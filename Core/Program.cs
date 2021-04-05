@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebApp.Data;
+using Core.Data;
 
-namespace WebApp
+namespace Core
 {
     public class Program
     {

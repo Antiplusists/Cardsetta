@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace WebApp.Data
+namespace Core.Data
 {
     public static class DataExtensions
     {
