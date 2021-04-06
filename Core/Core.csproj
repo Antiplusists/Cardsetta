@@ -20,11 +20,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
-    <PackageReference Include="TypeGen" Version="2.4.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Update="app.db" CopyToOutputDirectory="PreserveNewest"/>
     <None Update="Certificates\cert.pfx" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
