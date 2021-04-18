@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Core.Models;
+using Core.Models.Dbo;
 
 namespace Core.Data
 {
@@ -17,5 +14,8 @@ namespace Core.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+
+        public DbSet<CardDbo> Cards { get; set; } = null!;
+        public DbSet<DeckDbo> Decks { get; set; } = null!;
     }
 }
