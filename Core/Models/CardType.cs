@@ -4,6 +4,6 @@
     {
         Text,
         Photo,
-        Mixed = Text | Photo
+        Mixed
     }
 }

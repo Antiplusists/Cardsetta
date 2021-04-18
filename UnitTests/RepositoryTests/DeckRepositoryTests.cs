@@ -34,15 +34,17 @@ namespace UnitTests.RepositoryTests
         {
             get
             {
-                yield return new TestCaseData(new CreationDeckDto {Name = "some name"});
+                yield return new TestCaseData(new CreationDeckDto {AuthorId = Guid.NewGuid(), Name = "some name"});
                 yield return new TestCaseData(new CreationDeckDto
                 {
+                    AuthorId = Guid.NewGuid(),
                     Name = "some name",
                     Cards = new List<CardDbo>
                         {new() {Answer = "asd", Id = Guid.NewGuid(), Question = "some quest", Type = CardType.Text}}
                 });
                 yield return new TestCaseData(new CreationDeckDto
                 {
+                    AuthorId = Guid.NewGuid(),
                     Name = "some name",
                     Cards = new List<CardDbo>
                     {
@@ -59,6 +61,7 @@ namespace UnitTests.RepositoryTests
             var result = await _deckRepository.AddAsync(dto);
             var found = await _deckRepository.FindAsync(result.Id);
 
+            result.AuthorId.Should().Be(dto.AuthorId);
             result.Name.Should().BeEquivalentTo(dto.Name);
             result.Cards.Should().BeEquivalentTo(dto.Cards);
 

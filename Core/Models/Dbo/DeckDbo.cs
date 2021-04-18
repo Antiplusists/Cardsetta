@@ -14,11 +14,13 @@ namespace Core.Models.Dbo
         public DeckDbo(CreationDeckDto dto)
         {
             Id = Guid.NewGuid();
+            AuthorId = dto.AuthorId;
             Name = dto.Name;
             Cards = dto.Cards;
         }
 
         [Key] public Guid Id { get; set; }
+        public Guid AuthorId { get; set; }
         public string Name { get; set; } = null!;
         public List<CardDbo> Cards { get; set; } = new();
     }
