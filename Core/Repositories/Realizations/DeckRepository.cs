@@ -4,6 +4,8 @@ using Core.Data;
 using Core.Models.Dbo;
 using Core.Models.Dto;
 using Core.Repositories.Abstracts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
@@ -15,22 +17,42 @@ namespace Core.Repositories.Realizations
 
         public override async Task<DeckDbo?> FindAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await DbContext.Decks.FindAsync(id);
         }
 
         public override async Task<DeckDbo> AddAsync(CreationDeckDto creationEntity)
         {
-            throw new NotImplementedException();
+            var newDeck = new DeckDbo(creationEntity);
+            var result = await DbContext.Decks.AddAsync(newDeck);
+
+            await DbContext.SaveChangesAsync();
+
+            return result.Entity!;
         }
 
         public override async Task<bool> RemoveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var result = DbContext.Decks.Remove(new DeckDbo {Id = id});
+
+            await DbContext.SaveChangesAsync();
+
+            if (result is {State: EntityState.Deleted})
+                return true;
+
+            return false;
         }
 
         public override async Task<DeckDbo> UpdateAsync(Guid id, CreationDeckDto entity)
         {
-            throw new NotImplementedException();
+            var model = new DeckDbo(entity) {Id = id};
+            var result = DbContext.Decks.Update(model);
+
+            await DbContext.SaveChangesAsync();
+
+            if (result is {State: EntityState.Modified})
+                return result.Entity!;
+
+            throw new OperationException("Failed to update entity");
         }
     }
 }

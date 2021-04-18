@@ -15,7 +15,7 @@ namespace Core.Data
         {
         }
 
-        public DbSet<CardDbo> Cards { get; set; } = null!;
-        public DbSet<DeckDbo> Decks { get; set; } = null!;
+        public DbSet<CardDbo?> Cards { get; set; } = null!;
+        public DbSet<DeckDbo?> Decks { get; set; } = null!;
     }
 }
