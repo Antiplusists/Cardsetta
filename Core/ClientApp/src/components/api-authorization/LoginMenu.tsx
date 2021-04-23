@@ -1,12 +1,16 @@
-import React, { Component, Fragment } from 'react';
+import { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import authService from './AuthorizeService';
 import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 import { styled } from '@material-ui/core/styles';
-import { Link as NavLink, Button, Menu, MenuItem, Avatar } from '@material-ui/core';
+import { Link as NavLink, Menu, MenuItem, Avatar } from '@material-ui/core';
 
-const CustomNavLink = styled(NavLink)({
+const CustomNavLink =  styled(
+    ({ ...other }) => (
+      <NavLink {...other} />
+    )
+  )({
     color: 'white',
     backgroundColor: 'rgba(255, 255, 255, 0)',
     fontWeight: 'bold',
@@ -25,19 +29,27 @@ const CustomNavLink = styled(NavLink)({
         borderRadius: '15px',
     },
 });
+
 const CustomAvatar = styled(Avatar)({
     width: '60px',
     height: '60px',
     marginLeft: '15px'
 });
 
-export class LoginMenu extends Component {
-    constructor(props) {
-        super(props);
+interface LoginMenuState {
+    isAuthenticated: boolean,
+    userName: string | null,
+    anchorEl: HTMLElement | null
+}
 
+export class LoginMenu extends Component<{}, LoginMenuState> {
+    private _subscription: number | undefined;
+
+    constructor(props: {}) {
+        super(props);
         this.state = {
             isAuthenticated: false,
-            userName: 'username',
+            userName: null,
             anchorEl: null
         };
     }
@@ -72,19 +84,25 @@ export class LoginMenu extends Component {
         }
     }
 
-    authenticatedView(userName, profilePath, logoutPath) {
+    authenticatedView(
+        userName: string | null,
+        profilePath: string,
+        logoutPath: {
+            pathname: string, state:
+                { local: boolean }
+        }) {
         return (<Fragment>
             <CustomNavLink
-                onClick={(event) => this.setState({ anchorEl: event.currentTarget })}
+                onClick={(event: React.MouseEvent<HTMLElement>) => this.setState({ anchorEl: event.currentTarget })}
             >
                 {userName}
-                <CustomAvatar>{userName ? userName[0] : 'D'}</CustomAvatar>
+                <CustomAvatar>{userName ? userName[0] : 'A'}</CustomAvatar>
             </CustomNavLink>
             <Menu
                 anchorEl={this.state.anchorEl}
                 open={Boolean(this.state.anchorEl)}
                 onClose={() => this.setState({ anchorEl: null })}
-                style={{marginTop: '50px', marginLeft: '10px'}}
+                style={{ marginTop: '50px', marginLeft: '10px' }}
             >
                 <MenuItem component={Link} to={profilePath}>Профиль</MenuItem>
                 <MenuItem component={Link} to={logoutPath}>Выйти</MenuItem>
@@ -93,7 +111,7 @@ export class LoginMenu extends Component {
 
     }
 
-    anonymousView(registerPath, loginPath) {
+    anonymousView(registerPath: string, loginPath: string) {
         return (<Fragment>
             <CustomNavLink component={Link} to={registerPath}>Регистрация</CustomNavLink>
             <CustomNavLink component={Link} to={loginPath}>Вход</CustomNavLink>
