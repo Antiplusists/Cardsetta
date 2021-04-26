@@ -73,7 +73,7 @@ export default function NavMenu() {
     <AppBar className={classes.header} position="static">
       <Toolbar>
         <NavLink className={classes.logo} component={Link} to="/" color="inherit" >
-          <img className={classes.logoImg} src="/images/logo/logo.svg" alt="logo" />
+          <img className={classes.logoImg} src="/images/logo/logo_white.svg" alt="logo" />
         </NavLink>
 
         <div className={classes.search}>
