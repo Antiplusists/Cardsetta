@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using Core.Data;
 using Core.Models.Dbo;
 using Core.Models.Dto;
+using Core.Models.Entities;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
-    public class DeckRepository : RepositoryBase<DeckDbo, CreationDeckDto, CreationDeckDto>, IDeckRepository
+    public class DeckRepository : RepositoryBase<DeckDbo, NewDeckEntity, UpdateDeckEntity>, IDeckRepository
     {
         public DeckRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
@@ -20,7 +21,7 @@ namespace Core.Repositories.Realizations
             return await DbContext.Decks.FindAsync(id);
         }
 
-        public override async Task<DeckDbo> AddAsync(CreationDeckDto creationEntity)
+        public override async Task<DeckDbo> AddAsync(NewDeckEntity creationEntity)
         {
             var newDeck = new DeckDbo(creationEntity);
             var result = await DbContext.Decks.AddAsync(newDeck);
@@ -42,7 +43,7 @@ namespace Core.Repositories.Realizations
             return false;
         }
 
-        public override async Task<DeckDbo> UpdateAsync(Guid id, CreationDeckDto entity)
+        public override async Task<DeckDbo> UpdateAsync(Guid id, UpdateDeckEntity entity)
         {
             var model = new DeckDbo(entity) {Id = id};
             var result = DbContext.Decks.Update(model);
