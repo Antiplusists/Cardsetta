@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Core.Data;
 using Core.Models;
 using Core.Models.Dto;
+using Core.Models.Entities;
 using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
 using FluentAssertions;
@@ -39,12 +40,13 @@ namespace UnitTests.RepositoryTests
         [TestCaseSource(nameof(CreationCards))]
         public async Task CreationCard(CreationCardDto dto)
         {
-            var result = await _cardRepository.AddAsync(dto);
+            var result = await _cardRepository.AddAsync(new CreationCardEntity(null, dto));
             var found = await _cardRepository.FindAsync(result.Id);
             
             result.Answer.Should().BeEquivalentTo(dto.Answer);
             result.Question.Should().BeEquivalentTo(dto.Question);
             result.Type.Should().BeEquivalentTo(dto.Type);
+            result.ImagePath.Should().BeNull();
             
             found.Should().Be(result);
         }
