@@ -10,5 +10,6 @@ namespace Core.Models.Dto
         public string? Description { get; set; }
         //TODO: Хз откуд в дто карточки возьмутся, но пока оставлю
         public List<CardDbo> Cards { get; set; } = new();
+        public List<TagDbo> Tags { get; set; } = new();
     }
 }

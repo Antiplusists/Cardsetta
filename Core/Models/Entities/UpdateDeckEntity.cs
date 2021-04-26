@@ -14,6 +14,7 @@ namespace Core.Models.Entities
             Description = dto.Description;
             Cards = dto.Cards;
             ImagePath = imagePath;
+            Tags = dto.Tags;
         }
         
         public Guid AuthorId;
@@ -21,5 +22,6 @@ namespace Core.Models.Entities
         public string? Description { get; set; }
         public List<CardDbo> Cards { get; set; } = new();
         public string? ImagePath { get; set; }
+        public List<TagDbo> Tags { get; set; } = new();
     }
 }

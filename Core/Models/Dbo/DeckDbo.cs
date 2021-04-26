@@ -19,6 +19,7 @@ namespace Core.Models.Dbo
             Name = entity.Name;
             Description = entity.Description;
             ImagePath = entity.ImagePath;
+            Tags = entity.Tags;
         }
 
         public DeckDbo(UpdateDeckEntity entity)
@@ -28,6 +29,7 @@ namespace Core.Models.Dbo
             Description = entity.Description;
             Cards = entity.Cards;
             ImagePath = entity.ImagePath;
+            Tags = entity.Tags;
         }
 
         [Key] public Guid Id { get; set; }
@@ -36,5 +38,6 @@ namespace Core.Models.Dbo
         public string? Description { get; set; }
         public List<CardDbo> Cards { get; set; } = new();
         public string? ImagePath { get; set; }
+        public List<TagDbo> Tags { get; set; } = new();
     }
 }
