@@ -55,5 +55,27 @@ namespace Core.Repositories.Realizations
 
             throw new OperationException("Failed to update entity");
         }
+        
+        
+        public async Task<bool> AddCard(Guid deckId, CardDbo dbo)
+        {
+            var deck = await FindAsync(deckId);
+            if (deck is null) return false;
+            
+            deck.Cards.Add(dbo);
+            
+            return await DbContext.SaveChangesAsync() != 0;
+        }
+
+        public async Task<bool> RemoveCard(Guid deckId, Guid cardId)
+        {
+            var deck = await FindAsync(deckId);
+            var card = deck?.Cards.Find(card => card.Id == cardId);
+            if (card is null) return false;
+            
+            deck!.Cards.Remove(card);
+
+            return await DbContext.SaveChangesAsync() != 0;
+        }
     }
 }
