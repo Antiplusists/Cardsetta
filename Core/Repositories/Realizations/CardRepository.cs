@@ -2,15 +2,14 @@
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Models.Dbo;
-using Core.Models.Dto;
+using Core.Models.Entities;
 using Core.Repositories.Abstracts;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
-    public class CardRepository : RepositoryBase<Guid ,CardDbo, CreationCardDto, CreationCardDto>, ICardRepository
+    public class CardRepository : RepositoryBase<Guid ,CardDbo, CreationCardEntity, CreationCardEntity>, ICardRepository
     {
         public CardRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
@@ -21,7 +20,7 @@ namespace Core.Repositories.Realizations
             return await DbContext.Cards.FindAsync(id);
         }
 
-        public override async Task<CardDbo> AddAsync(CreationCardDto creationEntity)
+        public override async Task<CardDbo> AddAsync(CreationCardEntity creationEntity)
         {
             var newCard = new CardDbo(creationEntity);
             var result = await DbContext.Cards.AddAsync(newCard);
@@ -43,7 +42,7 @@ namespace Core.Repositories.Realizations
             return false;
         }
 
-        public override async Task<CardDbo> UpdateAsync(Guid id, CreationCardDto entity)
+        public override async Task<CardDbo> UpdateAsync(Guid id, CreationCardEntity entity)
         {
             var model = new CardDbo(entity) {Id = id};
             var result = DbContext.Cards.Update(model);
