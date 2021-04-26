@@ -19,7 +19,6 @@ namespace Core.Models.Dbo
             Name = entity.Name;
             Description = entity.Description;
             ImagePath = entity.ImagePath;
-            Tags = entity.Tags;
         }
 
         public DeckDbo(UpdateDeckEntity entity)

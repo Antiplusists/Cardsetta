@@ -25,6 +25,12 @@ namespace Core.Repositories.Realizations
             var newDeck = new DeckDbo(creationEntity);
             var result = await DbContext.Decks.AddAsync(newDeck);
 
+            foreach (var tag in creationEntity.Tags)
+            {
+                var tagDbo = await DbContext.Tags.FindAsync(tag);
+                result.Entity!.Tags.Add(tagDbo ?? new TagDbo(tag));
+            }
+
             await DbContext.SaveChangesAsync();
 
             return result.Entity!;
