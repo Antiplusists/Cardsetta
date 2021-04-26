@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Core.Repositories.Abstracts
 {
-    public interface IRepository<TEntity, TCreationEntity, TUpdatingEntity>
+    public interface IRepository<TId ,TEntity, TCreationEntity, TUpdatingEntity>
     {
-        Task<TEntity?> FindAsync(Guid id);
+        Task<TEntity?> FindAsync(TId id);
         Task<TEntity> AddAsync(TCreationEntity creationEntity);
-        Task<bool> RemoveAsync(Guid id);
-        Task<TEntity> UpdateAsync(Guid id, TUpdatingEntity entity);
+        Task<bool> RemoveAsync(TId id);
+        Task<TEntity> UpdateAsync(TId id, TUpdatingEntity entity);
     }
 }

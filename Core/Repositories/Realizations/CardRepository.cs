@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
-    public class CardRepository : RepositoryBase<CardDbo, CreationCardDto, CreationCardDto>, ICardRepository
+    public class CardRepository : RepositoryBase<Guid ,CardDbo, CreationCardDto, CreationCardDto>, ICardRepository
     {
         public CardRepository(ApplicationDbContext dbContext) : base(dbContext)
         {

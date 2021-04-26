@@ -4,7 +4,7 @@ using Core.Data;
 
 namespace Core.Repositories.Abstracts
 {
-    public abstract class RepositoryBase<TEntity, TCreationEntity, TUpdatingEntity>: IRepository<TEntity, TCreationEntity, TUpdatingEntity>
+    public abstract class RepositoryBase<TId, TEntity, TCreationEntity, TUpdatingEntity>: IRepository<TId, TEntity, TCreationEntity, TUpdatingEntity>
     {
         protected readonly ApplicationDbContext DbContext;
 
@@ -13,9 +13,9 @@ namespace Core.Repositories.Abstracts
             DbContext = dbContext;
         }
         
-        public abstract Task<TEntity?> FindAsync(Guid id);
+        public abstract Task<TEntity?> FindAsync(TId id);
         public abstract Task<TEntity> AddAsync(TCreationEntity creationEntity);
-        public abstract Task<bool> RemoveAsync(Guid id);
-        public abstract Task<TEntity> UpdateAsync(Guid id, TUpdatingEntity entity);
+        public abstract Task<bool> RemoveAsync(TId id);
+        public abstract Task<TEntity> UpdateAsync(TId id, TUpdatingEntity entity);
     }
 }

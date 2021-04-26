@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Models.Dbo;
-using Core.Models.Dto;
 using Core.Models.Entities;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
-    public class DeckRepository : RepositoryBase<DeckDbo, NewDeckEntity, UpdateDeckEntity>, IDeckRepository
+    public class DeckRepository : RepositoryBase<Guid, DeckDbo, NewDeckEntity, UpdateDeckEntity>, IDeckRepository
     {
         public DeckRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
