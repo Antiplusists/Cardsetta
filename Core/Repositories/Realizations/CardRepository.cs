@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Models.Dbo;
-using Core.Models.Entities;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
-    public class CardRepository : RepositoryBase<Guid ,CardDbo, CreationCardEntity, CreationCardEntity>, ICardRepository
+    public class CardRepository : RepositoryBase<Guid ,CardDbo, CardDbo, CardDbo>, ICardRepository
     {
         public CardRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
@@ -20,10 +19,9 @@ namespace Core.Repositories.Realizations
             return await DbContext.Cards.FindAsync(id);
         }
 
-        public override async Task<CardDbo> AddAsync(CreationCardEntity creationEntity)
+        public override async Task<CardDbo> AddAsync(CardDbo dbo)
         {
-            var newCard = new CardDbo(creationEntity);
-            var result = await DbContext.Cards.AddAsync(newCard);
+            var result = await DbContext.Cards.AddAsync(dbo);
 
             await DbContext.SaveChangesAsync();
 
@@ -42,10 +40,10 @@ namespace Core.Repositories.Realizations
             return false;
         }
 
-        public override async Task<CardDbo> UpdateAsync(Guid id, CreationCardEntity entity)
+        public override async Task<CardDbo> UpdateAsync(Guid id, CardDbo dbo)
         {
-            var model = new CardDbo(entity) {Id = id};
-            var result = DbContext.Cards.Update(model);
+            dbo.Id = id;
+            var result = DbContext.Cards.Update(dbo);
 
             await DbContext.SaveChangesAsync();
 

@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Models.Dbo;
-using Core.Models.Entities;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
-    public class DeckRepository : RepositoryBase<Guid, DeckDbo, NewDeckEntity, UpdateDeckEntity>, IDeckRepository
+    public class DeckRepository : RepositoryBase<Guid, DeckDbo, DeckDbo, DeckDbo>, IDeckRepository
     {
-        public DeckRepository(ApplicationDbContext dbContext) : base(dbContext)
+        private readonly ICardRepository cardRepo;
+
+        public DeckRepository(ApplicationDbContext dbContext, ICardRepository cardRepo) : base(dbContext)
         {
+            this.cardRepo = cardRepo;
         }
 
         public override async Task<DeckDbo?> FindAsync(Guid id)
@@ -20,19 +24,14 @@ namespace Core.Repositories.Realizations
             return await DbContext.Decks.FindAsync(id);
         }
 
-        public override async Task<DeckDbo> AddAsync(NewDeckEntity creationEntity)
+        public override async Task<DeckDbo> AddAsync(DeckDbo dbo)
         {
-            var newDeck = new DeckDbo(creationEntity);
-            var result = await DbContext.Decks.AddAsync(newDeck);
-
-            foreach (var tag in creationEntity.Tags)
-            {
-                var tagDbo = await DbContext.Tags.FindAsync(tag);
-                result.Entity!.Tags.Add(tagDbo ?? new TagDbo(tag));
-            }
+            dbo.Tags = dbo.Tags.AsParallel().Select(tag => DbContext.Tags.Find(tag.Tag) ?? tag).ToHashSet();
+            
+            var result = await DbContext.Decks.AddAsync(dbo);
 
             await DbContext.SaveChangesAsync();
-
+            
             return result.Entity!;
         }
 
@@ -48,10 +47,10 @@ namespace Core.Repositories.Realizations
             return false;
         }
 
-        public override async Task<DeckDbo> UpdateAsync(Guid id, UpdateDeckEntity entity)
+        public override async Task<DeckDbo> UpdateAsync(Guid id, DeckDbo dbo)
         {
-            var model = new DeckDbo(entity) {Id = id};
-            var result = DbContext.Decks.Update(model);
+            dbo.Id = id;
+            var result = DbContext.Decks.Update(dbo);
 
             await DbContext.SaveChangesAsync();
 
@@ -62,25 +61,77 @@ namespace Core.Repositories.Realizations
         }
         
         
-        public async Task<bool> AddCard(Guid deckId, CardDbo dbo)
+        public async Task<CardDbo?> AddCard(Guid deckId, CardDbo dbo)
         {
             var deck = await FindAsync(deckId);
-            if (deck is null) return false;
+
+            if (deck is null) return null;
+
+            CardDbo? card;
             
-            deck.Cards.Add(dbo);
+            if (dbo.Id == Guid.Empty)
+            {
+                card = await cardRepo.AddAsync(dbo);
+            }
+            else
+            {
+                card = await cardRepo.FindAsync(dbo.Id);
+            }
+
+            if (card is null) return null;
             
-            return await DbContext.SaveChangesAsync() != 0;
+            deck.Cards.Add(card);
+            
+            await DbContext.SaveChangesAsync();
+
+            return card;
         }
 
-        public async Task<bool> RemoveCard(Guid deckId, Guid cardId)
+        public async Task<CardDbo?> RemoveCard(Guid deckId, Guid cardId)
         {
             var deck = await FindAsync(deckId);
+            
             var card = deck?.Cards.Find(card => card.Id == cardId);
-            if (card is null) return false;
+            
+            if (card is null) return null;
             
             deck!.Cards.Remove(card);
 
+            return card;
+        }
+
+        public async Task<bool> AddTags(Guid deckId, params string[] tags)
+        {
+            var deck = await FindAsync(deckId);
+
+            if (deck is null) return false;
+            
+            foreach (var tag in tags)
+            {
+                var tagDbo = await DbContext.Tags.FindAsync(tag);
+                deck.Tags.Add(tagDbo ?? new TagDbo(tag));
+            }
+
             return await DbContext.SaveChangesAsync() != 0;
+        }
+
+        public async Task<bool> RemoveTags(Guid deckId, params string[] tags)
+        {
+            var deck = await FindAsync(deckId);
+
+            if (deck is null) return false;
+
+            foreach (var tag in tags)
+            {
+                deck.Tags.RemoveWhere(tagDbo => tagDbo.Tag == tag);
+            }
+
+            return await DbContext.SaveChangesAsync() != 0;
+        }
+
+        public IEnumerable<DeckDbo> FindByTags(params string[] tags)
+        {
+            return DbContext.Tags.Where(tag => tags.Contains(tag.Tag)).SelectMany(tag => tag.Decks).Distinct().AsEnumerable();
         }
     }
 }

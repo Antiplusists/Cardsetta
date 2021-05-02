@@ -10,6 +10,6 @@ namespace Core.Models.Dbo
 
         [Key] public string Tag { get; set; } = null!;
 
-        public List<DeckDbo> Decks { get; set; } = new();
+        public HashSet<DeckDbo> Decks { get; set; } = new();
     }
 }
