@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Core.Data;
 using Core.Models;
+using Core.Models.Dbo;
 using Core.Models.Dto;
-using Core.Models.Entities;
 using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
 using FluentAssertions;
@@ -11,6 +12,7 @@ using IdentityServer4.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
+using UnitTests.MapperProfiles;
 
 namespace UnitTests.RepositoryTests
 {
@@ -18,6 +20,7 @@ namespace UnitTests.RepositoryTests
     public class CardRepositoryTests
     {
         private ICardRepository _cardRepository;
+        private IMapper _mapper;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -26,6 +29,7 @@ namespace UnitTests.RepositoryTests
                 .UseInMemoryDatabase(databaseName: "Test")
                 .Options;
             _cardRepository = new CardRepository(new ApplicationDbContext(options, new OptionsWrapper<OperationalStoreOptions>(new OperationalStoreOptions())));
+            _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile(typeof(CreationCardProfile))));
         }
         public static IEnumerable<TestCaseData> CreationCards
         {
@@ -38,14 +42,15 @@ namespace UnitTests.RepositoryTests
         }
 
         [TestCaseSource(nameof(CreationCards))]
-        public async Task CreationCard(CreationCardDto dto)
+        public async Task IsCreationCardWithoutImageSuccessful(CreationCardDto dto)
         {
-            var result = await _cardRepository.AddAsync(new CreationCardEntity(null, dto));
+            var dbo = _mapper.Map<CardDbo>(dto);
+            var result = await _cardRepository.AddAsync(dbo);
             var found = await _cardRepository.FindAsync(result.Id);
             
-            result.Answer.Should().BeEquivalentTo(dto.Answer);
-            result.Question.Should().BeEquivalentTo(dto.Question);
-            result.Type.Should().BeEquivalentTo(dto.Type);
+            result.Answer.Should().BeEquivalentTo(dbo.Answer);
+            result.Question.Should().BeEquivalentTo(dbo.Question);
+            result.Type.Should().BeEquivalentTo(dbo.Type);
             result.ImagePath.Should().BeNull();
             
             found.Should().Be(result);
