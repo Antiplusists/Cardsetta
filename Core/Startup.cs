@@ -1,6 +1,7 @@
 using System.Reflection;
 using Core.Data;
 using Core.Models;
+using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -31,9 +32,9 @@ namespace Core
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             
-            services.AddSingleton<CardRepository>();
-            services.AddSingleton<DeckRepository>();
-            services.AddSingleton<TagRepository>();
+            services.AddSingleton<ICardRepository, CardRepository>();
+            services.AddSingleton<IDeckRepository, DeckRepository>();
+            services.AddSingleton<ITagRepository, TagRepository>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddDatabaseDeveloperPageExceptionFilter();
