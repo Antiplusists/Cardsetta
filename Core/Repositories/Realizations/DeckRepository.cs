@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
+using Core.Models;
 using Core.Models.Dbo;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
@@ -91,7 +91,7 @@ namespace Core.Repositories.Realizations
         {
             var deck = await FindAsync(deckId);
             
-            var card = deck?.Cards.Find(card => card.Id == cardId);
+            var card = deck?.Cards.Find(cardDbo => cardDbo.Id == cardId);
             
             if (card is null) return null;
             
@@ -129,9 +129,31 @@ namespace Core.Repositories.Realizations
             return await DbContext.SaveChangesAsync() != 0;
         }
 
-        public IEnumerable<DeckDbo> FindByTags(params string[] tags)
+        public async Task<PageList<DeckDbo>> GetPageByTags(int pageNumber, int pageSize, params string[] tags)
         {
-            return DbContext.Tags.Where(tag => tags.Contains(tag.Tag)).SelectMany(tag => tag.Decks).Distinct().AsEnumerable();
+            var neededDecks = DbContext.Tags
+                .Where(tag => tags.Contains(tag.Tag))
+                .SelectMany(tag => tag.Decks)
+                .Distinct();
+            
+            var page = neededDecks
+                .OrderBy(deck => deck.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+            
+            return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
+                pageNumber, pageSize);
+        }
+
+        public async Task<PageList<DeckDbo>> GetPage(int pageNumber, int pageSize)
+        {
+            var page = DbContext.Decks
+                .OrderBy(deck => deck.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+            
+            return new PageList<DeckDbo>(await page.ToListAsync(), await DbContext.Decks.LongCountAsync(),
+                pageNumber, pageSize);
         }
     }
 }
