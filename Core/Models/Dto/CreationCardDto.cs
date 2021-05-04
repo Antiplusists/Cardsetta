@@ -1,12 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.ComponentModel.DataAnnotations;
+using Core.Models.Validation;
+using Microsoft.AspNetCore.Http;
 
 namespace Core.Models.Dto
 {
     public record CreationCardDto
     {
+        [Required]
         public CardType Type { get; set; }
-        public string Question { get; set; } = null!;
+        [OnlyLettersAndNumbers]
+        [StringLength(500)]
+        public string? Question { get; set; } = null!;
+        [Required]
+        [OnlyLettersAndNumbers]
+        [StringLength(500)]
         public string Answer { get; set; } = null!;
+        [Validation.FileExtensions("jpg", "jpeg", "png")]
         public IFormFile? Image { get; set; }
     }
 }
