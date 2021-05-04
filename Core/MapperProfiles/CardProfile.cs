@@ -9,9 +9,7 @@ namespace Core.MapperProfiles
     {
         public CardProfile()
         {
-            CreateMap<CreationCardDto, CardDbo>()
-                .ForMember(dest => dest.ImagePath,
-                    opt => opt.MapFrom(src => DropboxHelper.UploadImage(src.Image)));
+            CreateMap<CreationCardDto, CardDbo>();
         }
     }
 }
