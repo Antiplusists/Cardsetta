@@ -52,5 +52,10 @@ namespace Core.Repositories.Realizations
 
             throw new OperationException("Failed to update entity");
         }
+
+        public async Task<CardDbo> UpdateAsync(CardDbo dbo)
+        {
+            return await UpdateAsync(dbo.Id, dbo);
+        }
     }
 }

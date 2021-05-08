@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Core.Helpers;
 using Core.Models.Dbo;
 using Core.Models.Dto;
 
@@ -10,6 +9,8 @@ namespace Core.MapperProfiles
         public CardProfile()
         {
             CreateMap<CreationCardDto, CardDbo>();
+            CreateMap<UpdateCardDto, CardDbo>();
+            CreateMap<CardDbo, UpdateCardDto>();
         }
     }
 }
