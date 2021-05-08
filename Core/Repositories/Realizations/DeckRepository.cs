@@ -155,5 +155,10 @@ namespace Core.Repositories.Realizations
             return new PageList<DeckDbo>(await page.ToListAsync(), await DbContext.Decks.LongCountAsync(),
                 pageNumber, pageSize);
         }
+
+        public async Task<DeckDbo> UpdateAsync(DeckDbo dbo)
+        {
+            return await UpdateAsync(dbo.Id, dbo);
+        }
     }
 }

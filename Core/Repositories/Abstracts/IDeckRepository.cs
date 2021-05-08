@@ -14,5 +14,6 @@ namespace Core.Repositories.Abstracts
         Task<bool> RemoveTags(Guid deckId, params string[] tags);
         Task<PageList<DeckDbo>> GetPageByTags(int pageNumber, int pageSize, params string[] tags);
         Task<PageList<DeckDbo>> GetPage(int pageNumber, int pageSize);
+        Task<DeckDbo> UpdateAsync(DeckDbo dbo);
     }
 }
