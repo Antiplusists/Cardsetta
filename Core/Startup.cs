@@ -11,6 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace Core
 {
@@ -31,10 +34,10 @@ namespace Core
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
-            
+
             services.AddScoped<ICardRepository, CardRepository>();
-            services.AddScoped<IDeckRepository, DeckRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IDeckRepository, DeckRepository>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -48,8 +51,22 @@ namespace Core
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            services.AddControllers(cfg =>
+                {
+                    cfg.ReturnHttpNotAcceptable = true;
+                    cfg.RespectBrowserAcceptHeader = true;
+                })
+                .ConfigureApiBehaviorOptions(opt =>
+                {
+                    opt.SuppressModelStateInvalidFilter = true;
+                    opt.SuppressMapClientErrors = true;
+                })
+                .AddNewtonsoftJson(opt =>
+                {
+                    opt.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
+                    opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
@@ -92,10 +109,7 @@ namespace Core
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>
