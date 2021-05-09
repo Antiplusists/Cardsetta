@@ -34,5 +34,17 @@ namespace Core.Controllers
             this.mapper = mapper;
             this.userManager = userManager;
         }
+        
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<CardResult>>> GetCards([FromRoute] Guid deckId)
+        {
+            var deck = await deckRepo.FindAsync(deckId);
+            if (deck is null)
+                return NotFound();
+            
+            return Ok(mapper.Map<IEnumerable<CardDbo>, IEnumerable<CardResult>>(deck.Cards));
+        }
     }
 }
