@@ -84,9 +84,16 @@ namespace Core.Controllers
 
         [HttpGet]
         [Route("{deckId:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<DeckResult>> GetDeckById([FromRoute] Guid deckId)
         {
-            throw new NotImplementedException();
+            var deckDbo = await deckRepo.FindAsync(deckId);
+
+            if (deckDbo is null)
+                return NotFound();
+
+            return Ok(mapper.Map<DeckDbo, DeckResult>(deckDbo));
         }
     }
 }
