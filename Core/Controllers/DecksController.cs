@@ -8,7 +8,6 @@ using Core.Models.Dbo;
 using Core.Models.Dto;
 using Core.Models.Results;
 using Core.Repositories.Abstracts;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +24,9 @@ namespace Core.Controllers
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
 
+        private async Task<ApplicationUser?> GetCurrentUser()
+            => await userManager.GetUserAsync(User);
+
         public DecksController(IDeckRepository deckRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             this.deckRepo = deckRepo;
@@ -35,7 +37,7 @@ namespace Core.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PageList<DeckResult>>> GetDecksByTags([FromQuery] string[] tags,
+        public async Task<ActionResult<PageListResult<DeckResult>>> GetDecksByTags([FromQuery] string[] tags,
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (pageNumber < 1 || pageSize < 1)
@@ -67,7 +69,7 @@ namespace Core.Controllers
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
-            var user = await userManager.FindByIdAsync(User.GetSubjectId());
+            var user = await GetCurrentUser();
 
             if (user is null)
                 return Unauthorized();
@@ -82,8 +84,7 @@ namespace Core.Controllers
             return CreatedAtRoute(nameof(GetDeckById), new {deckId = dbo.Id}, dbo.Id);
         }
 
-        [HttpGet]
-        [Route("{deckId:guid}")]
+        [HttpGet("{deckId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<DeckResult>> GetDeckById([FromRoute] Guid deckId)
