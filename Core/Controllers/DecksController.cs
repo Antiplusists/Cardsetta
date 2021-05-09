@@ -35,7 +35,7 @@ namespace Core.Controllers
             this.mapper = mapper;
             this.userManager = userManager;
         }
-        
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -50,14 +50,14 @@ namespace Core.Controllers
                 return BadRequest("Tags should be in lower case");
             if (!tags.All(tag => tag.Length <= 30))
                 return BadRequest("Tags should not be bigger than 30 symbols");
-            
-            var page = tags.Length > 0 
-                ? await deckRepo.GetPageByTags(pageNumber, pageSize, tags) 
+
+            var page = tags.Length > 0
+                ? await deckRepo.GetPageByTags(pageNumber, pageSize, tags)
                 : await deckRepo.GetPage(pageNumber, pageSize);
-            
-            var result = new PageListResult<DeckResult>(mapper.Map<List<DeckDbo>, List<DeckResult>>(page), page.TotalCount,
-                page.CurrentPage, page.PageSize);
-            
+
+            var result = new PageListResult<DeckResult>(mapper.Map<List<DeckDbo>, List<DeckResult>>(page),
+                page.TotalCount, page.CurrentPage, page.PageSize);
+
             return Ok(result);
         }
 
@@ -98,7 +98,7 @@ namespace Core.Controllers
 
             return Ok(mapper.Map<DeckDbo, DeckResult>(deckDbo));
         }
-        
+
         [HttpPatch("{deckId:guid}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -107,7 +107,8 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Consumes("application/json-patch+json")]
-        public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId, [FromBody] JsonPatchDocument<UpdateDeckDto> patchDoc)
+        public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId,
+            [FromBody] JsonPatchDocument<UpdateDeckDto> patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("Patch document is null");
@@ -115,7 +116,7 @@ namespace Core.Controllers
             var deckDbo = await deckRepo.FindAsync(deckId);
             if (deckDbo is null)
                 return NotFound();
-            
+
             var user = await GetCurrentUser();
             if (!deckDbo.Author.Equals(user))
                 return Unauthorized();
@@ -128,7 +129,7 @@ namespace Core.Controllers
 
             mapper.Map(dto, deckDbo);
             await deckRepo.UpdateAsync(deckDbo);
-            
+
             return NoContent();
         }
 
@@ -139,14 +140,14 @@ namespace Core.Controllers
         public async Task<IActionResult> DeleteDeck([FromRoute] Guid deckId)
         {
             var deck = await deckRepo.FindAsync(deckId);
-            if ( deck is null)
+            if (deck is null)
                 return NotFound();
 
             if (!deck.Author.Equals(await GetCurrentUser()))
                 return Unauthorized();
-            
+
             var result = await deckRepo.RemoveAsync(deckId);
-            
+
             if (result)
                 return NoContent();
 
@@ -171,7 +172,7 @@ namespace Core.Controllers
 
             if (!deck.Author.Equals(await GetCurrentUser()))
                 return Unauthorized();
-            
+
             //TODO: Сделать какое-то обновление картинки здесь
 
             await deckRepo.UpdateAsync(deck);
