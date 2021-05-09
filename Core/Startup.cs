@@ -32,9 +32,9 @@ namespace Core
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             
-            services.AddSingleton<ICardRepository, CardRepository>();
-            services.AddSingleton<IDeckRepository, DeckRepository>();
-            services.AddSingleton<ITagRepository, TagRepository>();
+            services.AddScoped<ICardRepository, CardRepository>();
+            services.AddScoped<IDeckRepository, DeckRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddDatabaseDeveloperPageExceptionFilter();

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Core.Models.Validation;
 
 namespace Core.Models.Dto
@@ -10,6 +9,5 @@ namespace Core.Models.Dto
         [OnlyLettersAndNumbers]
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public HashSet<string> Tags { get; set; } = new();
     }
 }
