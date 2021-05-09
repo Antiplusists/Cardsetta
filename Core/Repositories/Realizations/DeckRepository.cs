@@ -156,6 +156,19 @@ namespace Core.Repositories.Realizations
                 pageNumber, pageSize);
         }
 
+        public async Task<PageList<DeckDbo>> GetPageByAuthorId(int pageNumber, int pageSize, Guid authorId)
+        {
+            var neededDecks = DbContext.Decks
+                .Where(deck => deck.AuthorId == authorId);
+
+            var page = neededDecks
+                .OrderBy(deck => deck.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(), pageNumber, pageSize);
+        }
+
         public async Task<DeckDbo> UpdateAsync(DeckDbo dbo)
         {
             return await UpdateAsync(dbo.Id, dbo);

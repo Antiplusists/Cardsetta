@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Models;
 using Core.Models.Dbo;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Core.Repositories.Abstracts
 {
@@ -14,6 +15,7 @@ namespace Core.Repositories.Abstracts
         Task<bool> RemoveTags(Guid deckId, params string[] tags);
         Task<PageList<DeckDbo>> GetPageByTags(int pageNumber, int pageSize, params string[] tags);
         Task<PageList<DeckDbo>> GetPage(int pageNumber, int pageSize);
+        Task<PageList<DeckDbo>> GetPageByAuthorId(int pageNumber, int pageSize, Guid authorId);
         Task<DeckDbo> UpdateAsync(DeckDbo dbo);
     }
 }
