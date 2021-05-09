@@ -11,6 +11,7 @@ using Core.Repositories.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Controllers
@@ -95,6 +96,39 @@ namespace Core.Controllers
                 return NotFound();
 
             return Ok(mapper.Map<DeckDbo, DeckResult>(deckDbo));
+        }
+        
+        [HttpPatch("{deckId:guid}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [Consumes("application/json-patch+json")]
+        public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId, [FromBody] JsonPatchDocument<UpdateDeckDto> patchDoc)
+        {
+            if (patchDoc is null)
+                return BadRequest("Patch document is null");
+
+            var deckDbo = await deckRepo.FindAsync(deckId);
+            if (deckDbo is null)
+                return NotFound();
+            
+            var user = await GetCurrentUser();
+            if (!deckDbo.Author.Equals(user))
+                return Unauthorized();
+
+            var dto = mapper.Map<DeckDbo, UpdateDeckDto>(deckDbo);
+            patchDoc.ApplyTo(dto, ModelState);
+            TryValidateModel(dto);
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            mapper.Map(dto, deckDbo);
+            await deckRepo.UpdateAsync(deckDbo);
+            
+            return NoContent();
         }
     }
 }
