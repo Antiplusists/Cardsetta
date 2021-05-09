@@ -46,5 +46,33 @@ namespace Core.Controllers
             
             return Ok(mapper.Map<IEnumerable<CardDbo>, IEnumerable<CardResult>>(deck.Cards));
         }
+        
+        [HttpPost]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult<CardResult>> AddCard([FromRoute] Guid deckId, [FromForm] CreationCardDto dto)
+        {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+            
+            var deck = await deckRepo.FindAsync(deckId);
+            
+            if (deck is null)
+                return NotFound();
+
+            if (!deck.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+
+            var cardDbo = mapper.Map<CreationCardDto, CardDbo>(dto);
+            cardDbo = await deckRepo.AddCard(deckId, cardDbo);
+
+            if (cardDbo is null)
+                throw new AggregateException();
+
+            return Ok(mapper.Map<CardDbo, CardResult>(cardDbo));
+        }
     }
 }
