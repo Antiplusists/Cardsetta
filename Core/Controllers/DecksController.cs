@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -17,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Core.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/decks")]
     [Produces("application/json")]
     public class DecksController : Controller
     {
@@ -150,6 +151,31 @@ namespace Core.Controllers
                 return NoContent();
 
             throw new AggregateException();
+        }
+
+        [HttpPost("{deckId:guid}/update-image")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> UpdateImage([FromRoute] Guid deckId,
+            [Required] [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile image)
+        {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            var deck = await deckRepo.FindAsync(deckId);
+            if (deck is null)
+                return NotFound();
+
+            if (!deck.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+            
+            //TODO: Сделать какое-то обновление картинки здесь
+
+            await deckRepo.UpdateAsync(deck);
+            return NoContent();
         }
     }
 }
