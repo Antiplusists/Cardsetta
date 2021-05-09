@@ -11,6 +11,7 @@ using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
 using FluentAssertions;
 using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
@@ -27,6 +28,7 @@ namespace UnitTests.RepositoryTests
         private ICardRepository _cardRepository;
         private ITagRepository _tagRepository;
         private IMapper _mapper;
+        private ApplicationUser _user;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -39,7 +41,7 @@ namespace UnitTests.RepositoryTests
             _tagRepository = new TagRepository(dbContext);
             _cardRepository = new CardRepository(dbContext);
             _deckRepository = new DeckRepository(dbContext, _cardRepository);
-            
+            _user = dbContext.Users.Add(new ApplicationUser() {UserName = "TestUser"}).Entity;
             await InitTagRepository();
             
             var mapperConfiguration = new MapperConfiguration(cfg =>
@@ -93,11 +95,11 @@ namespace UnitTests.RepositoryTests
         [TestCaseSource(nameof(CreationDecks))]
         public async Task IsDeckCreationCorrect(CreationDeckDto dto)
         {
-            var dbo = _mapper.Map(dto, new DeckDbo {AuthorId = Guid.NewGuid()});
+            var dbo = _mapper.Map(dto, new DeckDbo {Author = _user});
             var result = await _deckRepository.AddAsync(dbo);
             var found = await _deckRepository.FindAsync(result.Id);
             
-            result.AuthorId.Should().Be(dbo.AuthorId);
+            result.Author.Should().BeEquivalentTo(_user);
             result.Description.Should().BeEquivalentTo(dbo.Description);
             result.Name.Should().BeEquivalentTo(dbo.Name);
             result.Cards.Should().BeEmpty();

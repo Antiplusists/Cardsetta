@@ -158,15 +158,18 @@ namespace Core.Repositories.Realizations
 
         public async Task<PageList<DeckDbo>> GetPageByAuthorId(int pageNumber, int pageSize, Guid authorId)
         {
-            var neededDecks = DbContext.Decks
-                .Where(deck => deck.AuthorId == authorId);
+            var author = await DbContext.Users.FindAsync(authorId.ToString());
 
-            var page = neededDecks
+            if (author is null)
+                throw new ArgumentException($"User with id: {authorId} doesn't exists");
+            
+            var page = author.Decks
+                .AsQueryable()
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
-            return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(), pageNumber, pageSize);
+            return new PageList<DeckDbo>(await page.ToListAsync(), await author.Decks.AsQueryable().LongCountAsync(), pageNumber, pageSize);
         }
 
         public async Task<DeckDbo> UpdateAsync(DeckDbo dbo)
