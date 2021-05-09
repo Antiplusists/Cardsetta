@@ -130,5 +130,26 @@ namespace Core.Controllers
             
             return NoContent();
         }
+
+        [HttpDelete("{deckId:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteDeck([FromRoute] Guid deckId)
+        {
+            var deck = await deckRepo.FindAsync(deckId);
+            if ( deck is null)
+                return NotFound();
+
+            if (!deck.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+            
+            var result = await deckRepo.RemoveAsync(deckId);
+            
+            if (result)
+                return NoContent();
+
+            throw new AggregateException();
+        }
     }
 }
