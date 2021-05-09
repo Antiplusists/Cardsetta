@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
 using Core.Models.Dbo;
+using Core.Models.Results;
 using Core.Repositories.Abstracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 
 namespace Core.Controllers
 {
@@ -21,6 +22,21 @@ namespace Core.Controllers
         {
             this.deckRepo = deckRepo;
             this.mapper = mapper;
+        }
+        
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PageListResult<DeckResult>>> GetDecks([FromQuery]int pageNumber = 1, [FromQuery]int pageSize = 10)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+                return BadRequest();
+            
+            var page = await deckRepo.GetPage(pageNumber, pageSize);
+            var result = new PageListResult<DeckResult>(mapper.Map<List<DeckDbo>, List<DeckResult>>(page), page.TotalCount,
+                page.CurrentPage, page.PageSize);
+            
+            return Ok(result);
         }
     }
 }
