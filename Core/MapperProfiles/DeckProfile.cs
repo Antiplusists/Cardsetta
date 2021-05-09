@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using AutoMapper;
 using Core.Models.Dbo;
 using Core.Models.Dto;
@@ -16,6 +17,8 @@ namespace Core.MapperProfiles
             CreateMap<UpdateDeckDto, DeckDbo>();
             CreateMap<DeckDbo, UpdateDeckDto>();
             CreateMap<DeckDbo, DeckResult>()
+                .ForMember(dest => dest.AuthorId, opt 
+                    => opt.MapFrom(src => Guid.Parse(src.Author.Id)))
                 .ForMember(dest => dest.Tags, opt 
                     => opt.MapFrom(src => src.Tags.Select(tagDbo => tagDbo.Tag)));
         }
