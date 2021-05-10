@@ -35,6 +35,8 @@
 }
 
 .sideQACard span {
+    width: 75%;
+    text-align: center;
     font-size: xx-large;
     font-weight: bold;
     font-family: Roboto;

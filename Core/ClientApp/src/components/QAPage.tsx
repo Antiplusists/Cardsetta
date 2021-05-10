@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import './QAPage.css';
+import { CardInfo } from '../types/CardInfo'
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -13,12 +14,6 @@ const useStyles = makeStyles(() =>
             fontSize: 'x-large',
         },
     }));
-
-type CardInfo = {
-    questionImg: string | undefined,
-    questionText: string,
-    answearText: string
-}
 
 type QACardState = {
     isFlipped: boolean,
@@ -42,6 +37,10 @@ const cards: CardInfo[] = [
         questionImg: 'images/forTest/tree_2.png',
         questionText: 'Real tree',
         answearText: 'Настоящее дерево'
+    },
+    {
+        questionText: 'House',
+        answearText: 'Жилой дом'
     }
 ]
 
