@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
@@ -150,6 +151,35 @@ namespace Core.Controllers
             mapper.Map(dto, cardDbo);
             await cardRepo.UpdateAsync(cardDbo);
 
+            return NoContent();
+        }
+
+        [HttpPost("{cardId:guid}/update-image")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> UpdateImage([FromRoute] Guid deckId, [FromRoute] Guid cardId,
+            [Required] [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile image)
+        {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            var deck = await deckRepo.FindAsync(deckId);
+            if (deck is null)
+                return NotFound();
+
+            if (!deck.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+
+            var card = deck.Cards.Find(cardDbo => cardDbo.Id == cardId);
+            if (card is null)
+                return NotFound();
+            
+            //TODO: Тут какое-то обновление картинки
+
+            await cardRepo.UpdateAsync(card);
             return NoContent();
         }
     }
