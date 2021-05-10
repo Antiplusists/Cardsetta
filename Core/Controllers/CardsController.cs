@@ -91,5 +91,29 @@ namespace Core.Controllers
 
             return Ok(mapper.Map<CardDbo, CardResult>(card));
         }
+
+        [HttpDelete("{cardId:guid}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoveCard([FromRoute] Guid deckId, [FromRoute] Guid cardId)
+        {
+            var deck = await deckRepo.FindAsync(deckId);
+            if (deck is null)
+                return NotFound();
+
+            if (!deck.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+
+            var card = await deckRepo.RemoveCard(deckId, cardId);
+            if (card is null)
+                return NotFound();
+
+            if (!await cardRepo.RemoveAsync(cardId))
+                throw new AggregateException();
+
+            return NoContent();
+        }
     }
 }
