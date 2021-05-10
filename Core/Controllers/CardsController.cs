@@ -10,6 +10,7 @@ using Core.Repositories.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Core.Controllers
@@ -112,6 +113,42 @@ namespace Core.Controllers
 
             if (!await cardRepo.RemoveAsync(cardId))
                 throw new AggregateException();
+
+            return NoContent();
+        }
+        
+        [HttpPatch("{cardId:guid}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> PatchCard([FromRoute] Guid deckId, [FromRoute] Guid cardId,
+            [FromForm] JsonPatchDocument<UpdateCardDto> patchDoc)
+        {
+            if (patchDoc is null)
+                return BadRequest("Patch document is null");
+
+            var deckDbo = await deckRepo.FindAsync(deckId);
+            if (deckDbo is null)
+                return NotFound();
+
+            if (!deckDbo.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+
+            var cardDbo = deckDbo.Cards.Find(card => card.Id == cardId);
+            if (cardDbo is null)
+                return NotFound();
+
+            var dto = mapper.Map<CardDbo, UpdateCardDto>(cardDbo);
+            patchDoc.ApplyTo(dto, ModelState);
+            TryValidateModel(dto);
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            mapper.Map(dto, cardDbo);
+            await cardRepo.UpdateAsync(cardDbo);
 
             return NoContent();
         }
