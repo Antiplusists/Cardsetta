@@ -178,5 +178,45 @@ namespace Core.Controllers
             await deckRepo.UpdateAsync(deck);
             return NoContent();
         }
+
+        [HttpPost("{deckId:guid}/update-tags")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Consumes("application/json")]
+        public async Task<IActionResult> UpdateTags([FromRoute] Guid deckId, [Required] [FromBody] string[] newTags)
+        {
+            if (!newTags.All(tag => !string.IsNullOrEmpty(tag) && tag.All(char.IsLetterOrDigit)))
+                return BadRequest("Tags should contains only letters and digits");
+            if (!newTags.All(tag => tag.All(char.IsLower)))
+                return BadRequest("Tags should be in lower case");
+            if (!newTags.All(tag => tag.Length <= 30))
+                return BadRequest("Tags should not be bigger than 30 symbols");
+
+            var deck = await deckRepo.FindAsync(deckId);
+            if (deck is null)
+                return NotFound();
+
+            if (!deck.Author.Equals(await GetCurrentUser()))
+                return Unauthorized();
+
+            var currentTags = deck.Tags.Select(tagDbo => tagDbo.Tag);
+
+            // ReSharper disable PossibleMultipleEnumeration
+            if (currentTags.SequenceEqual(newTags))
+                return NoContent();
+            var difference = currentTags.Except(newTags);
+            var tagsToAddition = currentTags.Except(difference);
+            var tagsToDeletion = difference.Except(tagsToAddition);
+
+            if (!await deckRepo.AddTags(deckId, tagsToAddition.ToArray()))
+                throw new AggregateException();
+            if (!await deckRepo.RemoveTags(deckId, tagsToDeletion.ToArray()))
+                throw new AggregateException();
+
+            return NoContent();
+        }
     }
 }
