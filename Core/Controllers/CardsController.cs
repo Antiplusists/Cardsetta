@@ -16,6 +16,7 @@ namespace Core.Controllers
 {
     [ApiController]
     [Route( "api/v1/decks/{deckId:guid}/cards")]
+    [Produces("application/json")]
     public class CardsController : Controller
     {
         private readonly IDeckRepository deckRepo;
@@ -49,11 +50,11 @@ namespace Core.Controllers
         
         [HttpPost]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<CardResult>> AddCard([FromRoute] Guid deckId, [FromForm] CreationCardDto dto)
+        public async Task<IActionResult> AddCard([FromRoute] Guid deckId, [FromForm] CreationCardDto dto)
         {
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
@@ -72,7 +73,23 @@ namespace Core.Controllers
             if (cardDbo is null)
                 throw new AggregateException();
 
-            return Ok(mapper.Map<CardDbo, CardResult>(cardDbo));
+            return CreatedAtRoute(nameof(GetCardById), new {deckId, cardId = cardDbo.Id}, cardDbo.Id);
+        }
+
+        [HttpGet("{cardId:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CardResult>> GetCardById([FromRoute] Guid deckId, [FromRoute] Guid cardId)
+        {
+            var deck = await deckRepo.FindAsync(deckId);
+            if (deck is null)
+                return NotFound();
+
+            var card = deck.Cards.Find(cardDbo => cardDbo.Id == cardId);
+            if (card is null)
+                return NotFound();
+
+            return Ok(mapper.Map<CardDbo, CardResult>(card));
         }
     }
 }
