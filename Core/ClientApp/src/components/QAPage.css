@@ -6,48 +6,10 @@
     padding-top: 50px;
 }
 
-.QACard {
-    width: 450px;
-    height: 600px;
-    border-radius: 60px;
-    background-color: white;
-    transition: transform 1s;
-    transform-style: preserve-3d;
-}
-
-.QACard.isFlipped {
-    transform: rotateY(180deg);
-}
-
-.QACard.isReduce {
-    transform: scale(0.01);
-}
-
-.sideQACard {
-    position: absolute;
-    backface-visibility: hidden;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-.sideQACard span {
-    width: 75%;
-    text-align: center;
-    font-size: xx-large;
+.page .answerButton {
+    margin: 40px 20px;
+    width: 200px;
+    height: 75px;
     font-weight: bold;
-    font-family: Roboto;
-    margin: 10px;
-}
-
-.sideQACard img {
-    max-width: 75%;
-    max-height: 75%;
-}
-
-.sideQACard.back {
-    transform: rotateY(180deg);
+    font-size: x-large;
 }

@@ -1,0 +1,39 @@
+.settingsBlock {
+    background-color: white;
+    width: 1000px;
+    height: 700px;
+    border-radius: 50px;
+    margin: 50px;
+    padding: 25px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsBlock .inputsBlock {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+} 
+
+.settingsBlock .MuiButton-root,
+.settingsBlock .MuiTextField-root {
+    width: 75%;
+    margin: 15px;
+}
+
+.settingsBlock .MuiDropzoneArea-root {
+    width: 75%;
+    margin: 15px;
+    min-height: 200px;
+}
+
+.settingsBlock .QACard {
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    width: 400px;
+}

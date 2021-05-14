@@ -1,8 +1,12 @@
+import { Link } from 'react-router-dom';
+import { InferProps } from 'prop-types';
 import { Link as NavLink, Fab, makeStyles } from '@material-ui/core';
 import { Edit, Add } from '@material-ui/icons';
 import { FC } from 'react';
 import { CardInfo } from '../types/CardInfo'
 import './CardsPreviewPage.css'
+import { Sets } from '../fakeSets'
+import { Cards } from '../fakeCards'
 
 const useStyles = makeStyles({
   fabOne: {
@@ -23,34 +27,50 @@ const useStyles = makeStyles({
   },
 });
 
-const CardPreview: FC<CardInfo> = ({ questionImg, questionText, answearText }) => {
+const CardPreview: FC<CardInfo> = ({ id, questionImg, questionText, answearText }) => {
   return (
-    <div className='cardPreview'>
-      <div className='previewSideQACard'>
-        {questionImg !== undefined ? <img src={questionImg} alt='questionImage' /> : ""}
+    <div className='QAcardPreview'>
+      <div className='sideQACard'>
+        {questionImg !== undefined ? <img src={questionImg} alt='questionImage' /> : ''}
         <span>{questionText}</span>
       </div>
-      <div className='previewSideQACard '>
+      <div className='sideQACard'>
         <span>{answearText}</span>
       </div>
       <div className='overlay'>
-        <NavLink className='changeButton'>Изменить</NavLink>
+        <NavLink className='changeButton' component={Link} to={'/card-settings/' + id}>Изменить</NavLink>
       </div>
     </div>
 
   );
 }
 
-export default function СardsPreviewPage() {
+type СardsPreviewPageProps = {
+  setId: number,
+}
+
+export default function СardsPreviewPage({ setId }
+  : InferProps<СardsPreviewPageProps>) {
   const classes = useStyles();
+
+  function handleAddCard() {
+    Sets[setId].cardIds.push(Cards.length);
+  }
+
   return (
     <div>
-      <div className='cardsPreview'>
-        <CardPreview questionImg='images/forTest/tree.png' questionText='Tree' answearText='Дерево' />
-        <CardPreview questionImg='images/forTest/tree_2.png' questionText='Real tree' answearText='Настоящее дерево' />
-        <CardPreview questionText='House' answearText='Жилой дом' />
+      <div className='QAcardsPreview'>
+        {Sets[setId].cardIds.map(
+          id =>
+            <CardPreview key={id}
+              id={id}
+              questionImg={Cards[id].questionImg}
+              questionText={Cards[id].questionText}
+              answearText={Cards[id].answearText}
+            />
+        )}
       </div>
-      <Fab className={classes.fabOne} color='primary'>
+      <Fab className={classes.fabOne} color='primary' onClick={handleAddCard}  component={Link} to='/card-settings'>
         <Add />
       </Fab>
       <Fab className={classes.fabTwo} color='primary'>

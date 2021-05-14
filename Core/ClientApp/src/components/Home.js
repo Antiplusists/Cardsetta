@@ -14,9 +14,9 @@ export default function Home() {
   const classes = useStyles();
   return (
     <div className={classes.previews}>
-      <PreviewSetCards imgPreview='images/forTest/tree.png' />
-      <PreviewSetCards imgPreview='images/forTest/tree_2.png'/>
-      <PreviewSetCards/>
+      <PreviewSetCards imgPreview='images/forTest/tree.png' setId={0} />
+      <PreviewSetCards imgPreview='images/forTest/tree_2.png' setId={1} />
+      <PreviewSetCards setId={2} />
     </div>
   );
 }

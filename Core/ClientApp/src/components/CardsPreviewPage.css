@@ -1,11 +1,11 @@
-.cardsPreview {
+.QAcardsPreview {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     justify-items: center;
     padding: 20px 0;
 }
 
-.cardPreview {
+.QAcardPreview {
     position: relative;
     display: flex;
     width: 450px;
@@ -17,31 +17,16 @@
     border-width: 1px;
 }
 
-.previewSideQACard {
-    height: 100%;
+.QAcardPreview .sideQACard {
+    position: relative;
     width: 50%;
     border-radius: 30px;
     background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
     margin: 0px 5px;
 }
 
-.previewSideQACard img {
-    max-width: 75%;
-    max-height: 75%;
-}
-
-.previewSideQACard span {
-    width: 75%;
-    text-align: center;
+.QAcardPreview .sideQACard span {
     font-size: medium;
-    font-weight: bold;
-    font-family: Roboto;
-    margin: 10px;
-    overflow: hidden;
 }
 
 .overlay .changeButton {
