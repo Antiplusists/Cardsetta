@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { InferProps } from 'prop-types';
 import { CardInfo } from '../types/CardInfo';
 import { TextField, Button } from '@material-ui/core'
-import { DropzoneArea } from 'material-ui-dropzone'
+import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
 import QACard from './QACard'
 import './QACardSettings.css'
 import { Cards } from '../fakeCards'
@@ -15,23 +15,32 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
         Cards[cardInfo.id] = cardInfo;
     }
 
-    return (
+    function handleAddImage(files: FileObject[]) {
+        setCardInfo({ ...cardInfo, questionImg: files[0].data?.toString() });
+    }
+
+    return (    
         <div className='settingsBlock'>
             <div className='inputsBlock'>
                 <TextField label='Слово' variant='outlined' defaultValue={questionText}
                     onChange={(e) => setCardInfo({ ...cardInfo, questionText: e.target.value })} />
                 <TextField label='Перевод' variant='outlined' defaultValue={answearText}
                     onChange={(e) => setCardInfo({ ...cardInfo, answearText: e.target.value })} />
-                {/* TODO: придумать что-то с загрузкой изображения */}
-                <DropzoneArea
+                <DropzoneAreaBase fileObjects={[]}
                     acceptedFiles={['image/*']}
                     filesLimit={1}
+                    maxFileSize={1000000}
                     showPreviewsInDropzone={false}
-                    dropzoneText='Загрузить изображение'
+                    onAdd={handleAddImage}
+                    dropzoneText='Загрузить изображение'               
+                    getFileAddedMessage={(fileName: String) => `Файл ${fileName} успешно добавлен.`}
+                    getFileLimitExceedMessage={(filesLimit: number) => `Превышено максимально допустимое количество файлов. Разрешено только ${filesLimit}.`}
+                    getDropRejectMessage={(rejectedFile: File) => `Файл ${rejectedFile.name} был отклонен.`}
+                    getFileRemovedMessage={(fileName: String) => `Файл ${fileName} был удалён.`}
                 />
                 <Button variant='contained' color='primary' onClick={handleSave}>Сохранить</Button>
             </div>
-            <QACard cardInfo={cardInfo} isFlipped={isFlipped} onClick={() => setIsFlipped(!isFlipped)}/>
+            <QACard cardInfo={cardInfo} isFlipped={isFlipped} onClick={() => setIsFlipped(!isFlipped)} />
         </div >
     );
 }

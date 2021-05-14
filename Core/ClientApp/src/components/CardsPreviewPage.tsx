@@ -70,9 +70,12 @@ export default function СardsPreviewPage({ setId }
             />
         )}
       </div>
-      <Fab className={classes.fabOne} color='primary' onClick={handleAddCard}  component={Link} to='/card-settings'>
-        <Add />
-      </Fab>
+      <Link to='/card-settings'>
+        <Fab className={classes.fabOne} color='primary' onClick={handleAddCard} >
+          <Add />
+        </Fab>
+      </Link>
+
       <Fab className={classes.fabTwo} color='primary'>
         <Edit />
       </Fab>
