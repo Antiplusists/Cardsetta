@@ -7,6 +7,7 @@ import { CardInfo } from '../types/CardInfo'
 import './CardsPreviewPage.css'
 import { getSetById, changeCardsInSetById } from '../fakeSets'
 import { getCardById } from '../fakeCards'
+import { ButtonLink } from './ButtonLink';
 
 const useStyles = makeStyles({
   fabOne: {
@@ -52,7 +53,9 @@ const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete, setId }) => {
         <span>{answearText}</span>
       </div>
       <div className='overlay'>
-        <NavLink className='changeButton' component={Link} to={`/card-settings/${id}?set=${setId}`}>Изменить</NavLink>
+        <ButtonLink className='buttonLink'>
+          <Link to={`/card-settings/${id}?set=${setId}`}>Изменить</Link>
+        </ButtonLink>
         <IconButton className='deleteButton' onClick={handleDelete}>
           <DeleteForever />
         </IconButton>

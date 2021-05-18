@@ -4,29 +4,24 @@ import authService from './AuthorizeService';
 import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 import { styled } from '@material-ui/core/styles';
-import { Link as NavLink, Menu, MenuItem, Avatar } from '@material-ui/core';
+import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
+import { ButtonLink } from '../ButtonLink';
 
-const CustomNavLink =  styled(
+const CustomButton =  styled(
     ({ ...other }) => (
-      <NavLink {...other} />
+      <Button {...other} />
     )
   )({
     color: 'white',
     backgroundColor: 'rgba(255, 255, 255, 0)',
+    borderRadius: '15px',
+    padding: '10px 15px',
     fontWeight: 'bold',
     fontSize: 'x-large',
-    fontFamily: 'Roboto',
-    textTransform: 'capitalize',
-    margin: '15px',
-    padding: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
+    fontFamily: 'Roboto', 
     '&:hover': {
         color: 'white',
         background: 'rgba(255, 255, 255, 0.1)',
-        textDecoration: 'none',
-        borderRadius: '15px',
     },
 });
 
@@ -92,12 +87,12 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
                 { local: boolean }
         }) {
         return (<Fragment>
-            <CustomNavLink
+            <CustomButton
                 onClick={(event: React.MouseEvent<HTMLElement>) => this.setState({ anchorEl: event.currentTarget })}
             >
                 {userName}
                 <CustomAvatar>{userName ? userName[0] : 'A'}</CustomAvatar>
-            </CustomNavLink>
+            </CustomButton>
             <Menu
                 anchorEl={this.state.anchorEl}
                 open={Boolean(this.state.anchorEl)}
@@ -113,8 +108,8 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
 
     anonymousView(registerPath: string, loginPath: string) {
         return (<Fragment>
-            <CustomNavLink component={Link} to={registerPath}>Регистрация</CustomNavLink>
-            <CustomNavLink component={Link} to={loginPath}>Вход</CustomNavLink>
+            <ButtonLink><Link to={registerPath}>Регистрация</Link></ButtonLink>
+            <ButtonLink><Link to={loginPath}>Вход</Link></ButtonLink>
         </Fragment>);
     }
 }

@@ -9,6 +9,7 @@ import { setCard } from '../fakeCards'
 import { containsCardInSet, getSetById } from '../fakeSets'
 import useQuery from '../customHooks/useQuery';
 import { Link } from 'react-router-dom';
+import { ButtonLink } from './ButtonLink'
 
 export default function QACardSettings({ id, questionImg, questionText, answearText }: InferProps<CardInfo>) {
     const query = useQuery();
@@ -51,12 +52,12 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
                     getFileRemovedMessage={(fileName: String) => `Файл ${fileName} был удалён.`}
                 />
 
-                <Button variant='contained' color='primary' onClick={handleSave}>
+                <ButtonLink className='linkButton' onClick={handleSave}>
                     <Link to={`/cards-preview/${setId}`}>Сохранить</Link>
-                </Button>
-                <Button variant='contained' color='primary'>
+                </ButtonLink>
+                <ButtonLink className='linkButton'>
                     <Link to={`/cards-preview/${setId}`}>Отмена</Link>
-                </Button>
+                </ButtonLink>
 
 
             </div>

@@ -1,11 +1,11 @@
 import { InferProps } from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Link as NavLink } from '@material-ui/core';
 import './PreviewSetCards.css';
+import { ButtonLink } from './ButtonLink';
 
 type PreviewSetCardsProps = {
   imgPreview: string,
-  setId: number,
+  setId: string,
 }
 
 export default function PreviewSetCards({ imgPreview, setId }
@@ -15,9 +15,15 @@ export default function PreviewSetCards({ imgPreview, setId }
       <div className='previewSetCard'>
         <img src={imgPreview ? imgPreview : ''} alt='preview'></img>
         <div className='overlay'>
-          <NavLink className='linkButton' component={Link} to={'/cards/' + setId}>START</NavLink>
-          <NavLink className='linkButton'>FREE</NavLink>
-          <NavLink className='linkButton' component={Link} to={'/cards-preview/' + setId}>CARDS</NavLink>
+          <ButtonLink className='buttonLink'>
+            <Link to={'/cards/' + setId}>Начать</Link>
+          </ButtonLink>
+          <ButtonLink className='buttonLink'>
+            <Link to={'/'}>SOON</Link>
+          </ButtonLink>
+          <ButtonLink className='buttonLink'>
+            <Link to={'/cards-preview/' + setId}>Превью</Link>
+          </ButtonLink>
         </div>
       </div>
     </div>
