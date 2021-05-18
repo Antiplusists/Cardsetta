@@ -52,10 +52,10 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
                     getFileRemovedMessage={(fileName: String) => `Файл ${fileName} был удалён.`}
                 />
 
-                <ButtonLink className='linkButton' onClick={handleSave}>
+                <ButtonLink className='buttonLink' onClick={handleSave}>
                     <Link to={`/cards-preview/${setId}`}>Сохранить</Link>
                 </ButtonLink>
-                <ButtonLink className='linkButton'>
+                <ButtonLink className='buttonLink'>
                     <Link to={`/cards-preview/${setId}`}>Отмена</Link>
                 </ButtonLink>
 

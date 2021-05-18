@@ -24,18 +24,18 @@
     margin: 15px;
 }
 
-.settingsBlock .linkButton {
+.settingsBlock .buttonLink {
     width: 60%;
     margin: 10px;
     background-color: green;
     font-size: small;
 }
 
-.settingsBlock .linkButton:hover {
+.settingsBlock .buttonLink:hover {
     background-color: rgb(0, 92, 0);
 }
 
-.settingsBlock .linkButton a {
+.settingsBlock .buttonLink a {
     font-size: large;
 }
 
