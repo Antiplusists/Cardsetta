@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 });
 
 type CardPreviewProps = {
-  setId: number,
+  setId: string,
   cardInfo: CardInfo,
   onDelete: Function,
 }
