@@ -71,10 +71,7 @@ namespace Core.Controllers
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
-            var user = await GetCurrentUser();
-
-            if (user is null)
-                return Unauthorized();
+            var user = (await GetCurrentUser())!;
 
             var dbo = mapper.Map(dto, new DeckDbo
             {
@@ -100,10 +97,9 @@ namespace Core.Controllers
         }
 
         [HttpPatch("{deckId:guid}")]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Consumes("application/json-patch+json")]
@@ -116,10 +112,6 @@ namespace Core.Controllers
             var deckDbo = await deckRepo.FindAsync(deckId);
             if (deckDbo is null)
                 return NotFound();
-
-            var user = await GetCurrentUser();
-            if (!deckDbo.Author.Equals(user))
-                return Unauthorized();
 
             var dto = mapper.Map<DeckDbo, UpdateDeckDto>(deckDbo);
             patchDoc.ApplyTo(dto, ModelState);
@@ -134,6 +126,7 @@ namespace Core.Controllers
         }
 
         [HttpDelete("{deckId:guid}")]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -142,9 +135,6 @@ namespace Core.Controllers
             var deck = await deckRepo.FindAsync(deckId);
             if (deck is null)
                 return NotFound();
-
-            if (!deck.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
 
             var result = await deckRepo.RemoveAsync(deckId);
 
@@ -155,9 +145,8 @@ namespace Core.Controllers
         }
 
         [HttpPost("{deckId:guid}/update-image")]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> UpdateImage([FromRoute] Guid deckId,
@@ -170,9 +159,6 @@ namespace Core.Controllers
             if (deck is null)
                 return NotFound();
 
-            if (!deck.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
-
             //TODO: Сделать какое-то обновление картинки здесь
 
             await deckRepo.UpdateAsync(deck);
@@ -180,10 +166,9 @@ namespace Core.Controllers
         }
 
         [HttpPost("{deckId:guid}/update-tags")]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes("application/json")]
         public async Task<IActionResult> UpdateTags([FromRoute] Guid deckId, [Required] [FromBody] string[] newTags)
@@ -198,10 +183,7 @@ namespace Core.Controllers
             var deck = await deckRepo.FindAsync(deckId);
             if (deck is null)
                 return NotFound();
-
-            if (!deck.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
-
+            
             var currentTags = deck.Tags.Select(tagDbo => tagDbo.Tag);
 
             // ReSharper disable PossibleMultipleEnumeration
