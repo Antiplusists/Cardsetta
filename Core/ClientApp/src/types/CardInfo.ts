@@ -1,5 +1,5 @@
 export type CardInfo = {
-    id: number,
+    id: string,
     questionImg?: string,
     questionText: string,
     answearText: string

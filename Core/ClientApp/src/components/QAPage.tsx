@@ -3,8 +3,8 @@ import { InferProps } from 'prop-types';
 import { Button } from '@material-ui/core';
 import { CardInfo } from '../types/CardInfo'
 import { QACard } from './QACard'
-import { Sets } from '../fakeSets'
-import { Cards } from '../fakeCards'
+import { getSetById } from '../fakeSets'
+import { getCardById } from '../fakeCards'
 import './QAPage.css';
 
 type QAPageState = {
@@ -12,7 +12,7 @@ type QAPageState = {
 }
 
 type QAPageProps = {
-    setId: number,
+    setId: string,
 }
 
 const defaultPageState: QAPageState = {
@@ -22,8 +22,8 @@ const defaultPageState: QAPageState = {
 let currentPos = 0;
 
 export default function QAPage({ setId }: InferProps<QAPageProps>) {
-    const cardIds = Sets[setId].cardIds;
-    const [cardInfo, setCardInfo] = useState<CardInfo>(Cards[cardIds[0]]);
+    const cardIds = getSetById(setId).cardIds;
+    const [cardInfo, setCardInfo] = useState<CardInfo>(getCardById(cardIds[0]));
     const [pageState, setPageState] = useState<QAPageState>(defaultPageState);
     const cardRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,7 @@ export default function QAPage({ setId }: InferProps<QAPageProps>) {
             if (currentPos >= cardIds.length) {
                 currentPos = 0;
             }
-            setCardInfo(Cards[cardIds[currentPos]]);
+            setCardInfo(getCardById(cardIds[currentPos]));
             setTimeout(() => {
                 cardRef.current?.classList.remove('isReduce', 'isFlipped');
                 setPageState(defaultPageState);
