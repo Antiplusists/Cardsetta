@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Models;
 using Core.Models.Dbo;
 using Core.Models.Dto;
 using Core.Models.Results;
 using Core.Repositories.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,18 +22,12 @@ namespace Core.Controllers
         private readonly IDeckRepository deckRepo;
         private readonly ICardRepository cardRepo;
         private readonly IMapper mapper;
-        private readonly UserManager<ApplicationUser> userManager;
 
-        private async Task<ApplicationUser?> GetCurrentUser()
-            => await userManager.GetUserAsync(User);
-        
-        public CardsController(IDeckRepository deckRepo, ICardRepository cardRepo, IMapper mapper,
-            UserManager<ApplicationUser> userManager)
+        public CardsController(IDeckRepository deckRepo, ICardRepository cardRepo, IMapper mapper)
         {
             this.deckRepo = deckRepo;
             this.cardRepo = cardRepo;
             this.mapper = mapper;
-            this.userManager = userManager;
         }
         
         [HttpGet]
@@ -51,9 +43,8 @@ namespace Core.Controllers
         }
         
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> AddCard([FromRoute] Guid deckId, [FromForm] CreationCardDto dto)
@@ -65,9 +56,6 @@ namespace Core.Controllers
             
             if (deck is null)
                 return NotFound();
-
-            if (!deck.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
 
             var cardDbo = mapper.Map<CreationCardDto, CardDbo>(dto);
             cardDbo = await deckRepo.AddCard(deckId, cardDbo);
@@ -95,18 +83,14 @@ namespace Core.Controllers
         }
 
         [HttpDelete("{cardId:guid}")]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveCard([FromRoute] Guid deckId, [FromRoute] Guid cardId)
         {
             var deck = await deckRepo.FindAsync(deckId);
             if (deck is null)
                 return NotFound();
-
-            if (!deck.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
 
             var card = await deckRepo.RemoveCard(deckId, cardId);
             if (card is null)
@@ -119,7 +103,7 @@ namespace Core.Controllers
         }
         
         [HttpPatch("{cardId:guid}")]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -134,9 +118,6 @@ namespace Core.Controllers
             var deckDbo = await deckRepo.FindAsync(deckId);
             if (deckDbo is null)
                 return NotFound();
-
-            if (!deckDbo.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
 
             var cardDbo = deckDbo.Cards.Find(card => card.Id == cardId);
             if (cardDbo is null)
@@ -155,7 +136,7 @@ namespace Core.Controllers
         }
 
         [HttpPost("{cardId:guid}/update-image")]
-        [Authorize]
+        [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -169,9 +150,6 @@ namespace Core.Controllers
             var deck = await deckRepo.FindAsync(deckId);
             if (deck is null)
                 return NotFound();
-
-            if (!deck.Author.Equals(await GetCurrentUser()))
-                return Unauthorized();
 
             var card = deck.Cards.Find(cardDbo => cardDbo.Id == cardId);
             if (card is null)
