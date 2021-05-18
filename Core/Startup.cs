@@ -3,7 +3,9 @@ using Core.Data;
 using Core.Models;
 using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
+using Core.Services.Authorization;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -50,6 +52,16 @@ namespace Core
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+
+            services.AddScoped<IAuthorizationHandler, MustBeDeckOwnerHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("MustBeDeckOwner", policyBuilder =>
+                {
+                    policyBuilder.RequireAuthenticatedUser();
+                    policyBuilder.AddRequirements(new MustBeDeckOwnerRequirement());
+                });
+            });
 
             services.AddControllers(cfg =>
                 {
