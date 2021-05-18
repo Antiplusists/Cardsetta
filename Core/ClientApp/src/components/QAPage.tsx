@@ -1,26 +1,22 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { InferProps } from 'prop-types';
 import { Button } from '@material-ui/core';
 import { CardInfo } from '../types/CardInfo'
-import QACard from './QACard'
+import { QACard } from './QACard'
 import { Sets } from '../fakeSets'
 import { Cards } from '../fakeCards'
 import './QAPage.css';
 
 type QAPageState = {
-    isFlipped: boolean,
-    isReduce: boolean,
-    isKnow: boolean | undefined
+    isKnow: boolean | undefined,
 }
 
 type QAPageProps = {
     setId: number,
 }
 
-const defaultPageState = {
-    isFlipped: false,
-    isReduce: false,
-    isKnow: undefined
+const defaultPageState: QAPageState = {
+    isKnow: undefined,
 }
 
 let currentPos = 0;
@@ -28,34 +24,39 @@ let currentPos = 0;
 export default function QAPage({ setId }: InferProps<QAPageProps>) {
     const cardIds = Sets[setId].cardIds;
     const [cardInfo, setCardInfo] = useState<CardInfo>(Cards[cardIds[0]]);
-    const [cardState, setCardState] = useState<QAPageState>(defaultPageState);
+    const [pageState, setPageState] = useState<QAPageState>(defaultPageState);
+    const cardRef = useRef<HTMLDivElement>(null);
 
     function chooseAnswer(isKnow: boolean | undefined) {
-        if (cardState.isFlipped) {
+        if (pageState.isKnow !== undefined) {
             nextCard();
         }
         else {
-            setCardState({ ...cardState, isKnow, isFlipped: true });
+            cardRef.current?.classList.add('isFlipped');
+            setPageState({ ...pageState, isKnow });
         }
     }
 
     function nextCard() {
-        setCardState({ ...cardState, isReduce: true });
+        cardRef.current?.classList.add('isReduce');
         setTimeout(() => {
             currentPos++;
             if (currentPos >= cardIds.length) {
                 currentPos = 0;
             }
             setCardInfo(Cards[cardIds[currentPos]]);
-            setTimeout(() => setCardState(defaultPageState), 100);
-        }, 1000);
+            setTimeout(() => {
+                cardRef.current?.classList.remove('isReduce', 'isFlipped');
+                setPageState(defaultPageState);
+            }, 100);
+        }, 750);
     }
 
     return (
-        <div className='page'>
-            <QACard cardInfo={cardInfo} isFlipped={cardState.isFlipped} isReduce={cardState.isReduce} />
-            <div >
-                {cardState.isKnow !== false
+        <div className='QAPage'>
+            <QACard ref={cardRef} cardInfo={cardInfo} />
+            <div>
+                {pageState.isKnow !== false
                     ?
                     <div>
                         <Button className='answerButton'

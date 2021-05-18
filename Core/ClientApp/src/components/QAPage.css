@@ -1,4 +1,4 @@
-.page {
+.QAPage {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6,7 +6,7 @@
     padding-top: 50px;
 }
 
-.page .answerButton {
+.QAPage .answerButton {
     margin: 40px 20px;
     width: 200px;
     height: 75px;

@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { InferProps } from 'prop-types';
 import { CardInfo } from '../types/CardInfo';
 import { TextField, Button } from '@material-ui/core'
 import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
-import QACard from './QACard'
+import { QACard } from './QACard'
 import './QACardSettings.css'
 import { Cards } from '../fakeCards'
 
 export default function QACardSettings({ id, questionImg, questionText, answearText }: InferProps<CardInfo>) {
     const [cardInfo, setCardInfo] = useState<CardInfo>({ id, questionImg, questionText, answearText });
-    const [isFlipped, setIsFlipped] = useState<boolean>(false);
+    const cardRef = useRef<HTMLDivElement>(null);
 
     function handleSave() {
         Cards[cardInfo.id] = cardInfo;
@@ -40,7 +40,7 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
                 />
                 <Button variant='contained' color='primary' onClick={handleSave}>Сохранить</Button>
             </div>
-            <QACard cardInfo={cardInfo} isFlipped={isFlipped} onClick={() => setIsFlipped(!isFlipped)} />
+            <QACard ref={cardRef} cardInfo={cardInfo} onClick={() => cardRef.current?.classList.toggle('isFlipped')} />
         </div >
     );
 }

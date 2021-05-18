@@ -3,7 +3,7 @@
     height: 600px;
     border-radius: 60px;
     background-color: white;
-    transition: transform 1s;
+    transition: transform 750ms;
     transform-style: preserve-3d;
 }
 
@@ -13,10 +13,6 @@
 
 .QACard.isReduce {
     transform: scale(0.01);
-}
-
-.QACard.isClick {
-    cursor: pointer;
 }
 
 .sideQACard {
