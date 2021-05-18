@@ -17,6 +17,11 @@
     border-width: 1px;
 }
 
+.QAcardPreview.isDelete {
+    transition: opacity 500ms;
+    opacity: 0;
+}
+
 .QAcardPreview .sideQACard {
     position: relative;
     width: 50%;
@@ -45,4 +50,11 @@
 
 .overlay .changeButton:hover {
     text-decoration: none;
+}
+
+.overlay .deleteButton {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    color: red;
 }

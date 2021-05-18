@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { InferProps } from 'prop-types';
-import { Link as NavLink, Fab, makeStyles } from '@material-ui/core';
-import { Edit, Add } from '@material-ui/icons';
-import { FC } from 'react';
+import { Link as NavLink, Fab, IconButton, makeStyles } from '@material-ui/core';
+import { Edit, Add, DeleteForever } from '@material-ui/icons';
+import { FC, useRef, useState } from 'react';
 import { CardInfo } from '../types/CardInfo'
 import './CardsPreviewPage.css'
 import { Sets } from '../fakeSets'
@@ -27,9 +27,22 @@ const useStyles = makeStyles({
   },
 });
 
-const CardPreview: FC<CardInfo> = ({ id, questionImg, questionText, answearText }) => {
+type CardPreviewProps = {
+  cardInfo: CardInfo,
+  onDelete: Function,
+}
+
+const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete }) => {
+  const { id, questionImg, questionText, answearText } = cardInfo;
+  const blockRef = useRef<HTMLDivElement>(null);
+
+  function handleDelete() {
+    blockRef.current?.classList.add('isDelete');
+    setTimeout(() => onDelete(id), 500);   
+  }
+
   return (
-    <div className='QAcardPreview'>
+    <div ref={blockRef} className='QAcardPreview'>
       <div className='sideQACard'>
         {questionImg !== undefined ? <img src={questionImg} alt='questionImage' /> : ''}
         <span>{questionText}</span>
@@ -39,9 +52,11 @@ const CardPreview: FC<CardInfo> = ({ id, questionImg, questionText, answearText 
       </div>
       <div className='overlay'>
         <NavLink className='changeButton' component={Link} to={'/card-settings/' + id}>Изменить</NavLink>
+        <IconButton className='deleteButton' onClick={handleDelete}>
+          <DeleteForever />
+        </IconButton>
       </div>
     </div>
-
   );
 }
 
@@ -52,9 +67,15 @@ type СardsPreviewPageProps = {
 export default function СardsPreviewPage({ setId }
   : InferProps<СardsPreviewPageProps>) {
   const classes = useStyles();
+  const [cardIds, setCardIds] = useState<number[]>(Sets[setId].cardIds);
 
   function handleAddCard() {
     Sets[setId].cardIds.push(Cards.length);
+  }
+
+  function handleRemoveCard(id: number) {
+    Sets[setId].cardIds = cardIds.filter(i => i !== id);
+    setCardIds(Sets[setId].cardIds);
   }
 
   return (
@@ -62,12 +83,7 @@ export default function СardsPreviewPage({ setId }
       <div className='QAcardsPreview'>
         {Sets[setId].cardIds.map(
           id =>
-            <CardPreview key={id}
-              id={id}
-              questionImg={Cards[id].questionImg}
-              questionText={Cards[id].questionText}
-              answearText={Cards[id].answearText}
-            />
+            <CardPreview key={id} cardInfo={Cards[id]} onDelete={handleRemoveCard} />
         )}
       </div>
       <Link to='/card-settings'>
