@@ -80,7 +80,7 @@ namespace Core.Controllers
 
             dbo = await deckRepo.AddAsync(dbo);
 
-            return CreatedAtRoute(nameof(GetDeckById), new {deckId = dbo.Id}, dbo.Id);
+            return CreatedAtRoute(nameof(GetDeckById), dbo.Id);
         }
 
         [HttpGet("{deckId:guid}")]
@@ -102,7 +102,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [Consumes("application/json-patch+json")]
+        // [Consumes("application/json-patch+json")]
         public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId,
             [FromBody] JsonPatchDocument<UpdateDeckDto> patchDoc)
         {

@@ -1,15 +1,21 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
 using Core.Models.Dto;
 using Core.Models.Result;
 using Core.Models.Validation;
+using Core.Repositories.Abstracts;
+using Core.Services.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace Core.Controllers
 {
@@ -21,13 +27,15 @@ namespace Core.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IMapper mapper;
+        private readonly ILogger logger;
 
         public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            IMapper mapper)
+            IMapper mapper, ILogger logger)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -37,15 +45,29 @@ namespace Core.Controllers
         {
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
-            
+
             var user = mapper.Map<CreationUserDto, ApplicationUser>(dto);
             var result = await userManager.CreateAsync(user, dto.Password);
 
-            if (!result.Succeeded) throw new AggregateException();
-            
+
+            if (!result.Succeeded)
+            {
+                logger.Error("Errors with register {0}", string.Join(", ", JsonSerializer.Serialize(result.Errors)));
+                throw new AggregateException();
+            }
+
             //Как я понимаю тут кукисы сетятся с токеном
             await signInManager.SignInAsync(user, false);
             return NoContent();
+        }
+
+        [HttpPost("me")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> GetMe()
+        {
+            return Ok(JwtTokens.GenerateEncoded(Guid.Parse("613f4fa0-7cb0-45c7-947d-94f6468f4b69"),
+               "someemail@asd.ru"));
         }
 
         [HttpPost("login")]
@@ -96,7 +118,7 @@ namespace Core.Controllers
                 return NotFound();
             return Ok(mapper.Map<ApplicationUser, UserResult>(user));
         }
-        
+
         [HttpPost("update-username")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -105,7 +127,7 @@ namespace Core.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            
+
             var result = await userManager.SetUserNameAsync(await userManager.GetUserAsync(User), userName);
 
             if (!result.Succeeded)
@@ -124,7 +146,8 @@ namespace Core.Controllers
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
-            var result = await userManager.ChangePasswordAsync(await userManager.GetUserAsync(User), dto.OldPassword, dto.NewPassword);
+            var result = await userManager.ChangePasswordAsync(await userManager.GetUserAsync(User), dto.OldPassword,
+                dto.NewPassword);
 
             if (!result.Succeeded)
                 return BadRequest();
@@ -136,13 +159,15 @@ namespace Core.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateAvatar([Required] [Models.Validation.FileExtensions("jpeg", "jpg", "png")] IFormFile image)
+        public async Task<IActionResult> UpdateAvatar(
+            [Required] [Models.Validation.FileExtensions("jpeg", "jpg", "png")]
+            IFormFile image)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var user = await userManager.GetUserAsync(User);
-            
+
             //TODO: какое-то изменение картинки
 
             var result = await userManager.UpdateAsync(user);

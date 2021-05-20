@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Core.Repositories.Abstracts;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Core.Services.Authorization
 {
@@ -21,7 +24,7 @@ namespace Core.Services.Authorization
         
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MustBeDeckOwnerRequirement requirement)
         {
-            var userId = context.User.GetSubjectId();
+            var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             var httpContext = httpContextAccessor.HttpContext;
             var deckIdString = httpContext?.GetRouteValue("deckId")?.ToString();
             

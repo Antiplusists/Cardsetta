@@ -21,7 +21,7 @@ namespace Core.Repositories.Realizations
 
         public override async Task<DeckDbo?> FindAsync(Guid id)
         {
-            return await DbContext.Decks.FindAsync(id);
+            return await DbContext.Decks.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public override async Task<DeckDbo> AddAsync(DeckDbo dbo)
