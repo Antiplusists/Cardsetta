@@ -34,7 +34,7 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
 
     return (
         <div className='settingsBlock'>
-            <div className='inputsBlock'>
+            <div className='part1'>
                 <TextField label='Слово' variant='outlined' defaultValue={cardInfo.questionText}
                     onChange={(e) => setCardInfo({ ...cardInfo, questionText: e.target.value })} />
                 <TextField label='Перевод' variant='outlined' defaultValue={cardInfo.answearText}
@@ -61,7 +61,11 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
 
 
             </div>
-            <QACard ref={cardRef} cardInfo={cardInfo} onClick={() => cardRef.current?.classList.toggle('isFlipped')} />
+            <div className='part2'>
+                <QACard ref={cardRef} cardInfo={cardInfo}
+                    onClick={() => cardRef.current?.classList.toggle('isFlipped')} />
+            </div>
+
         </div >
     );
 }

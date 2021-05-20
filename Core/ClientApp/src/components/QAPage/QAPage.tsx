@@ -19,11 +19,9 @@ const defaultPageState: QAPageState = {
     isKnow: undefined,
 }
 
-let currentPos = 0;
-
 export default function QAPage({ setId }: InferProps<QAPageProps>) {
     const cardIds = getSetById(setId).cardIds;
-    const [cardInfo, setCardInfo] = useState<CardInfo>(getCardById(cardIds[0]));
+    const [position, setPosition] = useState<number>(0);
     const [pageState, setPageState] = useState<QAPageState>(defaultPageState);
     const cardRef = useRef<HTMLDivElement>(null);
 
@@ -40,11 +38,10 @@ export default function QAPage({ setId }: InferProps<QAPageProps>) {
     function nextCard() {
         cardRef.current?.classList.add('isReduce');
         setTimeout(() => {
-            currentPos++;
-            if (currentPos >= cardIds.length) {
-                currentPos = 0;
+            if (position + 1 >= cardIds.length) {
+                setPosition(0);
             }
-            setCardInfo(getCardById(cardIds[currentPos]));
+            else setPosition(position + 1);
             setTimeout(() => {
                 cardRef.current?.classList.remove('isReduce', 'isFlipped');
                 setPageState(defaultPageState);
@@ -54,7 +51,7 @@ export default function QAPage({ setId }: InferProps<QAPageProps>) {
 
     return (
         <div className='QAPage'>
-            <QACard ref={cardRef} cardInfo={cardInfo} />
+            <QACard ref={cardRef} cardInfo={getCardById(cardIds[position])} />
             <div>
                 {pageState.isKnow !== false
                     ?

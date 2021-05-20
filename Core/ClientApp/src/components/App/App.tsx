@@ -12,6 +12,8 @@ import { ApplicationPaths } from "../api-authorization/ApiAuthorizationConstants
 
 import "./App.css";
 import { setCard, getCardById } from "../../fakeRepository/fakeCards";
+import CardsetSettings from "../CardsetSettings/CardsetSettings";
+import { getSetById } from "../../fakeRepository/fakeSets";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -29,18 +31,17 @@ export default class App extends Component {
           } />
           <Route path="/card-settings/:id" render={(props) => {
             const card = getCardById(props.match.params.id);
-            return <QACardSettings id={card.id}
-              questionText={card.questionText}
-              questionImg={card.questionImg}
-              answearText={card.answearText} />
+            return <QACardSettings {...card} />
           }} />
           <Route path="/card-settings" render={() => {
             const card = getCardById(null);
-            console.log(card);
             setCard(card);
-            return (<QACardSettings id={card.id}
-              questionText={card.questionText}
-              answearText={card.answearText} />);
+            return (<QACardSettings {...card} />);
+          }
+          } />
+          <Route path="/cardset-settings/:id" render={(props) => {
+            const cardset = getSetById(props.match.params.id);
+            return (<CardsetSettings {...cardset} />);
           }
           } />
           <AuthorizeRoute path="/fetch-data" component={FetchData} />

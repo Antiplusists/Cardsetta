@@ -5,7 +5,7 @@ import { Edit, Add, DeleteForever } from '@material-ui/icons';
 import { FC, useRef, useState } from 'react';
 import { CardInfo } from '../../types/CardInfo'
 import './CardsPreviewPage.css'
-import { getSetById, changeCardsInSetById } from '../../fakeRepository/fakeSets'
+import { changeCardsInSetById, getSetById } from '../../fakeRepository/fakeSets'
 import { getCardById } from '../../fakeRepository/fakeCards'
 import { ButtonLink } from '../ButtonLink/ButtonLink';
 
@@ -94,9 +94,11 @@ export default function СardsPreviewPage({ setId }
         </Fab>
       </Link>
 
-      <Fab className={classes.fabTwo} color='primary'>
-        <Edit />
-      </Fab>
+      <Link to={`/cardset-settings/${setId}`}>
+        <Fab className={classes.fabTwo} color='primary'>
+          <Edit />
+        </Fab>
+      </Link>
     </div>
   );
 }
