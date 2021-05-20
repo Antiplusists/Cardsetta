@@ -1,15 +1,15 @@
 import { useRef, useState } from 'react';
 import { InferProps } from 'prop-types';
-import { CardInfo } from '../types/CardInfo';
-import { TextField, Button } from '@material-ui/core'
+import { CardInfo } from '../../types/CardInfo';
+import { TextField } from '@material-ui/core'
 import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
-import { QACard } from './QACard'
+import { QACard } from '../QACard/QACard'
 import './QACardSettings.css'
-import { setCard } from '../fakeCards'
-import { containsCardInSet, getSetById } from '../fakeSets'
-import useQuery from '../customHooks/useQuery';
+import { setCard } from '../../fakeRepository/fakeCards'
+import { containsCardInSet, getSetById } from '../../fakeRepository/fakeSets'
+import useQuery from '../../customHooks/useQuery';
 import { Link } from 'react-router-dom';
-import { ButtonLink } from './ButtonLink'
+import { ButtonLink } from '../ButtonLink/ButtonLink'
 
 export default function QACardSettings({ id, questionImg, questionText, answearText }: InferProps<CardInfo>) {
     const query = useQuery();

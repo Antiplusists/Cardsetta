@@ -1,17 +1,17 @@
 import { Component } from "react";
 import { Route, Switch } from "react-router";
-import { Layout } from "./components/Layout";
-import Home from "./components/Home";
-import QAPage from "./components/QAPage";
-import СardsPreviewPage from "./components/CardsPreviewPage";
-import QACardSettings from "./components/QACardSettings"
-import { FetchData } from "./components/FetchData";
-import AuthorizeRoute from "./components/api-authorization/AuthorizeRoute";
-import ApiAuthorizationRoutes from "./components/api-authorization/ApiAuthorizationRoutes";
-import { ApplicationPaths } from "./components/api-authorization/ApiAuthorizationConstants";
+import { Layout } from "./Layout";
+import Home from "../Home/Home";
+import QAPage from "../QAPage/QAPage";
+import СardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
+import QACardSettings from "../QACardSettings/QACardSettings"
+import { FetchData } from "../FetchData";
+import AuthorizeRoute from "../api-authorization/AuthorizeRoute";
+import ApiAuthorizationRoutes from "../api-authorization/ApiAuthorizationRoutes";
+import { ApplicationPaths } from "../api-authorization/ApiAuthorizationConstants";
 
-import "./custom.css";
-import { setCard, getCardById } from "./fakeCards";
+import "./App.css";
+import { setCard, getCardById } from "../../fakeRepository/fakeCards";
 
 export default class App extends Component {
   static displayName = App.name;

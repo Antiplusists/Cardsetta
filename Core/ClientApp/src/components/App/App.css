@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  font-family: 'Roboto';
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

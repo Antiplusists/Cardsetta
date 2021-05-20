@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from 'react';
-import { CardInfo } from '../types/CardInfo'
+import { CardInfo } from '../../types/CardInfo'
 import './QACard.css';
 
 interface QACardProps {

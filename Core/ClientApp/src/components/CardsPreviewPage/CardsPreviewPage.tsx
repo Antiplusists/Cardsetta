@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { InferProps } from 'prop-types';
-import { Link as NavLink, Fab, IconButton, makeStyles } from '@material-ui/core';
+import { Fab, IconButton, makeStyles } from '@material-ui/core';
 import { Edit, Add, DeleteForever } from '@material-ui/icons';
 import { FC, useRef, useState } from 'react';
-import { CardInfo } from '../types/CardInfo'
+import { CardInfo } from '../../types/CardInfo'
 import './CardsPreviewPage.css'
-import { getSetById, changeCardsInSetById } from '../fakeSets'
-import { getCardById } from '../fakeCards'
-import { ButtonLink } from './ButtonLink';
+import { getSetById, changeCardsInSetById } from '../../fakeRepository/fakeSets'
+import { getCardById } from '../../fakeRepository/fakeCards'
+import { ButtonLink } from '../ButtonLink/ButtonLink';
 
 const useStyles = makeStyles({
   fabOne: {

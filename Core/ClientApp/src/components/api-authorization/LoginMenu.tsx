@@ -5,7 +5,7 @@ import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 import { styled } from '@material-ui/core/styles';
 import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
-import { ButtonLink } from '../ButtonLink';
+import { ButtonLink } from '../ButtonLink/ButtonLink';
 
 const CustomButton =  styled(
     ({ ...other }) => (

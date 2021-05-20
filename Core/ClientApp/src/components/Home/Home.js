@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
-import PreviewSetCards from './PreviewSetCards';
+import PreviewSetCards from '../PreviewSetCards/PreviewSetCards';
 
 const useStyles = makeStyles(() => ({
   previews: {

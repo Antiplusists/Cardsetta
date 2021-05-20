@@ -1,7 +1,7 @@
 import { InferProps } from 'prop-types';
 import { Link } from 'react-router-dom';
 import './PreviewSetCards.css';
-import { ButtonLink } from './ButtonLink';
+import { ButtonLink } from '../ButtonLink/ButtonLink';
 
 type PreviewSetCardsProps = {
   imgPreview: string,

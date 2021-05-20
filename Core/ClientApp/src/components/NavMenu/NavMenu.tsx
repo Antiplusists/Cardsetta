@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LoginMenu } from './api-authorization/LoginMenu';
+import { LoginMenu } from '../api-authorization/LoginMenu';
 import './NavMenu.css';
 
 import { createStyles, makeStyles, Theme, fade } from '@material-ui/core/styles';

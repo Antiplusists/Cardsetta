@@ -1,4 +1,4 @@
-import { CardInfo } from './types/CardInfo'
+import { CardInfo } from '../types/CardInfo'
 
 const emptyCard: CardInfo = {
     id: '',

@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import { InferProps } from 'prop-types';
 import { Button } from '@material-ui/core';
-import { CardInfo } from '../types/CardInfo'
-import { QACard } from './QACard'
-import { getSetById } from '../fakeSets'
-import { getCardById } from '../fakeCards'
+import { CardInfo } from '../../types/CardInfo'
+import { QACard } from '../QACard/QACard'
+import { getSetById } from '../../fakeRepository/fakeSets'
+import { getCardById } from '../../fakeRepository/fakeCards'
 import './QAPage.css';
 
 type QAPageState = {

@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 
 export const ButtonLink = styled(
     ({ ...other }) => (
-        <Button {...other} />
+        <Button tabIndex={-1} {...other} />
     )
 )({
     padding: '0',
@@ -26,6 +26,7 @@ export const ButtonLink = styled(
         fontSize: 'x-large',
         fontFamily: 'Roboto',
         textTransform: 'none',
+        textDecoration: 'none',
     },
     '& a:hover': {
         textDecoration: 'none'
