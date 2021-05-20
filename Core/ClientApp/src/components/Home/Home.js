@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
-import { getAllCardsets } from '../../fakeRepository/fakeSets';
-import PreviewSetCards from '../PreviewSetCards/PreviewSetCards';
+import { getAllCardsets } from '../../fakeRepository/fakeCardsets';
+import PreviewCardsets from '../PreviewCardsets/PreviewCardsets';
 
 const useStyles = makeStyles(() => ({
   previews: {
@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <div className={classes.previews}>
       {getAllCardsets().map(cardset =>
-        <PreviewSetCards key={cardset.id} {...cardset} />
+        <PreviewCardsets key={cardset.id} {...cardset} />
       )}
     </div>
   );

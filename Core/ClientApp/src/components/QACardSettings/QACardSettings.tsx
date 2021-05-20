@@ -6,25 +6,25 @@ import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
 import { QACard } from '../QACard/QACard'
 import './QACardSettings.css'
 import { setCard } from '../../fakeRepository/fakeCards'
-import { containsCardInSet, getSetById } from '../../fakeRepository/fakeSets'
+import { containsCardInCardset, getCardsetById } from '../../fakeRepository/fakeCardsets'
 import useQuery from '../../customHooks/useQuery';
 import { Link } from 'react-router-dom';
 import { ButtonLink } from '../ButtonLink/ButtonLink'
 
 export default function QACardSettings({ id, questionImg, questionText, answearText }: InferProps<CardInfo>) {
     const query = useQuery();
-    const setId = query.get('set');
+    const cardsetId = query.get('cardset');
 
     const [cardInfo, setCardInfo] = useState<CardInfo>({ id, questionImg, questionText, answearText });
     const cardRef = useRef<HTMLDivElement>(null);
 
     function handleSave() {
         setCard(cardInfo);
-        if (!setId) {
+        if (!cardsetId) {
             return;
         }
-        if (!containsCardInSet(setId, cardInfo.id)) {
-            getSetById(setId).cardIds.push(cardInfo.id);
+        if (!containsCardInCardset(cardsetId, cardInfo.id)) {
+            getCardsetById(cardsetId).cardIds.push(cardInfo.id);
         }
     }
 
@@ -53,10 +53,10 @@ export default function QACardSettings({ id, questionImg, questionText, answearT
                 />
 
                 <ButtonLink className='buttonLink' onClick={handleSave}>
-                    <Link to={`/cards-preview/${setId}`}>Сохранить</Link>
+                    <Link to={`/cards-preview/${cardsetId}`}>Сохранить</Link>
                 </ButtonLink>
                 <ButtonLink className='buttonLink'>
-                    <Link to={`/cards-preview/${setId}`}>Отмена</Link>
+                    <Link to={`/cards-preview/${cardsetId}`}>Отмена</Link>
                 </ButtonLink>
 
 

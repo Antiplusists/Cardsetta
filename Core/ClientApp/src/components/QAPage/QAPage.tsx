@@ -3,7 +3,7 @@ import { InferProps } from 'prop-types';
 import { Button } from '@material-ui/core';
 import { CardInfo } from '../../types/CardInfo'
 import { QACard } from '../QACard/QACard'
-import { getSetById } from '../../fakeRepository/fakeSets'
+import { getCardsetById } from '../../fakeRepository/fakeCardsets'
 import { getCardById } from '../../fakeRepository/fakeCards'
 import './QAPage.css';
 
@@ -12,15 +12,15 @@ type QAPageState = {
 }
 
 type QAPageProps = {
-    setId: string,
+    cardsetId: string,
 }
 
 const defaultPageState: QAPageState = {
     isKnow: undefined,
 }
 
-export default function QAPage({ setId }: InferProps<QAPageProps>) {
-    const cardIds = getSetById(setId).cardIds;
+export default function QAPage({ cardsetId }: InferProps<QAPageProps>) {
+    const cardIds = getCardsetById(cardsetId).cardIds;
     const [position, setPosition] = useState<number>(0);
     const [pageState, setPageState] = useState<QAPageState>(defaultPageState);
     const cardRef = useRef<HTMLDivElement>(null);

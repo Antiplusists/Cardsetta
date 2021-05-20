@@ -13,7 +13,7 @@ import { ApplicationPaths } from "../api-authorization/ApiAuthorizationConstants
 import "./App.css";
 import { setCard, getCardById } from "../../fakeRepository/fakeCards";
 import CardsetSettings from "../CardsetSettings/CardsetSettings";
-import { getSetById } from "../../fakeRepository/fakeSets";
+import { getCardsetById } from "../../fakeRepository/fakeCardsets";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -24,10 +24,10 @@ export default class App extends Component {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/cards/:id" render={(props) =>
-            <QAPage setId={props.match.params.id} />
+            <QAPage cardsetId={props.match.params.id} />
           } />
           <Route path="/cards-preview/:id" render={(props) =>
-            <СardsPreviewPage setId={props.match.params.id} />
+            <СardsPreviewPage cardsetId={props.match.params.id} />
           } />
           <Route path="/card-settings/:id" render={(props) => {
             const card = getCardById(props.match.params.id);
@@ -40,7 +40,7 @@ export default class App extends Component {
           }
           } />
           <Route path="/cardset-settings/:id" render={(props) => {
-            const cardset = getSetById(props.match.params.id);
+            const cardset = getCardsetById(props.match.params.id);
             return (<CardsetSettings {...cardset} />);
           }
           } />

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { InferProps } from 'prop-types';
 import { Button, TextField } from '@material-ui/core'
 import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
-import { updateCardset } from '../../fakeRepository/fakeSets'
+import { updateCardset } from '../../fakeRepository/fakeCardsets'
 import { Link } from 'react-router-dom';
 import { ButtonLink } from '../ButtonLink/ButtonLink'
 import { CardsetInfo } from '../../types/CardsetInfo'

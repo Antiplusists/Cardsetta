@@ -1,24 +1,22 @@
 import { InferProps } from 'prop-types';
 import { Link } from 'react-router-dom';
-import './PreviewSetCards.css';
+import './PreviewCardsets.css';
 import { ButtonLink } from '../ButtonLink/ButtonLink';
-import { getSetById } from '../../fakeRepository/fakeSets';
 import { CardsetInfo } from '../../types/CardsetInfo';
 
-export default function PreviewSetCards({ id, image, name, description }
+export default function PreviewCardsets({ id, image, name, description }
   : InferProps<CardsetInfo>) {
-  const cardset = getSetById(id);
   return (
     <div>
       <div className='previewSetCard flexCenter'>
         {
-          cardset.image && cardset.image !== ''
+          image && image !== ''
             ?
-            <img src={cardset.image} alt='preview' />
+            <img src={image} alt='preview' />
             :
             <div className='textBlock'>
-              <h1 className='name'>{cardset.name}</h1>
-              <p>{cardset.description}</p>
+              <h1 className='name'>{name}</h1>
+              <p>{description}</p>
             </div>
         }
         <div className='overlay'>

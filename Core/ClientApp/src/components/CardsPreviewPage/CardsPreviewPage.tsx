@@ -5,7 +5,7 @@ import { Edit, Add, DeleteForever } from '@material-ui/icons';
 import { FC, useRef, useState } from 'react';
 import { CardInfo } from '../../types/CardInfo'
 import './CardsPreviewPage.css'
-import { changeCardsInSetById, getSetById } from '../../fakeRepository/fakeSets'
+import { changeIdsInCardset, getCardsetById } from '../../fakeRepository/fakeCardsets'
 import { getCardById } from '../../fakeRepository/fakeCards'
 import { ButtonLink } from '../ButtonLink/ButtonLink';
 
@@ -29,12 +29,12 @@ const useStyles = makeStyles({
 });
 
 type CardPreviewProps = {
-  setId: string,
+  cardsetId: string,
   cardInfo: CardInfo,
   onDelete: Function,
 }
 
-const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete, setId }) => {
+const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete, cardsetId }) => {
   const { id, questionImg, questionText, answearText } = cardInfo;
   const blockRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +54,7 @@ const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete, setId }) => {
       </div>
       <div className='overlay'>
         <ButtonLink className='buttonLink'>
-          <Link to={`/card-settings/${id}?set=${setId}`}>Изменить</Link>
+          <Link to={`/card-settings/${id}?cardset=${cardsetId}`}>Изменить</Link>
         </ButtonLink>
         <IconButton className='deleteButton' onClick={handleDelete}>
           <DeleteForever />
@@ -65,18 +65,18 @@ const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete, setId }) => {
 }
 
 type СardsPreviewPageProps = {
-  setId: string,
+  cardsetId: string,
 }
 
-export default function СardsPreviewPage({ setId }
+export default function СardsPreviewPage({ cardsetId}
   : InferProps<СardsPreviewPageProps>) {
   const classes = useStyles();
-  const set = getSetById(setId);
+  const set = getCardsetById(cardsetId);
   const [cardIds, setCardIds] = useState<string[]>(set.cardIds);
 
   function handleRemoveCard(id: string) {
     const ids = cardIds.filter(i => i !== id);
-    changeCardsInSetById(setId, ids);
+    changeIdsInCardset(cardsetId, ids);
     setCardIds(ids);
   }
 
@@ -85,16 +85,16 @@ export default function СardsPreviewPage({ setId }
       <div className='QAcardsPreview'>
         {set.cardIds.map(
           id =>
-            <CardPreview key={id} cardInfo={getCardById(id)} setId={setId} onDelete={handleRemoveCard} />
+            <CardPreview key={id} cardInfo={getCardById(id)} cardsetId={cardsetId} onDelete={handleRemoveCard} />
         )}
       </div>
-      <Link to={`/card-settings?set=${setId}`}>
+      <Link to={`/card-settings?cardset=${cardsetId}`}>
         <Fab className={classes.fabOne} color='primary'>
           <Add />
         </Fab>
       </Link>
 
-      <Link to={`/cardset-settings/${setId}`}>
+      <Link to={`/cardset-settings/${cardsetId}`}>
         <Fab className={classes.fabTwo} color='primary'>
           <Edit />
         </Fab>
