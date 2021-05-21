@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { Route, Switch } from "react-router";
 import { Layout } from "./Layout";
-import Home from "../Home/Home";
+import MainCardsets from "../Cardsets/MainCardsets";
 import QAPage from "../QAPage/QAPage";
 import СardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
 import QACardSettings from "../QACardSettings/QACardSettings"
@@ -13,7 +13,8 @@ import { ApplicationPaths } from "../api-authorization/ApiAuthorizationConstants
 import "./App.css";
 import { setCard, getCardById } from "../../fakeRepository/fakeCards";
 import CardsetSettings from "../CardsetSettings/CardsetSettings";
-import { getCardsetById } from "../../fakeRepository/fakeCardsets";
+import { getCardsetById, setCardset } from "../../fakeRepository/fakeCardsets";
+import CustomCardsets from "../Cardsets/CustomCardsets";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -22,7 +23,8 @@ export default class App extends Component {
     return (
       <Layout>
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={MainCardsets} />
+          <Route exact path="/custom-cardsets" component={CustomCardsets} />
           <Route path="/cards/:id" render={(props) =>
             <QAPage cardsetId={props.match.params.id} />
           } />
@@ -41,6 +43,12 @@ export default class App extends Component {
           } />
           <Route path="/cardset-settings/:id" render={(props) => {
             const cardset = getCardsetById(props.match.params.id);
+            return (<CardsetSettings {...cardset} />);
+          }
+          } />
+          <Route path="/cardset-settings" render={() => {
+            const cardset = getCardsetById(null);
+            setCardset(cardset);
             return (<CardsetSettings {...cardset} />);
           }
           } />

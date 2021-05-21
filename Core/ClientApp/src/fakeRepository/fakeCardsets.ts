@@ -24,10 +24,13 @@ const cardsets: Map<string, CardsetInfo> = new Map([
         id: '2',
         cardIds: ['1', '2'],
         name: 'Набор 2',
-    }]
+    }],    
 ]);
 
-export function getCardsetById(id: string) {
+export function getCardsetById(id: string | null) {
+    if (id === null) {
+        return { ...emptyCardset, id: `${cardsets.size}` };
+    }
     const cardset = cardsets.get(id);
     return cardset ?? { ...emptyCardset, id: `${cardsets.keys.length}` };
 }
@@ -52,5 +55,9 @@ export function updateCardset(cardset: CardsetInfo) {
     oldCardset.name = cardset.name;
     oldCardset.description = cardset.description;
     oldCardset.image = cardset.image;
+}
+
+export function setCardset(cardset: CardsetInfo) {
+    cardsets.set(cardset.id, cardset);
 }
 

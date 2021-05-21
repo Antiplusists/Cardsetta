@@ -1,18 +1,29 @@
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+.grow {
+  flex-grow: 1;
 }
 
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.header {
+  height: 125px;
+  background-color: #253C88 !important;
+  display: flex;
+  justify-content: center;
 }
 
-.box-shadow {
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+.logo {
+  height: 100px;
+  margin: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -68%);
+}
+
+.logo img {
+  height: 100px;
+  margin: 10px;
+}
+
+.logo:active {
+  transform: translate(-50%, -70%);
 }

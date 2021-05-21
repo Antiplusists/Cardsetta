@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { InferProps } from 'prop-types';
 import { Button } from '@material-ui/core';
-import { CardInfo } from '../../types/CardInfo'
 import { QACard } from '../QACard/QACard'
 import { getCardsetById } from '../../fakeRepository/fakeCardsets'
 import { getCardById } from '../../fakeRepository/fakeCards'
