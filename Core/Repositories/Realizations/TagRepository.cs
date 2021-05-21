@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Core.Data;
 using Core.Models.Dbo;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
@@ -15,12 +15,18 @@ namespace Core.Repositories.Realizations
 
         public override async Task<TagDbo?> FindAsync(string tag)
         {
-            return await DbContext.Tags.FindAsync(tag);
+            var tagDbo = await DbContext.Tags.FindAsync(tag);
+            var entry = DbContext.Entry(tagDbo);
+            await entry.Collection(t => t.Decks).LoadAsync();
+            return tagDbo;
         }
 
         public override async Task<TagDbo> AddAsync(string tag)
         {
             var result = await DbContext.Tags.AddAsync(new TagDbo(tag));
+
+            if (result is not {State: EntityState.Added})
+                throw new AggregateException();
 
             await DbContext.SaveChangesAsync();
 
@@ -29,22 +35,12 @@ namespace Core.Repositories.Realizations
 
         public override async Task<bool> RemoveAsync(string tag)
         {
-            var result = DbContext.Tags.Remove(new TagDbo(tag));
-
-            await DbContext.SaveChangesAsync();
-
-            return result.State is EntityState.Deleted;
+            throw new NotSupportedException();
         }
 
         public override async Task<TagDbo> UpdateAsync(string tag, string? _)
         {
-            var result = DbContext.Tags.Update(new TagDbo(tag));
-
-            await DbContext.SaveChangesAsync();
-
-            if (result.State is EntityState.Modified) return result.Entity!;
-
-            throw new OperationException("Failed to update entity");
+            throw new NotSupportedException();
         }
     }
 }

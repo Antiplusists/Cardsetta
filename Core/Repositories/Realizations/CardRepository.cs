@@ -30,7 +30,8 @@ namespace Core.Repositories.Realizations
 
         public override async Task<bool> RemoveAsync(Guid id)
         {
-            var result = DbContext.Cards.Remove(new CardDbo {Id = id});
+            var card = await DbContext.Cards.FindAsync(id);
+            var result = DbContext.Cards.Remove(card);
 
             await DbContext.SaveChangesAsync();
 

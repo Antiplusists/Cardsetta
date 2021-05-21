@@ -38,6 +38,13 @@ namespace Core.Controllers
             this.logger = logger;
         }
 
+        private static object CreateToken(ApplicationUser user) => new
+        {
+            JwtConstants.TokenType,
+            AccessToken = JwtTokens.GenerateEncoded(Guid.Parse(user.Id), user.UserName),
+            ExpiresIn = JwtTokens.ExpireTimeInMinutes
+        };
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -48,28 +55,30 @@ namespace Core.Controllers
 
             var user = mapper.Map<CreationUserDto, ApplicationUser>(dto);
             var result = await userManager.CreateAsync(user, dto.Password);
-
-
+            
             if (!result.Succeeded)
             {
                 logger.Error("Errors with register {0}", string.Join(", ", JsonSerializer.Serialize(result.Errors)));
-                throw new AggregateException();
-            }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(String.Empty, error.Description);
+                }
 
-            //Как я понимаю тут кукисы сетятся с токеном
-            await signInManager.SignInAsync(user, false);
-            return NoContent();
+                return UnprocessableEntity(ModelState);
+            }
+            
+            return Ok(CreateToken(user));
         }
 
-        [HttpPost("me")]
+        /*[HttpPost("me")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> GetMe()
         {
             return Ok(JwtTokens.GenerateEncoded(Guid.Parse("613f4fa0-7cb0-45c7-947d-94f6468f4b69"),
                "someemail@asd.ru"));
-        }
-
+        }*/
+        
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,15 +88,20 @@ namespace Core.Controllers
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
-            var result = await signInManager.PasswordSignInAsync(dto.UserName, dto.Password, false, false);
+            var user = await userManager.FindByNameAsync(dto.UserName);
+
+            if (user is null)
+                return BadRequest();
+
+            var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
 
             if (!result.Succeeded)
                 return BadRequest();
 
-            return NoContent();
+            return Ok(CreateToken(user));
         }
 
-        [HttpPost("logout")]
+        /*[HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Logout()
         {
@@ -104,7 +118,7 @@ namespace Core.Controllers
             if (user is null)
                 return NotFound();
             return Ok(mapper.Map<ApplicationUser, UserResult>(user));
-        }
+        }*/
 
         [HttpGet("{userName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

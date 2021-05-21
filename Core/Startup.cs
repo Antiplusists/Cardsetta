@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using Core.Data;
 using Core.Models;
 using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
 using Core.Services.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -87,7 +83,7 @@ namespace Core
                     options.Password.RequireUppercase = false;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonAlphanumeric = false;
-                    options.SignIn.RequireConfirmedAccount = true;
+                    //options.SignIn.RequireConfirmedAccount = true;
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -99,6 +95,7 @@ namespace Core
                 
                 options.AddPolicy("MustBeDeckOwner", policyBuilder =>
                 {
+                    policyBuilder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policyBuilder.RequireAuthenticatedUser();
                     policyBuilder.AddRequirements(new MustBeDeckOwnerRequirement());
                 });

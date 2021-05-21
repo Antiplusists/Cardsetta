@@ -11,6 +11,8 @@ namespace Core.Services.Authorization
     {
         public static SymmetricSecurityKey SigningKey =>
             new(Encoding.ASCII.GetBytes("Ne!0_0!vzlomayesh!^_^!nikogda!"));
+
+        public const int ExpireTimeInMinutes = 180; 
         
         public static string GenerateEncoded(Guid id, string name)
         {
@@ -21,10 +23,10 @@ namespace Core.Services.Authorization
             };
 
             var jwt = new JwtSecurityToken(
-                issuer:"MAX",
+                issuer:"Cardsetta",
                 claims: claims,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddHours(3),
+                expires: DateTime.UtcNow.AddMinutes(ExpireTimeInMinutes),
                 signingCredentials: new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 

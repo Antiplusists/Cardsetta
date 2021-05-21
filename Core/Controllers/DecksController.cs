@@ -39,6 +39,7 @@ namespace Core.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PageListResult<DeckResult>>> GetDecksByTags([FromQuery] string[] tags,
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -55,6 +56,9 @@ namespace Core.Controllers
                 ? await deckRepo.GetPageByTags(pageNumber, pageSize, tags)
                 : await deckRepo.GetPage(pageNumber, pageSize);
 
+            if (!page.Any())
+                return NotFound();
+            
             var result = new PageListResult<DeckResult>(mapper.Map<List<DeckDbo>, List<DeckResult>>(page),
                 page.TotalCount, page.CurrentPage, page.PageSize);
 
@@ -83,7 +87,7 @@ namespace Core.Controllers
             return CreatedAtRoute(nameof(GetDeckById), dbo.Id);
         }
 
-        [HttpGet("{deckId:guid}")]
+        [HttpGet("{deckId:guid}", Name = nameof(GetDeckById))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<DeckResult>> GetDeckById([FromRoute] Guid deckId)
@@ -104,7 +108,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         // [Consumes("application/json-patch+json")]
         public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId,
-            [FromBody] JsonPatchDocument<UpdateDeckDto> patchDoc)
+            [FromBody] JsonPatchDocument<UpdateDeckDto>? patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("Patch document is null");
