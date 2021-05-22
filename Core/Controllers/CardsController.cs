@@ -110,7 +110,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> PatchCard([FromRoute] Guid deckId, [FromRoute] Guid cardId,
-            [FromForm] JsonPatchDocument<UpdateCardDto>? patchDoc)
+            [FromBody] JsonPatchDocument<UpdateCardDto>? patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("Patch document is null");

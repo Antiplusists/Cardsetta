@@ -16,6 +16,8 @@ namespace Core.Repositories.Realizations
         public override async Task<TagDbo?> FindAsync(string tag)
         {
             var tagDbo = await DbContext.Tags.FindAsync(tag);
+            if (tagDbo is null) return null;
+            
             var entry = DbContext.Entry(tagDbo);
             await entry.Collection(t => t.Decks).LoadAsync();
             return tagDbo;

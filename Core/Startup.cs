@@ -70,6 +70,7 @@ namespace Core
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICardRepository, CardRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IDeckRepository, DeckRepository>();

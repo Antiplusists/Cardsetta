@@ -13,6 +13,7 @@ namespace Core.Models.Dto
         public string? Description { get; set; }
         [Validation.FileExtensions("jpg", "jpeg", "png")]
         public IFormFile? Image { get; set; }
+        [TagValidation]
         public HashSet<string> Tags { get; set; } = new();
     }
 }

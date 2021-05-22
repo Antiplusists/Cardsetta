@@ -17,14 +17,11 @@ namespace Core.Services.Authorization
     {
         private readonly IDeckRepository deckRepository;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly UserManager<ApplicationUser> userManager;
 
-        public MustBeDeckOwnerHandler(IDeckRepository deckRepository, IHttpContextAccessor httpContextAccessor,
-            UserManager<ApplicationUser> userManager)
+        public MustBeDeckOwnerHandler(IDeckRepository deckRepository, IHttpContextAccessor httpContextAccessor)
         {
             this.deckRepository = deckRepository;
             this.httpContextAccessor = httpContextAccessor;
-            this.userManager = userManager;
         }
         
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MustBeDeckOwnerRequirement requirement)

@@ -19,7 +19,7 @@ namespace Core.Services.Authorization
             var claims = new Claim[]
             {
                 new(JwtRegisteredClaimNames.Sub, id.ToString()),
-                new(JwtRegisteredClaimNames.Email, name),
+                new(JwtRegisteredClaimNames.UniqueName, name),
             };
 
             var jwt = new JwtSecurityToken(

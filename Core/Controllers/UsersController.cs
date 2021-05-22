@@ -25,88 +25,14 @@ namespace Core.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IUserRepository userRepository;
         private readonly IMapper mapper;
-        private readonly ILogger logger;
 
-        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            IMapper mapper, ILogger logger)
+        public UsersController(UserManager<ApplicationUser> userManager, IUserRepository userRepository, IMapper mapper)
         {
             this.userManager = userManager;
-            this.signInManager = signInManager;
+            this.userRepository = userRepository;
             this.mapper = mapper;
-            this.logger = logger;
-        }
-
-        private static object CreateToken(ApplicationUser user) => new
-        {
-            JwtConstants.TokenType,
-            AccessToken = JwtTokens.GenerateEncoded(Guid.Parse(user.Id), user.UserName),
-            ExpiresIn = JwtTokens.ExpireTimeInMinutes
-        };
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> Register([FromForm] CreationUserDto dto)
-        {
-            if (!ModelState.IsValid)
-                return UnprocessableEntity(ModelState);
-
-            var user = mapper.Map<CreationUserDto, ApplicationUser>(dto);
-            var result = await userManager.CreateAsync(user, dto.Password);
-            
-            if (!result.Succeeded)
-            {
-                logger.Error("Errors with register {0}", string.Join(", ", JsonSerializer.Serialize(result.Errors)));
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(String.Empty, error.Description);
-                }
-
-                return UnprocessableEntity(ModelState);
-            }
-            
-            return Ok(CreateToken(user));
-        }
-
-        /*[HttpPost("me")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> GetMe()
-        {
-            return Ok(JwtTokens.GenerateEncoded(Guid.Parse("613f4fa0-7cb0-45c7-947d-94f6468f4b69"),
-               "someemail@asd.ru"));
-        }*/
-        
-        [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> Login([FromForm] AuthUserDto dto)
-        {
-            if (!ModelState.IsValid)
-                return UnprocessableEntity(ModelState);
-
-            var user = await userManager.FindByNameAsync(dto.UserName);
-
-            if (user is null)
-                return BadRequest();
-
-            var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-
-            if (!result.Succeeded)
-                return BadRequest();
-
-            return Ok(CreateToken(user));
-        }
-
-        /*[HttpPost("logout")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Logout()
-        {
-            await signInManager.SignOutAsync();
-            return NoContent();
         }
 
         [HttpGet("{userId:guid}")]
@@ -114,11 +40,11 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserResult>> GetUserById([FromRoute] Guid userId)
         {
-            var user = await userManager.FindByIdAsync(userId.ToString());
+            var user = await userRepository.FindAsync(userId.ToString());
             if (user is null)
                 return NotFound();
             return Ok(mapper.Map<ApplicationUser, UserResult>(user));
-        }*/
+        }
 
         [HttpGet("{userName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -127,7 +53,7 @@ namespace Core.Controllers
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrWhiteSpace(userName))
                 return BadRequest();
-            var user = await userManager.FindByNameAsync(userName);
+            var user = await userRepository.FindByNameAsync(userName);
             if (user is null)
                 return NotFound();
             return Ok(mapper.Map<ApplicationUser, UserResult>(user));
@@ -137,7 +63,7 @@ namespace Core.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUserName([Required] [OnlyLettersAndNumbers] string userName)
+        public async Task<IActionResult> UpdateUserName([Required] [OnlyLettersAndNumbers] [FromBody] string userName)
         {
             if (!ModelState.IsValid)
                 return BadRequest();

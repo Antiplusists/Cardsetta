@@ -22,6 +22,8 @@ namespace Core.Repositories.Realizations
         public override async Task<DeckDbo?> FindAsync(Guid id)
         {
             var deck = await DbContext.Decks.FindAsync(id);
+            if (deck is null) return null;
+            
             var entry = DbContext.Entry(deck);
             await entry.Reference(d => d.Author).LoadAsync();
             await entry.Collection(d => d.Cards).LoadAsync();
@@ -61,11 +63,14 @@ namespace Core.Repositories.Realizations
             dbo.Id = id;
             var result = DbContext.Decks.Update(dbo);
 
+            if (result is not {State: EntityState.Modified})
+                throw new OperationException("Failed to update entity");
+            
             await DbContext.SaveChangesAsync();
 
-            if (result is {State: EntityState.Modified})
+            if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
-
+            
             throw new OperationException("Failed to update entity");
         }
         
@@ -147,11 +152,16 @@ namespace Core.Repositories.Realizations
                 .Distinct();
 
             var page = neededDecks
+                .Include(deck => deck.Author)
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Include(deck => deck.Author);
-            
+                .Take(pageSize);
+
+            foreach (var deckDbo in page)
+            {
+                await DbContext.Entry(deckDbo).Collection(d => d.Tags).LoadAsync();
+            }
+
             return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
                 pageNumber, pageSize);
         }
@@ -162,7 +172,8 @@ namespace Core.Repositories.Realizations
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Include(deck => deck.Author);
+                .Include(deck => deck.Author)
+                .Include(deck => deck.Tags);
             
             return new PageList<DeckDbo>(await page.ToListAsync(), await DbContext.Decks.LongCountAsync(),
                 pageNumber, pageSize);
