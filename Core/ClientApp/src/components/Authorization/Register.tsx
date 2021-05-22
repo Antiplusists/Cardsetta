@@ -1,7 +1,7 @@
 import './Authorization.css';
 import PasswordInput from './PasswordInput'
-import { FormControl, InputAdornment, InputLabel, OutlinedInput, Button, TextField } from '@material-ui/core';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { InputAdornment, Button } from '@material-ui/core';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { AccountCircle } from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import {
@@ -23,14 +23,13 @@ export default function Register() {
       });
 
     return () => {
-      ValidatorForm.removeValidationRule('isNotEmpty');
+      ValidatorForm.removeValidationRule('isPasswordMatch');
     };
   });
   const [registerForm, setRegisterForm] = useState<RegisterForm>({ login: '', password: '', repeatPassword: '' });
   return (
     <ValidatorForm className='authorization'
       onSubmit={() => console.log('submit')}
-      onError={(e) => console.log(e)}
       instantValidate={false}
     >
       <h1>Создать новый аккаунт</h1>
@@ -49,7 +48,6 @@ export default function Register() {
           ),
         }}
       />
-
       <PasswordInput className='input' label='Пароль'
         name='password' value={registerForm.password}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -57,7 +55,6 @@ export default function Register() {
         validators={ValidatorsPassword}
         errorMessages={ErrorMessagesPassword}
       />
-
       <PasswordInput className='input' label='Повторите пароль'
         value={registerForm.repeatPassword}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -65,10 +62,7 @@ export default function Register() {
         validators={ValidatorsRepeatPassword}
         errorMessages={ErrorMessagesRepeatPassword}
       />
-      <Button type='submit'>
-        Зарегистрироваться
-      </Button>
-
+      <Button type='submit'>Зарегистрироваться</Button>
     </ValidatorForm>
   );
 }

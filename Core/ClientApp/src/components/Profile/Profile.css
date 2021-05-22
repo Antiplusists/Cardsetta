@@ -1,0 +1,59 @@
+.profile {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -42%);
+    background-color: white;
+    padding: 30px 60px;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile h1 {
+    font-size: x-large;
+    font-weight: bold;
+    margin: 15px;
+}
+
+.profile .form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+}
+
+.profile .input {
+    width: 350px;
+    margin: 15px;
+}
+
+.profile .MuiButton-root {
+    color: white;
+    font-weight: bold;
+    font-size: larger;
+    text-transform: none;
+    margin: 10px;
+    width: 300px;
+    height: 50px;
+}
+
+.profile .saveLogin {
+    background-color: green;
+}
+
+.profile .saveLogin:hover {
+    background-color: rgb(0, 92, 0);
+}
+
+.profile .changePassword {
+    background-color: #465CEF;
+}
+
+.profile .changePassword:hover {
+    background-color: #2638ad;
+}

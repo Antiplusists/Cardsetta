@@ -1,6 +1,7 @@
+import './Authorization.css';
 import PasswordInput from './PasswordInput'
-import { FormControl, InputAdornment, InputLabel, OutlinedInput, Button, TextField } from '@material-ui/core';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { InputAdornment, Button } from '@material-ui/core';
+import { ChangeEvent, useState } from 'react';
 import { AccountCircle } from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 
@@ -14,8 +15,6 @@ export default function Login() {
     return (
         <ValidatorForm className='authorization'
             onSubmit={() => console.log('submit')}
-            onError={(e) => console.log(e)}
-            instantValidate={false}
         >
             <h1>Вход в аккаунт</h1>
             <TextValidator className='input' label='Логин'
@@ -31,7 +30,6 @@ export default function Login() {
                     ),
                 }}
             />
-
             <PasswordInput className='input' label='Пароль'
                 name='password' value={loginForm.password}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>

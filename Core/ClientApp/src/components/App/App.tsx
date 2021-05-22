@@ -17,6 +17,7 @@ import { getCardsetById, setCardset } from "../../fakeRepository/fakeCardsets";
 import CustomCardsets from "../Cardsets/CustomCardsets";
 import Register from "../Authorization/Register";
 import Login from "../Authorization/Login";
+import Profile from "../Profile/Profile";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -28,6 +29,7 @@ export default class App extends Component {
           <Route exact path="/" component={MainCardsets} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/login" component={Login} />
+          <Route exact path="/profile" component={Profile} />
           <Route exact path="/custom-cardsets" component={CustomCardsets} />
           <Route path="/cards/:id" render={(props) =>
             <QAPage cardsetId={props.match.params.id} />
