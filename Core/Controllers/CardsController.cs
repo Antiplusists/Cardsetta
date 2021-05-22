@@ -63,7 +63,8 @@ namespace Core.Controllers
             if (cardDbo is null)
                 throw new AggregateException();
 
-            return CreatedAtRoute(nameof(GetCardById), new {deckId, cardId = cardDbo.Id}, cardDbo.Id);
+            return CreatedAtRoute(nameof(GetCardById), new {deckId, cardId = cardDbo.Id},
+                mapper.Map<CardDbo, CardResult>(cardDbo));
         }
 
         [HttpGet("{cardId:guid}", Name = nameof(GetCardById))]

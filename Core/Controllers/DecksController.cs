@@ -83,7 +83,7 @@ namespace Core.Controllers
 
             dbo = await deckRepo.AddAsync(dbo);
 
-            return CreatedAtRoute(nameof(GetDeckById), dbo.Id);
+            return CreatedAtRoute(nameof(GetDeckById), new {deckId = dbo.Id}, mapper.Map<DeckDbo, DeckResult>(dbo));
         }
 
         [HttpGet("{deckId:guid}", Name = nameof(GetDeckById))]
