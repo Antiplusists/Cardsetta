@@ -80,23 +80,14 @@ namespace Core
 
             services.AddDefaultIdentity<ApplicationUser>(options =>
                 {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    //options.SignIn.RequireConfirmedAccount = true;
+                    options.Password.RequiredLength = 8;
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthorization(options =>
             {
-                // options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                //     .RequireAuthenticatedUser()
-                //     .Build();
-                
                 options.AddPolicy("MustBeDeckOwner", policyBuilder =>
                 {
-                    policyBuilder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policyBuilder.RequireAuthenticatedUser();
                     policyBuilder.AddRequirements(new MustBeDeckOwnerRequirement());
                 });
@@ -106,7 +97,6 @@ namespace Core
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    // options.RequireHttpsMetadata = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = false,
@@ -116,15 +106,6 @@ namespace Core
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = JwtTokens.SigningKey
                     };
-                    
-                    // options.Events = new JwtBearerEvents
-                    // {
-                    //     OnMessageReceived = c =>
-                    //     {
-                    //         c.Token = c.Request.Cookies[JwtTokens.CookieName];
-                    //         return Task.CompletedTask;
-                    //     }
-                    // };
                 });
             
             services.AddControllers(cfg =>

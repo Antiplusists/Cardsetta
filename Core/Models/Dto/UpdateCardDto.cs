@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Models.Validation;
-using Microsoft.AspNetCore.Http;
 
 namespace Core.Models.Dto
 {

@@ -109,6 +109,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [Consumes("application/json-patch+json")]
         public async Task<IActionResult> PatchCard([FromRoute] Guid deckId, [FromRoute] Guid cardId,
             [FromBody] JsonPatchDocument<UpdateCardDto>? patchDoc)
         {

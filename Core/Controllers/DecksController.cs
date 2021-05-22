@@ -105,7 +105,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        // [Consumes("application/json-patch+json")]
+        [Consumes("application/json-patch+json")]
         public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId,
             [FromBody] JsonPatchDocument<UpdateDeckDto>? patchDoc)
         {
