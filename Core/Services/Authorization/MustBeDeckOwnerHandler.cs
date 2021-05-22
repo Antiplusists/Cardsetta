@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Core.Models;
 using Core.Repositories.Abstracts;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Core.Services.Authorization
 {
@@ -43,7 +38,13 @@ namespace Core.Services.Authorization
 
             var deck = await deckRepository.FindAsync(deckId);
 
-            if (deck is not null && deck.Author.Id == userId)
+            if (deck is null)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            if (deck.Author.Id == userId)
             {
                 context.Succeed(requirement);
                 return;

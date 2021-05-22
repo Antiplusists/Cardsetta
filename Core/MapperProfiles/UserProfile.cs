@@ -3,7 +3,7 @@ using System.Linq;
 using AutoMapper;
 using Core.Models;
 using Core.Models.Dto;
-using Core.Models.Result;
+using Core.Models.Results;
 
 namespace Core.MapperProfiles
 {

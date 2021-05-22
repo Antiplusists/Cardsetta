@@ -1,21 +1,16 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models;
 using Core.Models.Dto;
-using Core.Models.Result;
+using Core.Models.Results;
 using Core.Models.Validation;
 using Core.Repositories.Abstracts;
-using Core.Services.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
 namespace Core.Controllers
 {
@@ -91,29 +86,6 @@ namespace Core.Controllers
 
             if (!result.Succeeded)
                 return BadRequest();
-
-            return NoContent();
-        }
-
-        [HttpPost("update-avatar")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateAvatar(
-            [Required] [Models.Validation.FileExtensions("jpeg", "jpg", "png")]
-            IFormFile image)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
-            var user = await userManager.GetUserAsync(User);
-
-            //TODO: какое-то изменение картинки
-
-            var result = await userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-                throw new AggregateException();
 
             return NoContent();
         }

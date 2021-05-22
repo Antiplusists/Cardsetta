@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Models.Validation;
-using Microsoft.AspNetCore.Http;
 
 namespace Core.Models.Dto
 {
@@ -15,11 +14,8 @@ namespace Core.Models.Dto
         public string Password { get; set; } = null!;
         
         [Required]
-        [Compare("Password", ErrorMessage = "Password not equals")]
+        [Compare("Password", ErrorMessage = "Passwords not equals")]
         [DataType(DataType.Password)]
         public string PasswordConfirm { get; set; } = null!;
-        
-        [Validation.FileExtensions("jpg", "jpeg", "png")]
-        public IFormFile? Avatar { get; set; }
     }
 }

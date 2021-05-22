@@ -34,7 +34,7 @@ namespace Core.Controllers
         private static object CreateToken(ApplicationUser user) => new
         {
             JwtConstants.TokenType,
-            AccessToken = JwtTokens.GenerateEncoded(Guid.Parse(user.Id), user.UserName)
+            AccessToken = JwtTokens.GenerateToken(user.Id, user.UserName)
         };
 
         [HttpPost("register")]

@@ -2,23 +2,20 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using IdentityModel;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Core.Services.Authorization
 {
-    public class JwtTokens
+    public static class JwtTokens
     {
         public static SymmetricSecurityKey SigningKey =>
             new(Encoding.ASCII.GetBytes("Ne!0_0!vzlomayesh!^_^!nikogda!"));
 
-        public const int ExpireTimeInMinutes = 180; 
-        
-        public static string GenerateEncoded(Guid id, string name)
+        public static string GenerateToken(string id, string name)
         {
             var claims = new Claim[]
             {
-                new(JwtRegisteredClaimNames.Sub, id.ToString()),
+                new(JwtRegisteredClaimNames.Sub, id),
                 new(JwtRegisteredClaimNames.UniqueName, name),
             };
 
@@ -26,7 +23,7 @@ namespace Core.Services.Authorization
                 issuer:"Cardsetta",
                 claims: claims,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(ExpireTimeInMinutes),
+                expires: DateTime.UtcNow.AddHours(3),
                 signingCredentials: new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
