@@ -6,6 +6,7 @@ using AutoMapper;
 using Core.Models;
 using Core.Models.Dto;
 using Core.Services.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +83,15 @@ namespace Core.Controllers
                 return BadRequest();
 
             return Ok(CreateToken(user));
+        }
+
+        [HttpPost("is-auth")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> IsAuthenticated()
+        {
+            return Ok();
         }
     }
 }
