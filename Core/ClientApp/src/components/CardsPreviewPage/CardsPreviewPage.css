@@ -1,0 +1,52 @@
+.QAcardsPreview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    padding: 20px 0;
+}
+
+.QAcardPreview {
+    position: relative;
+    display: flex;
+    width: 450px;
+    height: 300px;
+    margin: 25px;
+    border-radius: 30px;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.QAcardPreview.isDelete {
+    transition: opacity 500ms;
+    opacity: 0;
+}
+
+.QAcardPreview .sideQACard {
+    position: relative;
+    width: 50%;
+    border-radius: 30px;
+    background-color: white;
+    margin: 0px 5px;
+}
+
+.QAcardPreview .sideQACard span {
+    font-size: medium;
+}
+
+.QAcardPreview .overlay .buttonLink {
+    border-radius: 30px;
+}
+
+.QAcardPreview .overlay .buttonLink a {
+    width: 450px;
+    height: 300px;
+    border-radius: 30px;
+}
+
+.QAcardPreview .overlay .deleteButton {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    color: red;
+}
