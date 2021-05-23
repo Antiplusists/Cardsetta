@@ -5,18 +5,14 @@ import MainCardsets from "../Cardsets/MainCardsets";
 import QAPage from "../QAPage/QAPage";
 import СardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
 import QACardSettings from "../QACardSettings/QACardSettings"
-import { FetchData } from "../FetchData";
-import AuthorizeRoute from "../api-authorization/AuthorizeRoute";
-import ApiAuthorizationRoutes from "../api-authorization/ApiAuthorizationRoutes";
-import { ApplicationPaths } from "../api-authorization/ApiAuthorizationConstants";
 
 import "./App.css";
 import { setCard, getCardById } from "../../fakeRepository/fakeCards";
 import CardsetSettings from "../CardsetSettings/CardsetSettings";
 import { getCardsetById, setCardset } from "../../fakeRepository/fakeCardsets";
 import CustomCardsets from "../Cardsets/CustomCardsets";
-import Register from "../Authorization/Register";
-import Login from "../Authorization/Login";
+import { Register } from "../Authorization/Register";
+import { Login } from "../Authorization/Login";
 import Profile from "../Profile/Profile";
 
 export default class App extends Component {
@@ -58,11 +54,6 @@ export default class App extends Component {
             return (<CardsetSettings {...cardset} />);
           }
           } />
-          <AuthorizeRoute path="/fetch-data" component={FetchData} />
-          <Route
-            path={ApplicationPaths.ApiAuthorizationPrefix}
-            component={ApiAuthorizationRoutes}
-          />
         </Switch>
       </Layout>
     );

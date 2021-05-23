@@ -1,7 +1,6 @@
 import { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import authService from './AuthorizeService';
-import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 import { styled } from '@material-ui/core/styles';
 import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
@@ -63,30 +62,23 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
         const [isAuthenticated, user] = await Promise.all([authService.isAuthenticated(), authService.getUser()])
         this.setState({
             isAuthenticated,
-            userName: user && user.name
+            userName: user && user.userName
         });
     }
 
     render() {
         const { isAuthenticated, userName } = this.state;
         if (!isAuthenticated) {
-            const registerPath = `${ApplicationPaths.Register}`;
-            const loginPath = `${ApplicationPaths.Login}`;
+            const registerPath = `register`;
+            const loginPath = `login`;
             return this.anonymousView(registerPath, loginPath);
         } else {
-            const profilePath = `${ApplicationPaths.Profile}`;
-            const logoutPath = { pathname: `${ApplicationPaths.LogOut}`, state: { local: true } };
-            return this.authenticatedView(userName, profilePath, logoutPath);
+            const profilePath = `profile`;
+            return this.authenticatedView(userName, profilePath);
         }
     }
 
-    authenticatedView(
-        userName: string | null,
-        profilePath: string,
-        logoutPath: {
-            pathname: string, state:
-                { local: boolean }
-        }) {
+    authenticatedView(userName: string | null, profilePath: string) {
         return (<Fragment>
             <CustomButton
                 onClick={(event: React.MouseEvent<HTMLElement>) => this.setState({ anchorEl: event.currentTarget })}
@@ -101,7 +93,7 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
                 style={{ marginTop: '50px', marginLeft: '10px' }}
             >
                 <MenuItem component={Link} to={profilePath}>Профиль</MenuItem>
-                <MenuItem component={Link} to={logoutPath}>Выйти</MenuItem>
+                <MenuItem onClick={() => authService.logout()}>Выйти</MenuItem>
             </Menu>
         </Fragment>);
 
