@@ -21,7 +21,14 @@ namespace Core.Repositories.Realizations
 
         public override async Task<DeckDbo?> FindAsync(Guid id)
         {
-            return await DbContext.Decks.FindAsync(id);
+            var deck = await DbContext.Decks.FindAsync(id);
+            if (deck is null) return null;
+            
+            var entry = DbContext.Entry(deck);
+            await entry.Reference(d => d.Author).LoadAsync();
+            await entry.Collection(d => d.Cards).LoadAsync();
+            await entry.Collection(d => d.Tags).LoadAsync();
+            return deck;
         }
 
         public override async Task<DeckDbo> AddAsync(DeckDbo dbo)
@@ -30,6 +37,9 @@ namespace Core.Repositories.Realizations
             
             var result = await DbContext.Decks.AddAsync(dbo);
 
+            if (result is not {State: EntityState.Added})
+                throw new AggregateException();
+
             await DbContext.SaveChangesAsync();
             
             return result.Entity!;
@@ -37,14 +47,15 @@ namespace Core.Repositories.Realizations
 
         public override async Task<bool> RemoveAsync(Guid id)
         {
-            var result = DbContext.Decks.Remove(new DeckDbo {Id = id});
+            var deck = (await FindAsync(id))!;
+            var result = DbContext.Decks.Remove(deck);
 
+            if (result is not {State: EntityState.Deleted})
+                return false;
+                
             await DbContext.SaveChangesAsync();
 
-            if (result is {State: EntityState.Deleted})
-                return true;
-
-            return false;
+            return result is {State: EntityState.Detached};
         }
 
         public override async Task<DeckDbo> UpdateAsync(Guid id, DeckDbo dbo)
@@ -52,11 +63,14 @@ namespace Core.Repositories.Realizations
             dbo.Id = id;
             var result = DbContext.Decks.Update(dbo);
 
+            if (result is not {State: EntityState.Modified})
+                throw new OperationException("Failed to update entity");
+            
             await DbContext.SaveChangesAsync();
 
-            if (result is {State: EntityState.Modified})
+            if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
-
+            
             throw new OperationException("Failed to update entity");
         }
         
@@ -133,14 +147,21 @@ namespace Core.Repositories.Realizations
         {
             var neededDecks = DbContext.Tags
                 .Where(tag => tags.Contains(tag.Tag))
+                .Include(tag => tag.Decks)
                 .SelectMany(tag => tag.Decks)
                 .Distinct();
-            
+
             var page = neededDecks
+                .Include(deck => deck.Author)
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
-            
+
+            foreach (var deckDbo in page)
+            {
+                await DbContext.Entry(deckDbo).Collection(d => d.Tags).LoadAsync();
+            }
+
             return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
                 pageNumber, pageSize);
         }
@@ -150,7 +171,9 @@ namespace Core.Repositories.Realizations
             var page = DbContext.Decks
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize)
+                .Include(deck => deck.Author)
+                .Include(deck => deck.Tags);
             
             return new PageList<DeckDbo>(await page.ToListAsync(), await DbContext.Decks.LongCountAsync(),
                 pageNumber, pageSize);
@@ -167,7 +190,8 @@ namespace Core.Repositories.Realizations
                 .AsQueryable()
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize)
+                .Include(deck => deck.Author);
 
             return new PageList<DeckDbo>(await page.ToListAsync(), await author.Decks.AsQueryable().LongCountAsync(), pageNumber, pageSize);
         }

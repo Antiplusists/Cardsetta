@@ -23,6 +23,9 @@ namespace Core.Repositories.Realizations
         {
             var result = await DbContext.Cards.AddAsync(dbo);
 
+            if (result is not {State: EntityState.Added})
+                throw new AggregateException();
+
             await DbContext.SaveChangesAsync();
 
             return result.Entity!;
@@ -30,14 +33,15 @@ namespace Core.Repositories.Realizations
 
         public override async Task<bool> RemoveAsync(Guid id)
         {
-            var result = DbContext.Cards.Remove(new CardDbo {Id = id});
+            var card = await DbContext.Cards.FindAsync(id);
+            var result = DbContext.Cards.Remove(card);
 
+            if (result is not {State: EntityState.Deleted})
+                throw new AggregateException();
+            
             await DbContext.SaveChangesAsync();
 
-            if (result is {State: EntityState.Deleted})
-                return true;
-
-            return false;
+            return result is {State: EntityState.Detached};
         }
 
         public override async Task<CardDbo> UpdateAsync(Guid id, CardDbo dbo)
@@ -45,9 +49,12 @@ namespace Core.Repositories.Realizations
             dbo.Id = id;
             var result = DbContext.Cards.Update(dbo);
 
+            if (result is not {State: EntityState.Modified})
+                throw new AggregateException();
+            
             await DbContext.SaveChangesAsync();
 
-            if (result is {State: EntityState.Modified})
+            if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
 
             throw new OperationException("Failed to update entity");

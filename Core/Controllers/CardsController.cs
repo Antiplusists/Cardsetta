@@ -63,10 +63,11 @@ namespace Core.Controllers
             if (cardDbo is null)
                 throw new AggregateException();
 
-            return CreatedAtRoute(nameof(GetCardById), new {deckId, cardId = cardDbo.Id}, cardDbo.Id);
+            return CreatedAtRoute(nameof(GetCardById), new {deckId, cardId = cardDbo.Id},
+                mapper.Map<CardDbo, CardResult>(cardDbo));
         }
 
-        [HttpGet("{cardId:guid}")]
+        [HttpGet("{cardId:guid}", Name = nameof(GetCardById))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CardResult>> GetCardById([FromRoute] Guid deckId, [FromRoute] Guid cardId)
@@ -109,8 +110,9 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [Consumes("application/json-patch+json")]
         public async Task<IActionResult> PatchCard([FromRoute] Guid deckId, [FromRoute] Guid cardId,
-            [FromForm] JsonPatchDocument<UpdateCardDto> patchDoc)
+            [FromBody] JsonPatchDocument<UpdateCardDto>? patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("Patch document is null");

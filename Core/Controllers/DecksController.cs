@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,6 +9,7 @@ using Core.Models;
 using Core.Models.Dbo;
 using Core.Models.Dto;
 using Core.Models.Results;
+using Core.Models.Validation;
 using Core.Repositories.Abstracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,22 +41,23 @@ namespace Core.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PageListResult<DeckResult>>> GetDecksByTags([FromQuery] string[] tags,
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PageListResult<DeckResult>>> GetDecksByTags([TagValidation] [FromQuery] string[] tags,
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             if (pageNumber < 1 || pageSize < 1)
                 return BadRequest("Page number and page size can not be less than 1");
-            if (!tags.All(tag => !string.IsNullOrEmpty(tag) && tag.All(char.IsLetterOrDigit)))
-                return BadRequest("Tags should contains only letters and digits");
-            if (!tags.All(tag => tag.All(char.IsLower)))
-                return BadRequest("Tags should be in lower case");
-            if (!tags.All(tag => tag.Length <= 30))
-                return BadRequest("Tags should not be bigger than 30 symbols");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var page = tags.Length > 0
                 ? await deckRepo.GetPageByTags(pageNumber, pageSize, tags)
                 : await deckRepo.GetPage(pageNumber, pageSize);
 
+            if (!page.Any())
+                return NotFound();
+            
             var result = new PageListResult<DeckResult>(mapper.Map<List<DeckDbo>, List<DeckResult>>(page),
                 page.TotalCount, page.CurrentPage, page.PageSize);
 
@@ -80,10 +83,10 @@ namespace Core.Controllers
 
             dbo = await deckRepo.AddAsync(dbo);
 
-            return CreatedAtRoute(nameof(GetDeckById), new {deckId = dbo.Id}, dbo.Id);
+            return CreatedAtRoute(nameof(GetDeckById), new {deckId = dbo.Id}, mapper.Map<DeckDbo, DeckResult>(dbo));
         }
 
-        [HttpGet("{deckId:guid}")]
+        [HttpGet("{deckId:guid}", Name = nameof(GetDeckById))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<DeckResult>> GetDeckById([FromRoute] Guid deckId)
@@ -104,7 +107,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [Consumes("application/json-patch+json")]
         public async Task<IActionResult> PatchDeck([FromRoute] Guid deckId,
-            [FromBody] JsonPatchDocument<UpdateDeckDto> patchDoc)
+            [FromBody] JsonPatchDocument<UpdateDeckDto>? patchDoc)
         {
             if (patchDoc is null)
                 return BadRequest("Patch document is null");
@@ -171,32 +174,29 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes("application/json")]
-        public async Task<IActionResult> UpdateTags([FromRoute] Guid deckId, [Required] [FromBody] string[] newTags)
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public async Task<IActionResult> UpdateTags([FromRoute] Guid deckId, [Required] [TagValidation] [FromBody] string[] newTags)
         {
-            if (!newTags.All(tag => !string.IsNullOrEmpty(tag) && tag.All(char.IsLetterOrDigit)))
-                return BadRequest("Tags should contains only letters and digits");
-            if (!newTags.All(tag => tag.All(char.IsLower)))
-                return BadRequest("Tags should be in lower case");
-            if (!newTags.All(tag => tag.Length <= 30))
-                return BadRequest("Tags should not be bigger than 30 symbols");
-
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
             var deck = await deckRepo.FindAsync(deckId);
             if (deck is null)
                 return NotFound();
             
             var currentTags = deck.Tags.Select(tagDbo => tagDbo.Tag);
-
-            // ReSharper disable PossibleMultipleEnumeration
+            
             if (currentTags.SequenceEqual(newTags))
                 return NoContent();
-            var difference = currentTags.Except(newTags);
-            var tagsToAddition = currentTags.Except(difference);
-            var tagsToDeletion = difference.Except(tagsToAddition);
+            var tagsToAddition = newTags.Except(currentTags);
+            var tagsToDeletion = currentTags.Except(newTags);
 
-            if (!await deckRepo.AddTags(deckId, tagsToAddition.ToArray()))
-                throw new AggregateException();
-            if (!await deckRepo.RemoveTags(deckId, tagsToDeletion.ToArray()))
-                throw new AggregateException();
+            if (tagsToAddition.Any())
+                if (!await deckRepo.AddTags(deckId, tagsToAddition.ToArray()))
+                    throw new AggregateException();
+            if (tagsToDeletion.Any())
+                if (!await deckRepo.RemoveTags(deckId, tagsToDeletion.ToArray()))
+                    throw new AggregateException();
 
             return NoContent();
         }

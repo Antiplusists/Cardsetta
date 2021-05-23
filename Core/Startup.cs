@@ -1,10 +1,11 @@
+using System;
 using System.Reflection;
 using Core.Data;
 using Core.Models;
 using Core.Repositories.Abstracts;
 using Core.Repositories.Realizations;
 using Core.Services.Authorization;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -32,12 +35,42 @@ namespace Core
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.DescribeAllParametersInCamelCase();
+
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Cardsetta API", Version = "v1"});
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "",
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
             
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICardRepository, CardRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IDeckRepository, DeckRepository>();
@@ -45,16 +78,12 @@ namespace Core
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+                {
+                    options.Password.RequiredLength = 8;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer(Configuration.GetSection("IdentityServer"))
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
-
-            services.AddScoped<IAuthorizationHandler, MustBeDeckOwnerHandler>();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("MustBeDeckOwner", policyBuilder =>
@@ -63,7 +92,22 @@ namespace Core
                     policyBuilder.AddRequirements(new MustBeDeckOwnerRequirement());
                 });
             });
+            services.AddScoped<IAuthorizationHandler, MustBeDeckOwnerHandler>();
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ClockSkew = TimeSpan.Zero,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = JwtTokens.SigningKey
+                    };
+                });
+            
             services.AddControllers(cfg =>
                 {
                     cfg.ReturnHttpNotAcceptable = true;
@@ -120,8 +164,8 @@ namespace Core
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseIdentityServer();
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

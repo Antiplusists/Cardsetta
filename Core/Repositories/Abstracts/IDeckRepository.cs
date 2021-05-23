@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Models;
 using Core.Models.Dbo;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Core.Repositories.Abstracts
 {
