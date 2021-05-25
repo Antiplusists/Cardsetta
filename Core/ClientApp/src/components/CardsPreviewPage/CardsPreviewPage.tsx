@@ -43,14 +43,16 @@ const CardPreview: FC<CardPreviewProps> = ({ card, onDelete, deckId, isAuth }) =
     setTimeout(() => onDelete(card.id), 500);
   }
 
-  const getDeleteButton = () => {
-    if (!isAuth)
-      return null;
-    
+  const getOverlay = () => {
     return (
-        <IconButton className='deleteButton' onClick={handleDelete}>
-          <DeleteForever />
-        </IconButton>
+        <div className='overlay'>
+          <ButtonLink className='buttonLink'>
+            <Link to={`/card-settings/${card.id}?cardset=${deckId}`}>Изменить</Link>
+          </ButtonLink>
+          <IconButton className='deleteButton' onClick={handleDelete}>
+            <DeleteForever />
+          </IconButton>
+        </div>
     );
   }
   
@@ -63,12 +65,7 @@ const CardPreview: FC<CardPreviewProps> = ({ card, onDelete, deckId, isAuth }) =
       <div className='sideQACard'>
         <span>{card.answer}</span>
       </div>
-      <div className='overlay'>
-        <ButtonLink className='buttonLink'>
-          <Link to={`/card-settings/${card.id}?cardset=${deckId}`}>Изменить</Link>
-        </ButtonLink>
-        {getDeleteButton()}
-      </div>
+      {isAuth ? getOverlay() : null}
     </div>
   );
 }
