@@ -8,6 +8,7 @@ import { ButtonLink } from '../ButtonLink/ButtonLink';
 import {Card} from "../../entities/Card";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
 import authService from "../api-authorization/AuthorizeService";
+import React from 'react';
 
 const useStyles = makeStyles({
   fabOne: {
@@ -118,6 +119,24 @@ export default function СardsPreviewPage({ deckId}: InferProps<СardsPreviewPag
     }
   }
   
+  const getFloatButtons = () => {
+    return (
+        <React.Fragment>
+          <Link to={`/card-creation?cardset=${deckId}`}>
+            <Fab className={classes.fabOne} color='primary'>
+              <Add/>
+            </Fab>
+          </Link>
+
+          <Link to={`/cardset-settings/${deckId}`}>
+            <Fab className={classes.fabTwo} color='primary'>
+              <Edit/>
+            </Fab>
+          </Link>
+        </React.Fragment>
+    )
+  }
+  
   return (
     <div>
       <div className='QAcardsPreview'>
@@ -126,17 +145,7 @@ export default function СardsPreviewPage({ deckId}: InferProps<СardsPreviewPag
             <CardPreview key={card.id} card={card} deckId={deckId} isAuth={isAuthorAuth} onDelete={handleRemoveCard} />
         )}
       </div>
-      <Link to={`/card-creation?cardset=${deckId}`}>
-        <Fab className={classes.fabOne} color='primary'>
-          <Add />
-        </Fab>
-      </Link>
-
-      <Link to={`/cardset-settings/${deckId}`}>
-        <Fab className={classes.fabTwo} color='primary'>
-          <Edit />
-        </Fab>
-      </Link>
+      {isAuthorAuth ? getFloatButtons() : null}
     </div>
   );
 }

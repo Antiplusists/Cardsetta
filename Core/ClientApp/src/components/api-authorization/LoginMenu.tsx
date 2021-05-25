@@ -69,11 +69,11 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
     render() {
         const { isAuthenticated, userName } = this.state;
         if (!isAuthenticated) {
-            const registerPath = `register`;
-            const loginPath = `login`;
+            const registerPath = `/register`;
+            const loginPath = `/login`;
             return this.anonymousView(registerPath, loginPath);
         } else {
-            const profilePath = `profile`;
+            const profilePath = `/profile`;
             return this.authenticatedView(userName, profilePath);
         }
     }
