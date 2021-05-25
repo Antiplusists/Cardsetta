@@ -3,7 +3,7 @@
     type: CardType,
     question: string,
     answer: string,
-    imagePath: string
+    imagePath?: string
 }
 
 export enum CardType {

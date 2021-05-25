@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router";
 import { Layout } from "./Layout";
 import MainCardsets from "../Cardsets/MainCardsets";
 import QAPage from "../QAPage/QAPage";
-import СardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
+import CardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
 import QACardSettings from "../QACardSettings/QACardSettings"
 
 import "./App.css";
@@ -31,7 +31,7 @@ export default class App extends Component {
             <QAPage cardsetId={props.match.params.id} />
           } />
           <Route path="/cards-preview/:id" render={(props) =>
-            <СardsPreviewPage cardsetId={props.match.params.id} />
+            <CardsPreviewPage deckId={props.match.params.id} />
           } />
           <Route path="/card-settings/:id" render={(props) => {
             const card = getCardById(props.match.params.id);
