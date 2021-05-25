@@ -10,15 +10,13 @@ import { ButtonLink } from '../ButtonLink/ButtonLink';
 
 export default function NavMenu() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const _subscribeId = useRef<number | undefined>(undefined);
   useEffect(() => {
-    authService.isAuthenticated().then(v => setIsAuthenticated(v));
+    setIsAuthenticated(authService.isAuthenticated());
     
-    _subscribeId.current = authService.subscribe(async () => {
-      let isAuth = await authService.isAuthenticated();
-      setIsAuthenticated(_ => isAuth);
+    const _subscribeId = authService.subscribe(async () => {
+      setIsAuthenticated(authService.isAuthenticated());
     });
-    return () => authService.unsubscribe(_subscribeId.current);
+    return () => authService.unsubscribe(_subscribeId);
   }, []);
   
   return (

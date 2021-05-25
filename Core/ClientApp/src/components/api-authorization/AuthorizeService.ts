@@ -15,6 +15,13 @@ class AuthorizeService {
     private _callbacks: { callback: ()=> void, subscription: number }[] = [];
     private _nextSubscriptionId: number = 0;
     
+    constructor() {
+        const token = getCookie(AuthorizeService.tokenCookieName);
+        if (!token) return;
+        const jwtPlayload = AuthorizeService.parseJwtPlayload(token);
+        this.updateStateInternal(jwtPlayload.sub);
+    }
+    
     addAuthorizationHeader(data: RequestInit) {
         let token = getCookie(AuthorizeService.tokenCookieName);
         if (!token) return false;
@@ -26,11 +33,11 @@ class AuthorizeService {
         return true;
     }
     
-    async getUser() {
+    getUser() {
         return this._user;
     }
     
-    async isAuthenticated() {
+    isAuthenticated() {
         // let reqData: RequestInit = {
         //     method: 'POST'
         // }
@@ -97,6 +104,11 @@ class AuthorizeService {
         this.updateState(null);
     }
 
+    private async updateStateInternal(userId: string) {
+        const response = await fetch(ApiPaths.users.byId(userId));
+        this.updateState(await response.json());
+    }
+    
     updateState(user: User | null) {
         this._user = user;
         this.notifySubscribers();
