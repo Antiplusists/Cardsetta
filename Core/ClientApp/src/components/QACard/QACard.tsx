@@ -1,9 +1,9 @@
 import React, { MouseEventHandler } from 'react';
-import { CardInfo } from '../../types/CardInfo'
 import './QACard.css';
+import {Card} from "../../entities/Card";
 
 interface QACardProps {
-    cardInfo: CardInfo,
+    cardInfo: Card,
     onClick?: MouseEventHandler<HTMLDivElement>,
 }
 
@@ -14,11 +14,11 @@ export const QACard = React.forwardRef<HTMLDivElement, QACardProps>(
                 onClick={onClick}
                 style={onClick ? { cursor: 'pointer' } : {}}>
                 <div className='sideQACard'>
-                    {cardInfo.questionImg !== undefined ? <img src={cardInfo.questionImg} alt='questionImage' /> : ''}
-                    <span>{cardInfo.questionText}</span>
+                    {cardInfo.imagePath ? <img src={cardInfo.imagePath} alt='questionImage' /> : ''}
+                    <span>{cardInfo.question}</span>
                 </div>
                 <div className='sideQACard back'>
-                    <span>{cardInfo.answearText}</span>
+                    <span>{cardInfo.answer}</span>
                 </div>
             </div>
         );

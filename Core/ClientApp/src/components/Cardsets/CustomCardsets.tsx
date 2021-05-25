@@ -22,7 +22,7 @@ export default function CustomCardsets() {
             {getAllCardsets().map(cardset =>
                 <PreviewCardsets key={cardset.id} {...cardset} />
             )}
-            <Link to='cardset-settings'>
+            <Link to='cardset-creation'>
                 <Fab className={classes.fabOne} color='primary'>
                     <Add />
                 </Fab>

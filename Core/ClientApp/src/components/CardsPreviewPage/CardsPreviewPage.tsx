@@ -126,7 +126,7 @@ export default function СardsPreviewPage({ deckId}: InferProps<СardsPreviewPag
             <CardPreview key={card.id} card={card} deckId={deckId} isAuth={isAuthorAuth} onDelete={handleRemoveCard} />
         )}
       </div>
-      <Link to={`/card-settings?cardset=${deckId}`}>
+      <Link to={`/card-creation?cardset=${deckId}`}>
         <Fab className={classes.fabOne} color='primary'>
           <Add />
         </Fab>

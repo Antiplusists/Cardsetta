@@ -14,6 +14,7 @@ import CustomCardsets from "../Cardsets/CustomCardsets";
 import { Register } from "../Authorization/Register";
 import { Login } from "../Authorization/Login";
 import Profile from "../Profile/Profile";
+import QACardCreation from "../QACardCreation/QACardCreation";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -21,40 +22,32 @@ export default class App extends Component {
   render() {
     return (
       <Layout>
-        <Switch>
-          <Route exact path="/" component={MainCardsets} />
-          <Route exact path="/register" component={Register} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/profile" component={Profile} />
-          <Route exact path="/custom-cardsets" component={CustomCardsets} />
+          <Route exact path="/" component={MainCardsets}/>
+          <Route exact path="/register" component={Register}/>
+          <Route exact path="/login" component={Login}/>
+          <Route exact path="/profile" component={Profile}/>
+          <Route exact path="/custom-cardsets" component={CustomCardsets}/>
           <Route path="/cards/:id" render={(props) =>
-            <QAPage cardsetId={props.match.params.id} />
-          } />
-          <Route path="/cards-preview/:id" render={(props) =>
-            <CardsPreviewPage deckId={props.match.params.id} />
-          } />
-          <Route path="/card-settings/:id" render={(props) => {
-            const card = getCardById(props.match.params.id);
-            return <QACardSettings {...card} />
-          }} />
-          <Route path="/card-settings" render={() => {
-            const card = getCardById(null);
-            setCard(card);
-            return (<QACardSettings {...card} />);
-          }
-          } />
+              <QAPage deckId={props.match.params.id}/>
+          }/>
+          <Route exact path="/cards-preview/:id" render={(props) =>
+              <CardsPreviewPage deckId={props.match.params.id}/>
+          }/>
+          <Route exact path="/card-settings/:id" render={(props) => {
+              return <QACardSettings cardId={props.match.params.id}/>
+          }}/>
+          <Route path="/card-creation" component={QACardCreation}/>
           <Route path="/cardset-settings/:id" render={(props) => {
-            const cardset = getCardsetById(props.match.params.id);
-            return (<CardsetSettings {...cardset} />);
+              const cardset = getCardsetById(props.match.params.id);
+              return (<CardsetSettings {...cardset} />);
           }
-          } />
-          <Route path="/cardset-settings" render={() => {
-            const cardset = getCardsetById(null);
-            setCardset(cardset);
-            return (<CardsetSettings {...cardset} />);
+          }/>
+          <Route path="/cardset-creation" render={() => {
+              const cardset = getCardsetById(null);
+              setCardset(cardset);
+              return (<CardsetSettings {...cardset} />);
           }
-          } />
-        </Switch>
+          }/>
       </Layout>
     );
   }
