@@ -1,6 +1,31 @@
 .previews {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-gap: 100px;
     justify-items: center;
-    padding: 25px 0;
+    padding: 80px 0;
+}
+
+.previews.g1 {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+.previews.g2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.previews .centerText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.previews .loader {
+    position: fixed;
+    top: 50%;
+    left: 48%;
 }

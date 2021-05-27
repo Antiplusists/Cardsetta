@@ -1,9 +1,8 @@
-import PreviewCardsets from '../PreviewCardsets/PreviewCardsets';
-import './Cardsets.css';
 import Deck from "../../entities/Deck";
 import {useEffect, useRef, useState} from "react";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
 import DeckPage from "../../entities/DeckPage";
+import Cardsets from './Cardsets';
 
 export default function MainCardsets() {
   const [decks, setDecks] = useState<Deck[]>([]);
@@ -53,12 +52,6 @@ export default function MainCardsets() {
   }, []);
   
   return (
-    <div className='previews'>
-      {isNotFound ? <div>Наборов еще нет</div> : null} {/*TODO: Сделать какой-нить стиль или компонент*/}
-      {decks.map(cardset =>
-        <PreviewCardsets key={cardset.id} {...cardset} />
-      )}
-      {isLoading ? <div>Loading...</div> : null} {/*TODO: Сделать лоадер*/}
-    </div>
+    <Cardsets decks={decks} isLoading={isLoading} isNotFound={isNotFound}/>
   );
 }

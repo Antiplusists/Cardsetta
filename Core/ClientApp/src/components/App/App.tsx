@@ -1,13 +1,11 @@
+import "./App.css";
 import { Component } from "react";
-import { Route, Switch } from "react-router";
+import { Route } from "react-router";
 import { Layout } from "./Layout";
 import MainCardsets from "../Cardsets/MainCardsets";
 import QAPage from "../QAPage/QAPage";
 import CardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
 import QACardSettings from "../QACardSettings/QACardSettings"
-
-import "./App.css";
-import { setCard, getCardById } from "../../fakeRepository/fakeCards";
 import CardsetSettings from "../CardsetSettings/CardsetSettings";
 import { getCardsetById, setCardset } from "../../fakeRepository/fakeCardsets";
 import CustomCardsets from "../Cardsets/CustomCardsets";
