@@ -34,8 +34,8 @@ export default function MainCardsets() {
         .then((deckPage) => {
           maxPage.current = deckPage?.totalPages ?? maxPage.current;
           setDecks(value => [...value, ...(deckPage?.items ?? [])]);
+          setLoading(false);
         });
-    setLoading(false);
   }, [pageNumber]);
   
   useEffect(() => {

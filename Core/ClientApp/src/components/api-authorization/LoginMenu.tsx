@@ -6,18 +6,18 @@ import { styled } from '@material-ui/core/styles';
 import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
 import { ButtonLink } from '../ButtonLink/ButtonLink';
 
-const CustomButton =  styled(
+const CustomButton = styled(
     ({ ...other }) => (
-      <Button {...other} />
+        <Button {...other} />
     )
-  )({
+)({
     color: 'white',
     backgroundColor: 'rgba(255, 255, 255, 0)',
     borderRadius: '15px',
     padding: '10px 15px',
     fontWeight: 'bold',
     fontSize: 'x-large',
-    fontFamily: 'Roboto', 
+    fontFamily: 'Roboto',
     textTransform: 'none',
     '&:hover': {
         color: 'white',
@@ -92,8 +92,10 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
                 onClose={() => this.setState({ anchorEl: null })}
                 style={{ marginTop: '50px', marginLeft: '10px' }}
             >
-                <MenuItem component={Link} to={profilePath}>Профиль</MenuItem>
-                <MenuItem onClick={() => authService.logout()}>Выйти</MenuItem>
+                <MenuItem component={Link} to={profilePath}
+                    onClick={() => this.setState({ anchorEl: null })}>Профиль</MenuItem>
+                <MenuItem component={Link} to='/'
+                    onClick={() => { this.setState({ anchorEl: null }); authService.logout(); }}>Выйти</MenuItem>
             </Menu>
         </Fragment>);
 
