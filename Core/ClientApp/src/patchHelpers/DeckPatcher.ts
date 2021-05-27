@@ -28,7 +28,7 @@
             });
         }
         
-        if (this._description) {
+        if (this._description !== null) {
             result.push({
                 op: "replace",
                 path: "/description",

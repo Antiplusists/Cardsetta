@@ -37,7 +37,9 @@ export default function CustomCardsets() {
         const decks: Deck[] = [];
         for (const id of deckIds) {
             const response = await fetch(ApiPaths.decks.byId(id));
-            decks.push(await response.json() as Deck);
+            if (response.status === 200) {
+                decks.push(await response.json() as Deck);
+            }
         }
         return decks;
     }
@@ -60,7 +62,7 @@ export default function CustomCardsets() {
 
     return (
         <div>
-            <Cardsets {...decksState}/>
+            <Cardsets {...decksState} isNotFound={decksState.decks.length === 0}/>
             <Link to='cardset-creation'>
                 <Fab className={classes.fabOne} color='primary'>
                     <Add />

@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import { InferProps } from 'prop-types';
 import { TextField } from '@material-ui/core'
-import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
+import { FileObject } from 'material-ui-dropzone'
 import { QACard } from '../QACard/QACard'
 import './QACardSettings.css'
 import useQuery from '../../customHooks/useQuery';
@@ -11,6 +11,7 @@ import {Card} from "../../entities/Card";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
 import CardPatcher from "../../patchHelpers/CardPatcher";
 import authService from "../api-authorization/AuthorizeService";
+import ImageDropzone from '../ImageDropzone/ImageDropzone';
 
 type QACardSettingsProps = {
     cardId: string;
@@ -97,19 +98,7 @@ export default function QACardSettings({cardId} : InferProps<QACardSettingsProps
                            onChange={(e) => setCardInfo({ ...cardInfo, question: e.target.value })} />
                 <TextField label='Перевод' variant='outlined' value={cardInfo.answer || ''}
                            onChange={(e) => setCardInfo({ ...cardInfo, answer: e.target.value })} />
-                <DropzoneAreaBase fileObjects={[]}
-                                  acceptedFiles={['image/*']}
-                                  filesLimit={1}
-                                  maxFileSize={1000000}
-                                  showPreviewsInDropzone={false}
-                                  onAdd={handleAddImage}
-                                  dropzoneText='Загрузить изображение'
-                                  getFileAddedMessage={(fileName: String) => `Файл ${fileName} успешно добавлен.`}
-                                  getFileLimitExceedMessage={(filesLimit: number) => `Превышено максимально допустимое количество файлов. Разрешено только ${filesLimit}.`}
-                                  getDropRejectMessage={(rejectedFile: File) => `Файл ${rejectedFile.name} был отклонен.`}
-                                  getFileRemovedMessage={(fileName: String) => `Файл ${fileName} был удалён.`}
-                />
-
+                <ImageDropzone onAddImage={handleAddImage}/>           
                 <ButtonLink className='buttonLink' onClick={handleSave}>
                     <Link to={`/cards-preview/${deckId}`}>Сохранить</Link>
                 </ButtonLink>

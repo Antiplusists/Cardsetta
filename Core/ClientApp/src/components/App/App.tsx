@@ -6,14 +6,14 @@ import MainCardsets from "../Cardsets/MainCardsets";
 import QAPage from "../QAPage/QAPage";
 import CardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
 import QACardSettings from "../QACardSettings/QACardSettings"
-import CardsetSettings from "../CardsetSettings/CardsetSettings";
-import { getCardsetById, setCardset } from "../../fakeRepository/fakeCardsets";
 import CustomCardsets from "../Cardsets/CustomCardsets";
 import { Register } from "../Authorization/Register";
 import { Login } from "../Authorization/Login";
 import Profile from "../Profile/Profile";
 import QACardCreation from "../QACardCreation/QACardCreation";
 import authService from "../api-authorization/AuthorizeService";
+import AddCardset from "../CardsetSettings/AddCardset";
+import EditCardset from "../CardsetSettings/EditCardset";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -36,17 +36,10 @@ export default class App extends Component {
           return <QACardSettings cardId={props.match.params.id} />
         }} />
         <Route path="/card-creation" component={QACardCreation} />
-        <Route path="/cardset-settings/:id" render={(props) => {
-          const cardset = getCardsetById(props.match.params.id);
-          return (<CardsetSettings {...cardset} />);
-        }
+        <Route path="/cardset-settings/:id" render={(props) => (
+          <EditCardset deckId={props.match.params.id} />)
         } />
-        <Route path="/cardset-creation" render={() => {
-          const cardset = getCardsetById(null);
-          setCardset(cardset);
-          return (<CardsetSettings {...cardset} />);
-        }
-        } />
+        <Route path="/cardset-creation" component={AddCardset} />
         {!authService.isAuthenticated() ? <Redirect from='/custom-cardsets' to='/login' /> : null}
         {authService.isAuthenticated() ? <Redirect from='/login' to='/' /> : null}
         {authService.isAuthenticated() ? <Redirect from='/register' to='/' /> : null}

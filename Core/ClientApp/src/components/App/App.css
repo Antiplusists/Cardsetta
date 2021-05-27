@@ -12,3 +12,9 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.loader {
+  position: fixed;
+  top: 50%;
+  left: 48%;
+}

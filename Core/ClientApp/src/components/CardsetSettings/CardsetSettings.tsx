@@ -1,78 +1,77 @@
 import './CardsetSettings.css';
-
 import { useState } from 'react';
-import { InferProps } from 'prop-types';
 import { Button, TextField } from '@material-ui/core'
-import { DropzoneAreaBase, FileObject } from 'material-ui-dropzone'
-import { updateCardset } from '../../fakeRepository/fakeCardsets'
+import { FileObject } from 'material-ui-dropzone'
 import { Link } from 'react-router-dom';
 import { ButtonLink } from '../ButtonLink/ButtonLink'
-import { CardsetInfo } from '../../types/CardsetInfo'
+import Deck from '../../entities/Deck';
+import ImageDropzone from '../ImageDropzone/ImageDropzone';
 
-export default function CardsetSettings({ id, cardIds, name, description, image }: InferProps<CardsetInfo>) {
-    const [cardset, setCardset] = useState<CardsetInfo>({ id, cardIds, name, description, image });
+type CardsetSettingsProps = {
+    deck: Deck,
+    pathRedirect: string,
+    onSave?: Function,
+}
+
+export default function CardsetSettings(props: CardsetSettingsProps) {
+    const { deck, onSave, pathRedirect } = props;
+    const [cardset, setCardset] = useState<Deck>(deck);
 
     function handleSave() {
-        updateCardset(cardset);
+        if (onSave) {
+            onSave(cardset);
+        }
     }
 
     function handleAddImage(files: FileObject[]) {
-        setCardset({ ...cardset, image: files[0].data?.toString() });
+        setCardset({ ...cardset, imagePath: files[0].data?.toString() ?? '' });
     }
 
     function handleDeleteImage() {
-        setCardset({ ...cardset, image: undefined });
+        if (cardset.imagePath) {
+            setCardset({ ...cardset, imagePath: '' });
+        }
+    }
+
+    const DemoCardset = () => {
+        return (<div className='previewCardsetBlock '>
+            <div className='previewCardset flexCenter'>
+                {cardset.imagePath
+                    ?
+                    <img src={cardset.imagePath} alt='preview' />
+                    :
+                    <div className='textBlock'>
+                        <h1 className='name'>{cardset.name}</h1>
+                        <p>{cardset.description}</p>
+                    </div>
+                }
+            </div>
+            <div className='overlay'>
+                <Button className='deleteButton' onClick={handleDeleteImage}>
+                    Удалить изображение
+                </Button>
+            </div>
+        </div>);
     }
 
     return (
         <div className='settingsBlock'>
             <div className='part1'>
-                <TextField label='Название' variant='outlined' defaultValue={name}
+                <TextField label='Название' variant='outlined' defaultValue={cardset.name}
                     onChange={(e) => setCardset({ ...cardset, name: e.target.value })} />
-                <TextField label='Описание' variant='outlined' defaultValue={description}
+                <TextField label='Описание' variant='outlined' defaultValue={cardset.description}
                     onChange={(e) => setCardset({ ...cardset, description: e.target.value })}
                     rows={5} rowsMax={5} multiline />
-
-                <DropzoneAreaBase fileObjects={[]}
-                    acceptedFiles={['image/*']}
-                    filesLimit={1}
-                    maxFileSize={1000000}
-                    showPreviewsInDropzone={false}
-                    onAdd={handleAddImage}
-                    dropzoneText='Загрузить изображение'
-                    getFileAddedMessage={(fileName: String) => `Файл ${fileName} успешно добавлен.`}
-                    getFileLimitExceedMessage={(filesLimit: number) => `Превышено максимально допустимое количество файлов. Разрешено только ${filesLimit}.`}
-                    getDropRejectMessage={(rejectedFile: File) => `Файл ${rejectedFile.name} был отклонен.`}
-                    getFileRemovedMessage={(fileName: String) => `Файл ${fileName} был удалён.`}
-                />
-
+                <ImageDropzone onAddImage={handleAddImage} />
                 <ButtonLink className='buttonLink' onClick={handleSave}>
-                    <Link to={`/cards-preview/${cardset.id}`}>Сохранить</Link>
+                    <Link to={pathRedirect}>Сохранить</Link>
                 </ButtonLink>
                 <ButtonLink className='buttonLink'>
-                    <Link to={`/cards-preview/${cardset.id}`}>Отмена</Link>
+                    <Link to={pathRedirect}>Отмена</Link>
                 </ButtonLink>
             </div >
             <div className='part2'>
-                <div className='previewCardsetBlock '>
-                    <div className='previewCardset flexCenter'>
-                        {  
-                            cardset.image && cardset.image !== ''
-                                ?
-                                <img src={cardset.image} alt='preview' />
-                                :
-                                <div className='textBlock'>
-                                    <h1 className='name'>{cardset.name}</h1>
-                                    <p>{cardset.description}</p>
-                                </div>
-                        }
-                    </div>
-                    <div className='overlay'>
-                        <Button className='deleteButton' onClick={handleDeleteImage}>
-                            Удалить изображение
-                        </Button>
-                    </div>
-                </div>
+                <DemoCardset />
             </div>
         </div >
     );
