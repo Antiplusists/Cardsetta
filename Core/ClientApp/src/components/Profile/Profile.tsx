@@ -4,10 +4,8 @@ import { InputAdornment, Button, } from '@material-ui/core';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { AccountCircle } from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import {
-    ValidatorsLogin, ValidatorsPassword, ValidatorsRepeatPassword,
-    ErrorMessagesLogin, ErrorMessagesPassword, ErrorMessagesRepeatPassword
-} from '../Authorization/Validators'
+import { LoginValidators, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
+import { LoginErrorMessages, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
 
 type ProfileForm = {
     login: string,
@@ -26,7 +24,7 @@ export default function Profile() {
         return () => {
             ValidatorForm.removeValidationRule('isPasswordMatch');
         };
-    });
+    }, []);
     const [profileForm, setProfileForm] = useState<ProfileForm>({ login: '', oldPassword: '', password: '', repeatPassword: '' });
     return (
         <div className='profile'>
@@ -40,8 +38,8 @@ export default function Profile() {
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setProfileForm({ ...profileForm, login: e.target.value })}
                     value={profileForm.login}
-                    validators={ValidatorsLogin}
-                    errorMessages={ErrorMessagesLogin}
+                    validators={LoginValidators}
+                    errorMessages={LoginErrorMessages}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -61,24 +59,24 @@ export default function Profile() {
                     value={profileForm.oldPassword}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setProfileForm({ ...profileForm, oldPassword: e.target.value })}
-                    validators={ValidatorsPassword}
-                    errorMessages={ErrorMessagesPassword}
+                    validators={PasswordValidators}
+                    errorMessages={PasswordErrorMessages}
                 />
 
                 <PasswordInput className='input' label='Новый пароль'
                     name='password' value={profileForm.password}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setProfileForm({ ...profileForm, password: e.target.value })}
-                    validators={ValidatorsPassword}
-                    errorMessages={ErrorMessagesPassword}
+                    validators={PasswordValidators}
+                    errorMessages={PasswordErrorMessages}
                 />
 
                 <PasswordInput className='input' label='Повторите пароль'
                     value={profileForm.repeatPassword}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setProfileForm({ ...profileForm, repeatPassword: e.target.value })}
-                    validators={ValidatorsRepeatPassword}
-                    errorMessages={ErrorMessagesRepeatPassword}
+                    validators={RepeatPasswordValidators}
+                    errorMessages={RepeatPasswordErrorMessages}
                 />
                 <Button className='changePassword' type='submit'>Изменить пароль</Button>
             </ValidatorForm>

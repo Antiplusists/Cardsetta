@@ -1,15 +1,13 @@
 import './Authorization.css';
 import PasswordInput from './PasswordInput'
 import { InputAdornment, Button } from '@material-ui/core';
-import {ChangeEvent, FC, useEffect, useState} from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { AccountCircle } from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import {
-  ValidatorsLogin, ValidatorsPassword, ValidatorsRepeatPassword,
-  ErrorMessagesLogin, ErrorMessagesPassword, ErrorMessagesRepeatPassword
-} from './Validators'
-import AuthorizeService, {OperationResponse} from "../api-authorization/AuthorizeService";
-import {RouteComponentProps, withRouter} from "react-router-dom";
+import { LoginValidators, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
+import { LoginErrorMessages, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
+import AuthorizeService, { OperationResponse } from "../api-authorization/AuthorizeService";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
 type RegisterFormData = {
   login: string,
@@ -27,9 +25,9 @@ const RegForm: FC<RouteComponentProps> = (props) => {
     return () => {
       ValidatorForm.removeValidationRule('isPasswordMatch');
     };
-  });
+  }, []);
   const [registerForm, setRegisterForm] = useState<RegisterFormData>({ login: '', password: '', repeatPassword: '' });
-  
+
   const onSubmit = async () => {
     let formData = new FormData();
     formData.append('userName', registerForm.login)
@@ -52,7 +50,7 @@ const RegForm: FC<RouteComponentProps> = (props) => {
       }
     }
   }
-  
+
   return (
     <ValidatorForm className='authorization'
       onSubmit={onSubmit}
@@ -64,8 +62,8 @@ const RegForm: FC<RouteComponentProps> = (props) => {
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setRegisterForm({ ...registerForm, login: e.target.value })}
         value={registerForm.login}
-        validators={ValidatorsLogin}
-        errorMessages={ErrorMessagesLogin}
+        validators={LoginValidators}
+        errorMessages={LoginErrorMessages}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -78,15 +76,15 @@ const RegForm: FC<RouteComponentProps> = (props) => {
         name='password' value={registerForm.password}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setRegisterForm({ ...registerForm, password: e.target.value })}
-        validators={ValidatorsPassword}
-        errorMessages={ErrorMessagesPassword}
+        validators={PasswordValidators}
+        errorMessages={PasswordErrorMessages}
       />
       <PasswordInput className='input' label='Повторите пароль'
         value={registerForm.repeatPassword}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
           setRegisterForm({ ...registerForm, repeatPassword: e.target.value })}
-        validators={ValidatorsRepeatPassword}
-        errorMessages={ErrorMessagesRepeatPassword}
+        validators={RepeatPasswordValidators}
+        errorMessages={RepeatPasswordErrorMessages}
       />
       <Button type='submit'>Зарегистрироваться</Button>
     </ValidatorForm>

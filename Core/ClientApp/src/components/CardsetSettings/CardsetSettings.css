@@ -19,6 +19,11 @@
     object-fit: contain;
 }
 
+.textField {
+    width: 350px;
+    margin: 15px;
+}
+
 .settingsBlock .previewCardset .textBlock {
     max-width: 85%;
     max-height: 85%;

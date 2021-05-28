@@ -1,11 +1,14 @@
 import './CardsetSettings.css';
-import { useState } from 'react';
-import { Button, TextField } from '@material-ui/core'
+import { ChangeEvent, useState } from 'react';
+import { Button } from '@material-ui/core'
 import { FileObject } from 'material-ui-dropzone'
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { ButtonLink } from '../CustomButtons/ButtonLink'
 import Deck from '../../entities/Deck';
 import ImageDropzone from '../ImageDropzone/ImageDropzone';
+import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
+import { DeckNameValidators, DeckDescriptionValidators } from '../../validators/Validators';
+import { DeckNameErrorMessages, DeckDescriptionErrorMessages } from '../../validators/ErrorMessage';
 
 type CardsetSettingsProps = {
     deck: Deck,
@@ -16,9 +19,11 @@ type CardsetSettingsProps = {
 export default function CardsetSettings(props: CardsetSettingsProps) {
     const { deck, onSave, pathRedirect } = props;
     const [cardset, setCardset] = useState<Deck>(deck);
+    const [isSubmit, setIsSubmit] = useState(false);
 
     function handleSave() {
         if (onSave) {
+            setIsSubmit(true);
             onSave(cardset);
         }
     }
@@ -55,24 +60,38 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
     }
 
     return (
-        <div className='settingsBlock'>
-            <div className='part1'>
-                <TextField label='Название' variant='outlined' defaultValue={cardset.name}
-                    onChange={(e) => setCardset({ ...cardset, name: e.target.value })} />
-                <TextField label='Описание' variant='outlined' defaultValue={cardset.description}
-                    onChange={(e) => setCardset({ ...cardset, description: e.target.value })}
-                    rows={5} rowsMax={5} multiline />
-                <ImageDropzone onAddImage={handleAddImage} />
-                <ButtonLink className='buttonLink' onClick={handleSave}>
-                    <Link to={pathRedirect}>Сохранить</Link>
-                </ButtonLink>
-                <ButtonLink className='buttonLink'>
-                    <Link to={pathRedirect}>Отмена</Link>
-                </ButtonLink>
+        isSubmit
+            ?
+            <Redirect to={pathRedirect} />
+            :
+            <div className='settingsBlock'>
+                <ValidatorForm className='part1' onSubmit={handleSave} instantValidate={false}>
+                    <TextValidator label='Название' variant='outlined' type='text' name='name'
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            setCardset({ ...cardset, name: e.target.value })}
+                        value={cardset.name}
+                        validators={DeckNameValidators}
+                        errorMessages={DeckNameErrorMessages}
+                    />
+                    <TextValidator label='Описание' variant='outlined' type='text' name='description'
+                        rows={4} rowsMax={4} multiline
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            setCardset({ ...cardset, description: e.target.value })}
+                        value={cardset.description}
+                        validators={DeckDescriptionValidators}
+                        errorMessages={DeckDescriptionErrorMessages}
+                    />
+                    <ImageDropzone onAddImage={handleAddImage} />
+                    <ButtonLink className='buttonLink' type='submit'>
+                        <a>Сохранить</a>
+                    </ButtonLink>
+                    <ButtonLink className='buttonLink'>
+                        <Link to={pathRedirect}>Отмена</Link>
+                    </ButtonLink>
+                </ValidatorForm >
+                <div className='part2'>
+                    <DemoCardset />
+                </div>
             </div >
-            <div className='part2'>
-                <DemoCardset />
-            </div>
-        </div >
     );
 }
