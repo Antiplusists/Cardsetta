@@ -77,7 +77,7 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
     }
 
     const updateImage = async (card: Card) => {
-        if (card.imagePath !== card.imagePath) {
+        if (state.card.imagePath !== card.imagePath) {
             //TODO: надо вытащить файл и положить в formData
         }
     }

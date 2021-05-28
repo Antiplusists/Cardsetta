@@ -1,15 +1,14 @@
+import './CardsPreviewPage.css'
 import { Link } from 'react-router-dom';
 import { InferProps } from 'prop-types';
-import { Fab, IconButton, makeStyles } from '@material-ui/core';
-import { Edit, Add, DeleteForever } from '@material-ui/icons';
-import {FC, useEffect, useRef, useState} from 'react';
-import './CardsPreviewPage.css'
-import { ButtonLink } from '../CustomButtons/ButtonLink';
-import {Card} from "../../entities/Card";
-import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
+import { Fab, makeStyles } from '@material-ui/core';
+import { Edit, Add } from '@material-ui/icons';
+import { Fragment, useEffect, useState } from 'react';
+import { Card } from "../../entities/Card";
+import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import authService from "../api-authorization/AuthorizeService";
-import React from 'react';
-import { DeleteButton } from '../CustomButtons/DeleteButton';
+import CardPreview from './CardPreview'
+import LoaderLayout from '../LoaderLayout/LoaderLayout';
 
 const useStyles = makeStyles({
   fabOne: {
@@ -30,118 +29,88 @@ const useStyles = makeStyles({
   },
 });
 
-type CardPreviewProps = {
-  deckId: string,
-  card: Card,
-  onDelete: (cardId: string) => void,
-  isAuth: boolean
-}
-
-const CardPreview: FC<CardPreviewProps> = ({ card, onDelete, deckId, isAuth }) => {
-  const blockRef = useRef<HTMLDivElement>(null);
-
-  const getOverlay = () => {
-    return (
-        <div className='overlay'>
-          <ButtonLink className='buttonLink'>
-            <Link to={`/card-settings/${card.id}?cardset=${deckId}`}>Изменить</Link>
-          </ButtonLink>
-          <DeleteButton refComponentForDelete={blockRef}
-              onClick={() => onDelete(card.id)}
-              warningMessage='Вы действительно хотите удалить данную карточку?' />
-        </div>
-    );
-  }
-  
-  return (
-    <div ref={blockRef} className='QAcardPreview'>
-      <div className='sideQACard'>
-        {card.imagePath ? <img src={card.imagePath} alt='questionImage' /> : ''}
-        <span>{card.question}</span>
-      </div>
-      <div className='sideQACard'>
-        <span>{card.answer}</span>
-      </div>
-      {isAuth ? getOverlay() : null}
-    </div>
-  );
-}
-
 type СardsPreviewPageProps = {
   deckId: string,
 }
 
-export default function СardsPreviewPage({ deckId}: InferProps<СardsPreviewPageProps>) {
+type State = {
+  isLoading: boolean,
+  cards: Card[]
+}
+
+export default function СardsPreviewPage({ deckId }: InferProps<СardsPreviewPageProps>) {
   const classes = useStyles();
-  const [cards, setCards] = useState<Card[]>([]);
-  const [isAuthorAuth, setIsAuthorAuth] = useState<boolean>(authService.isAuthenticated() 
-      && !!authService.getUser()?.deckIds.includes(deckId));
-  
+
+  const [state, setState] = useState<State>({ isLoading: true, cards: [] });
+
+  const [isAuthorAuth, setIsAuthorAuth] = useState<boolean>(authService.isAuthenticated()
+    && !!authService.getUser()?.deckIds.includes(deckId));
+
   const getCards = async (deckId: string) => {
     const response = await fetch(ApiPaths.cards.default(deckId));
-    
     switch (response.status) {
       case 200: break;
       case 404: throw new Error(`Deck with id: ${deckId} is not exist`);
       default: throw new Error(`Can not fetch ${ApiPaths.cards.default(deckId)}`);
     }
-    
     return await response.json() as Card[];
   };
-  
+
   useEffect(() => {
     const _subscribe = authService.subscribe(() => setIsAuthorAuth(authService.isAuthenticated()
-        && !!authService.getUser()?.deckIds.includes(deckId)));
-    
+      && !!authService.getUser()?.deckIds.includes(deckId)));
+
     getCards(deckId)
-        .then(cards => setCards(cards));
-    
+      .then(cards => {
+        setState({ ...state, isLoading: false, cards })
+      });
+
     return () => authService.unsubscribe(_subscribe);
   }, []);
 
   const handleRemoveCard = async (cardId: string) => {
-    setCards(cards => cards.filter(card => card.id !== cardId));
-    
+    setState({ ...state, cards: state.cards.filter(card => card.id !== cardId) });
     const body = {
       method: 'DELETE'
     };
     authService.addAuthorizationHeader(body);
     const response = await fetch(ApiPaths.cards.byId(deckId, cardId), body);
-    
     switch (response.status) {
       case 204: return;
       case 404: throw new Error(`Card ${cardId} in deck ${deckId} is not exist`);
       default: throw new Error(`Can not fetch ${ApiPaths.cards.byId(deckId, cardId)}`);
     }
   }
-  
-  const getFloatButtons = () => {
-    return (
-        <React.Fragment>
-          <Link to={`/card-creation?cardset=${deckId}`}>
-            <Fab className={classes.fabOne} color='primary'>
-              <Add/>
-            </Fab>
-          </Link>
 
-          <Link to={`/cardset-settings/${deckId}`}>
-            <Fab className={classes.fabTwo} color='primary'>
-              <Edit/>
-            </Fab>
-          </Link>
-        </React.Fragment>
+  const getFabButtons = () => {
+    return (
+      <Fragment>
+        <Link to={`/card-creation?cardset=${deckId}`}>
+          <Fab className={classes.fabOne} color='primary'>
+            <Add />
+          </Fab>
+        </Link>
+
+        <Link to={`/cardset-settings/${deckId}`}>
+          <Fab className={classes.fabTwo} color='primary'>
+            <Edit />
+          </Fab>
+        </Link>
+      </Fragment>
     )
   }
-  
+
   return (
-    <div>
-      <div className='QAcardsPreview'>
-        {cards.map(
+    <Fragment>
+      <LoaderLayout className='QAcardsPreview' isLoading={state.isLoading} isNotFound={state.cards.length === 0}
+        componentNotFound={<div className='centerText'>Карточек еще нет</div>}>
+        {state.cards.map(
           card =>
-            <CardPreview key={card.id} card={card} deckId={deckId} isAuth={isAuthorAuth} onDelete={handleRemoveCard} />
+            <CardPreview key={card.id} card={card} deckId={deckId}
+              isAuth={isAuthorAuth} onDelete={handleRemoveCard} />
         )}
-      </div>
-      {isAuthorAuth ? getFloatButtons() : null}
-    </div>
+      </LoaderLayout>
+      {isAuthorAuth ? getFabButtons() : null}
+    </Fragment>
   );
 }

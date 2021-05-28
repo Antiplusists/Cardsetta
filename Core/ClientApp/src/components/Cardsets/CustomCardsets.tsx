@@ -68,10 +68,9 @@ export default function CustomCardsets() {
         };
         authService.addAuthorizationHeader(body);
         const response = await fetch(ApiPaths.decks.byId(deckId), body);
-        switch (response.status) {
-            case 204: return;
-            case 404: throw new Error(`Deck ${deckId} is not exist`);
-            default: throw new Error(`Can not fetch ${ApiPaths.decks.byId(deckId)}`);
+        const user = authService.getUser();
+        if (response.status === 204 && user !== null) {
+            authService.updateState({ ...user, deckIds: user.deckIds.filter(id => id !== deckId) });
         }
     };
 

@@ -14,7 +14,7 @@ export default function MainCardsets() {
   const pageSize = 20;
 
   const getDecks = async (pageNumber: number, pageSize: number) => {
-    let response = await fetch(ApiPaths.decks.default + `?pageNumber=${pageNumber}` + `&pageSize=${pageSize}`);
+    let response = await fetch(ApiPaths.decks.default + `?pageNumber=${pageNumber}&pageSize=${pageSize}`);
     
     switch (response.status) {
       case 200: break;

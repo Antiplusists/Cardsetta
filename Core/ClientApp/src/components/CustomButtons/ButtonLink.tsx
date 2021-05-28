@@ -30,5 +30,21 @@ export const ButtonLink = styled(
     },
     '& a:hover': {
         textDecoration: 'none'
-    }
+    },
+    '& p': {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        borderRadius: '15px',
+        padding: '10px 15px',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 'large',
+        fontFamily: 'Roboto',
+        textTransform: 'none',
+        textDecoration: 'none',
+        margin: 0,
+    },
 });

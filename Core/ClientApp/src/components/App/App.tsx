@@ -5,7 +5,6 @@ import { Layout } from "./Layout";
 import MainCardsets from "../Cardsets/MainCardsets";
 import QAPage from "../QAPage/QAPage";
 import CardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
-import QACardSettings from "../QACardSettings/QACardSettings"
 import CustomCardsets from "../Cardsets/CustomCardsets";
 import { Register } from "../Authorization/Register";
 import { Login } from "../Authorization/Login";

@@ -18,3 +18,13 @@ body {
   top: 50%;
   left: 48%;
 }
+
+.centerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  font-weight: bold;
+}

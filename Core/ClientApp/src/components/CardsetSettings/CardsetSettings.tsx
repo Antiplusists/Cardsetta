@@ -58,7 +58,6 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
             </div>
         </div>);
     }
-
     return (
         isSubmit
             ?
@@ -77,13 +76,13 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
                         rows={4} rowsMax={4} multiline
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             setCardset({ ...cardset, description: e.target.value })}
-                        value={cardset.description}
+                        value={cardset.description ?? ''}
                         validators={DeckDescriptionValidators}
                         errorMessages={DeckDescriptionErrorMessages}
                     />
                     <ImageDropzone onAddImage={handleAddImage} />
                     <ButtonLink className='buttonLink' type='submit' fixTabIndex={false}>
-                        <a>Сохранить</a>
+                        <p>Сохранить</p>
                     </ButtonLink>
                     <ButtonLink className='buttonLink'>
                         <Link to={pathRedirect}>Отмена</Link>

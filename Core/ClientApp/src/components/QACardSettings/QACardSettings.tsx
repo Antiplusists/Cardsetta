@@ -23,11 +23,11 @@ export default function QACardSettings(props: QACardSettingsProps) {
     const [isSubmit, setIsSubmit] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
 
-    function handleSave() {
-        setIsSubmit(true);
+    async function handleSave() {
         if (onSave) {
-            onSave(cardState);
+            await onSave(cardState);
         }
+        setIsSubmit(true);
     }
 
     function handleAddImage(files: FileObject[]) {
@@ -57,7 +57,7 @@ export default function QACardSettings(props: QACardSettingsProps) {
                     />
                     <ImageDropzone onAddImage={handleAddImage} />
                     <ButtonLink className='buttonLink' type='submit' fixTabIndex={false}>
-                        <a>Сохранить</a>
+                        <p>Сохранить</p>
                     </ButtonLink>
                     <ButtonLink className='buttonLink'>
                         <Link to={`/cards-preview/${deckId}`}>Отмена</Link>
