@@ -11,3 +11,12 @@ export enum CardType {
     Photo,
     Mixed
 }
+
+export const CreateEmptyCard = (): Card => {
+    return {
+        id: '',
+        type: CardType.Text,
+        question: '',
+        answer: '',
+    };
+};

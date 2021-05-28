@@ -2,8 +2,8 @@ import styled from '@material-ui/core/styles/styled';
 import Button from '@material-ui/core/Button';
 
 export const ButtonLink = styled(
-    ({ ...other }) => (
-        <Button tabIndex={-1} {...other} />
+    ({ fixTabIndex = true, ...other }) => (
+        <Button tabIndex={fixTabIndex ? -1 : 0} {...other} />
     )
 )({
     padding: '0',

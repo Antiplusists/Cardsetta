@@ -49,9 +49,6 @@ const CardPreview: FC<CardPreviewProps> = ({ card, onDelete, deckId, isAuth }) =
           <DeleteButton refComponentForDelete={blockRef}
               onClick={() => onDelete(card.id)}
               warningMessage='Вы действительно хотите удалить данную карточку?' />
-          {/* <IconButton className='deleteButton' onClick={handleDelete}>
-            <DeleteForever />
-          </IconButton> */}
         </div>
     );
   }

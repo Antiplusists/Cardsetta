@@ -82,7 +82,7 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
                         errorMessages={DeckDescriptionErrorMessages}
                     />
                     <ImageDropzone onAddImage={handleAddImage} />
-                    <ButtonLink className='buttonLink' type='submit'>
+                    <ButtonLink className='buttonLink' type='submit' fixTabIndex={false}>
                         <a>Сохранить</a>
                     </ButtonLink>
                     <ButtonLink className='buttonLink'>

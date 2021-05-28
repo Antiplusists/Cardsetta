@@ -10,10 +10,11 @@ import CustomCardsets from "../Cardsets/CustomCardsets";
 import { Register } from "../Authorization/Register";
 import { Login } from "../Authorization/Login";
 import Profile from "../Profile/Profile";
-import QACardCreation from "../QACardCreation/QACardCreation";
+import AddQACard from "../QACardSettings/AddQACard";
 import authService from "../api-authorization/AuthorizeService";
 import AddCardset from "../CardsetSettings/AddCardset";
 import EditCardset from "../CardsetSettings/EditCardset";
+import EditQACard from "../QACardSettings/EditQACard";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -32,10 +33,10 @@ export default class App extends Component {
         <Route exact path="/cards-preview/:id" render={(props) =>
           <CardsPreviewPage deckId={props.match.params.id} />
         } />
-        <Route exact path="/card-settings/:id" render={(props) => {
-          return <QACardSettings cardId={props.match.params.id} />
-        }} />
-        <Route path="/card-creation" component={QACardCreation} />
+        <Route exact path="/card-settings/:id" render={(props) =>
+          <EditQACard cardId={props.match.params.id} />
+        } />
+        <Route path="/card-creation" component={AddQACard} />
         <Route path="/cardset-settings/:id" render={(props) => (
           <EditCardset deckId={props.match.params.id} />)
         } />
