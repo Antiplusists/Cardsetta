@@ -4,11 +4,12 @@ import { Fab, IconButton, makeStyles } from '@material-ui/core';
 import { Edit, Add, DeleteForever } from '@material-ui/icons';
 import {FC, useEffect, useRef, useState} from 'react';
 import './CardsPreviewPage.css'
-import { ButtonLink } from '../ButtonLink/ButtonLink';
+import { ButtonLink } from '../CustomButtons/ButtonLink';
 import {Card} from "../../entities/Card";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
 import authService from "../api-authorization/AuthorizeService";
 import React from 'react';
+import { DeleteButton } from '../CustomButtons/DeleteButton';
 
 const useStyles = makeStyles({
   fabOne: {
@@ -39,20 +40,18 @@ type CardPreviewProps = {
 const CardPreview: FC<CardPreviewProps> = ({ card, onDelete, deckId, isAuth }) => {
   const blockRef = useRef<HTMLDivElement>(null);
 
-  function handleDelete() {
-    blockRef.current?.classList.add('isDelete');
-    setTimeout(() => onDelete(card.id), 500);
-  }
-
   const getOverlay = () => {
     return (
         <div className='overlay'>
           <ButtonLink className='buttonLink'>
             <Link to={`/card-settings/${card.id}?cardset=${deckId}`}>Изменить</Link>
           </ButtonLink>
-          <IconButton className='deleteButton' onClick={handleDelete}>
+          <DeleteButton refComponentForDelete={blockRef}
+              onClick={() => onDelete(card.id)}
+              warningMessage='Вы действительно хотите удалить данную карточку?' />
+          {/* <IconButton className='deleteButton' onClick={handleDelete}>
             <DeleteForever />
-          </IconButton>
+          </IconButton> */}
         </div>
     );
   }

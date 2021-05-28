@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button, TextField } from '@material-ui/core'
 import { FileObject } from 'material-ui-dropzone'
 import { Link } from 'react-router-dom';
-import { ButtonLink } from '../ButtonLink/ButtonLink'
+import { ButtonLink } from '../CustomButtons/ButtonLink'
 import Deck from '../../entities/Deck';
 import ImageDropzone from '../ImageDropzone/ImageDropzone';
 

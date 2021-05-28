@@ -60,9 +60,24 @@ export default function CustomCardsets() {
         return () => authService.unsubscribe(_subscribe);
     }, []);
 
+    const handleDelete = async (deckId: string) => {
+        setDecksState({ ...decksState, decks: decksState.decks.filter(d => d.id !== deckId) });
+
+        const body = {
+            method: 'DELETE'
+        };
+        authService.addAuthorizationHeader(body);
+        const response = await fetch(ApiPaths.decks.byId(deckId), body);
+        switch (response.status) {
+            case 204: return;
+            case 404: throw new Error(`Deck ${deckId} is not exist`);
+            default: throw new Error(`Can not fetch ${ApiPaths.decks.byId(deckId)}`);
+        }
+    };
+
     return (
         <div>
-            <Cardsets {...decksState} isNotFound={decksState.decks.length === 0}/>
+            <Cardsets {...decksState} isNotFound={decksState.decks.length === 0} onDelete={handleDelete} />
             <Link to='cardset-creation'>
                 <Fab className={classes.fabOne} color='primary'>
                     <Add />

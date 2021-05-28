@@ -6,7 +6,7 @@ import { QACard } from '../QACard/QACard'
 import './QACardSettings.css'
 import useQuery from '../../customHooks/useQuery';
 import { Link } from 'react-router-dom';
-import { ButtonLink } from '../ButtonLink/ButtonLink'
+import { ButtonLink } from '../CustomButtons/ButtonLink'
 import {Card} from "../../entities/Card";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
 import CardPatcher from "../../patchHelpers/CardPatcher";

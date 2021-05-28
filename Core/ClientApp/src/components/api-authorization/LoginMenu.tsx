@@ -4,7 +4,7 @@ import authService from './AuthorizeService';
 
 import { styled } from '@material-ui/core/styles';
 import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
-import { ButtonLink } from '../ButtonLink/ButtonLink';
+import { ButtonLink } from '../CustomButtons/ButtonLink';
 
 const CustomButton = styled(
     ({ ...other }) => (

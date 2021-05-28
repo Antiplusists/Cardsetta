@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import authService from '../api-authorization/AuthorizeService';
 import {useEffect, useRef, useState} from 'react';
-import { ButtonLink } from '../ButtonLink/ButtonLink';
+import { ButtonLink } from '../CustomButtons/ButtonLink';
 
 export default function NavMenu() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
