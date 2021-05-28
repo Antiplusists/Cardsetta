@@ -16,6 +16,7 @@ type RegisterFormData = {
 }
 
 const RegForm: FC<RouteComponentProps> = (props) => {
+  const [registerForm, setRegisterForm] = useState<RegisterFormData>({ login: '', password: '', repeatPassword: '' });
   useEffect(() => {
     ValidatorForm.addValidationRule('isPasswordMatch',
       (value: string) => {
@@ -25,8 +26,7 @@ const RegForm: FC<RouteComponentProps> = (props) => {
     return () => {
       ValidatorForm.removeValidationRule('isPasswordMatch');
     };
-  }, []);
-  const [registerForm, setRegisterForm] = useState<RegisterFormData>({ login: '', password: '', repeatPassword: '' });
+  }, [registerForm.password]);
 
   const onSubmit = async () => {
     let formData = new FormData();
