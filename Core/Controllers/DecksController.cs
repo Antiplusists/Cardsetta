@@ -11,6 +11,7 @@ using Core.Models.Dto;
 using Core.Models.Results;
 using Core.Models.Validation;
 using Core.Repositories.Abstracts;
+using Core.Services.Images;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -80,6 +81,9 @@ namespace Core.Controllers
             {
                 Author = user
             });
+
+            dbo.ImagePath = await ImageStore.SaveImage(dto.Image?.OpenReadStream(),
+                '.' + dto.Image?.FileName.Split('.')[1]);
 
             dbo = await deckRepo.AddAsync(dbo);
 

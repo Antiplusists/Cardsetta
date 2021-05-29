@@ -1,14 +1,15 @@
-import { DropzoneAreaBase } from "material-ui-dropzone";
-import { InferProps } from 'prop-types';
+import {DropzoneAreaBase} from "material-ui-dropzone";
+import {InferProps} from 'prop-types';
 
 type ImageDropzoneProps = {
     onAddImage: Function
 }
 
 export default function ImageDropzone(props: InferProps<ImageDropzoneProps>) {
-    const { onAddImage } = props;
-    return (<DropzoneAreaBase fileObjects={[]}
-        acceptedFiles={['image/*']}
+    const {onAddImage} = props;
+    return (<DropzoneAreaBase
+        fileObjects={[]}
+        acceptedFiles={['image/jpeg', 'image/jpg', 'image/png']}
         filesLimit={1}
         maxFileSize={1000000}
         showPreviewsInDropzone={false}

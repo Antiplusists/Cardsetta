@@ -4,12 +4,12 @@ import authService from '../api-authorization/AuthorizeService';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
 
 export default function AddCardset() {
-    const onSave = async (cardset: Deck) => {
+    const onSave = async (cardset: Deck, file?: File) => {
         const formData = new FormData();
         formData.append('name', cardset.name);
         formData.append('description', cardset.description);
-        if (cardset.imagePath !== '')
-            formData.append('imagePath', cardset.imagePath);
+        if (file)
+            formData.append('image', file, file.name);
 
         const data = {
             method: 'POST',

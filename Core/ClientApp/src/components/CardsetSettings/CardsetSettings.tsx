@@ -1,5 +1,5 @@
 import './CardsetSettings.css';
-import { ChangeEvent, useState } from 'react';
+import {ChangeEvent, useRef, useState} from 'react';
 import { Button } from '@material-ui/core'
 import { FileObject } from 'material-ui-dropzone'
 import { Link, Redirect } from 'react-router-dom';
@@ -20,21 +20,24 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
     const { deck, onSave, pathRedirect } = props;
     const [cardset, setCardset] = useState<Deck>(deck);
     const [isSubmit, setIsSubmit] = useState(false);
+    const file = useRef<File>();
 
     function handleSave() {
         if (onSave) {
             setIsSubmit(true);
-            onSave(cardset);
+            onSave(cardset, file.current);
         }
     }
 
     function handleAddImage(files: FileObject[]) {
         setCardset({ ...cardset, imagePath: files[0].data?.toString() ?? '' });
+        file.current = files[0].file;
     }
 
     function handleDeleteImage() {
         if (cardset.imagePath) {
             setCardset({ ...cardset, imagePath: '' });
+            file.current = undefined;
         }
     }
 
