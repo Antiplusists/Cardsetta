@@ -9,7 +9,7 @@ import { LoginErrorMessages, PasswordErrorMessages, RepeatPasswordErrorMessages 
 import authService from '../api-authorization/AuthorizeService';
 import { Redirect } from 'react-router';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
-import { profile } from 'node:console';
+import ProfileAlerts, { ProfileAlertsState, CreateDefaultState } from '../Alerts/ProfileAlerts';
 
 type ProfileForm = {
     login: string,
@@ -23,6 +23,7 @@ export default function Profile() {
     const [userName, setUserName] = useState(user ? user.userName : '');
     const [profileForm, setProfileForm] = useState<ProfileForm>(
         { login: user ? user.userName : '', oldPassword: '', password: '', repeatPassword: '' });
+    const [alertsState, setAlertsState] = useState<ProfileAlertsState>(CreateDefaultState());
 
     useEffect(() => {
         ValidatorForm.addValidationRule('isPasswordMatch',
@@ -46,9 +47,11 @@ export default function Profile() {
         authService.addAuthorizationHeader(body);
         const response = await fetch(ApiPaths.users.updateUserName, body);
         if (response.status === 204 && user) {
+            setAlertsState({ ...alertsState, isLoginSuccess: true });
             authService.updateState({ ...user, userName: profileForm.login })
             setUserName(profileForm.login);
         }
+        else setAlertsState({ ...alertsState, isLoginError: true });
     }
 
     async function handleChangePassword() {
@@ -61,69 +64,77 @@ export default function Profile() {
             body: formData
         };
         authService.addAuthorizationHeader(body);
-        await fetch(ApiPaths.users.updatePassword, body);
+        const response = await fetch(ApiPaths.users.updatePassword, body);
+        if (response.status === 204) {
+            setAlertsState({ ...alertsState, isPasswordSuccess: true });
+        }
+        else setAlertsState({ ...alertsState, isPasswordError: true });
     }
 
     return (
-        <div className='profile'>
-            {user === null
-                ?
-                <Redirect to='login' />
-                :
-                <Fragment>
-                    <h1>Профиль {userName}</h1>
-                    <ValidatorForm className='form'
-                        onSubmit={handleChangeLogin}
-                        instantValidate={false}
-                    >
-                        <TextValidator className='input' label='Логин'
-                            variant='outlined' type='text' name='login'
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setProfileForm({ ...profileForm, login: e.target.value })}
-                            value={profileForm.login}
-                            validators={LoginValidators}
-                            errorMessages={LoginErrorMessages}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <AccountCircle />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <Button className='saveLogin' type='submit'>Сохранить измения</Button>
-                    </ValidatorForm>
-                    <ValidatorForm className='form'
-                        onSubmit={handleChangePassword}
-                        instantValidate={false}
-                    >
-                        <PasswordInput className='input' label='Старый пароль'
-                            value={profileForm.oldPassword}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setProfileForm({ ...profileForm, oldPassword: e.target.value })}
-                            validators={PasswordValidators}
-                            errorMessages={PasswordErrorMessages}
-                        />
+        <Fragment>
+            <div className='profile'>
+                {user === null
+                    ?
+                    <Redirect to='login' />
+                    :
+                    <Fragment>
+                        <h1>Профиль {userName}</h1>
+                        <ValidatorForm className='form'
+                            onSubmit={handleChangeLogin}
+                            instantValidate={false}
+                        >
+                            <TextValidator className='input' label='Логин'
+                                variant='outlined' type='text' name='login'
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setProfileForm({ ...profileForm, login: e.target.value })}
+                                value={profileForm.login}
+                                validators={LoginValidators}
+                                errorMessages={LoginErrorMessages}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircle />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <Button className='saveLogin' type='submit'>Сохранить измения</Button>
+                        </ValidatorForm>
+                        <ValidatorForm className='form'
+                            onSubmit={handleChangePassword}
+                            instantValidate={false}
+                        >
+                            <PasswordInput className='input' label='Старый пароль'
+                                value={profileForm.oldPassword}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setProfileForm({ ...profileForm, oldPassword: e.target.value })}
+                                validators={PasswordValidators}
+                                errorMessages={PasswordErrorMessages}
+                            />
 
-                        <PasswordInput className='input' label='Новый пароль'
-                            name='password' value={profileForm.password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setProfileForm({ ...profileForm, password: e.target.value })}
-                            validators={PasswordValidators}
-                            errorMessages={PasswordErrorMessages}
-                        />
+                            <PasswordInput className='input' label='Новый пароль'
+                                name='password' value={profileForm.password}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setProfileForm({ ...profileForm, password: e.target.value })}
+                                validators={PasswordValidators}
+                                errorMessages={PasswordErrorMessages}
+                            />
 
-                        <PasswordInput className='input' label='Повторите пароль'
-                            value={profileForm.repeatPassword}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setProfileForm({ ...profileForm, repeatPassword: e.target.value })}
-                            validators={RepeatPasswordValidators}
-                            errorMessages={RepeatPasswordErrorMessages}
-                        />
-                        <Button className='changePassword' type='submit'>Изменить пароль</Button>
-                    </ValidatorForm>
-                </Fragment>}
-        </div>
+                            <PasswordInput className='input' label='Повторите пароль'
+                                value={profileForm.repeatPassword}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setProfileForm({ ...profileForm, repeatPassword: e.target.value })}
+                                validators={RepeatPasswordValidators}
+                                errorMessages={RepeatPasswordErrorMessages}
+                            />
+                            <Button className='changePassword' type='submit'>Изменить пароль</Button>
+                        </ValidatorForm>
+                    </Fragment>}
+            </div>
+            <ProfileAlerts alertsState={alertsState}
+                onClose={(state: ProfileAlertsState) => setAlertsState(state)} />
+        </Fragment>
     );
 }
 
