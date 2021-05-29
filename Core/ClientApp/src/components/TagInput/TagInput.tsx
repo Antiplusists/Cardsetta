@@ -1,22 +1,10 @@
+import './TagInput.css';
 import React, {useRef} from "react";
-import styled from "@material-ui/core/styles/styled";
 import {Autocomplete} from "@material-ui/lab";
-import {createStyles} from '@material-ui/core';
-import {TextField, withStyles} from "@material-ui/core";
+import {TextField} from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 
-const TextInput = styled(TextField)({
-    width: "300px",
-});
-
-const styles = createStyles({
-    input: {
-        color: "white",
-        textTransform: "lowercase",
-    }
-})
-
-const TagInput = (props: any) => {
+const TagInput = () => {
     const values = useRef<string[]>([]);
     const input = useRef<HTMLInputElement>();
     const history = useHistory();
@@ -24,14 +12,15 @@ const TagInput = (props: any) => {
     return (
         <React.Fragment>
             <Autocomplete
+                className="autocomplete"
                 multiple
                 freeSolo
                 options={[]}
                 limitTags={3}
+                size="small"
                 renderInput={(params) => {
-                    params.InputProps.className += " " + props.classes.input;
                     return (
-                        <TextInput
+                        <TextField
                             {...params}
                             inputRef={input}
                             placeholder="Тэги для поиска"
@@ -55,4 +44,4 @@ const TagInput = (props: any) => {
     );
 }
 
-export default withStyles(styles)(TagInput);
+export default TagInput;

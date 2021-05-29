@@ -1,0 +1,40 @@
+﻿.autocomplete {
+    width: 300px;
+}
+
+.autocomplete .MuiAutocomplete-input {
+    color: white;
+}
+
+.autocomplete .MuiInput-underline:before {
+    border-bottom-color: white;
+}
+
+.autocomplete :not(.Mui-disabled) .MuiInput-underline:hover:before {
+    border-bottom-color: white;
+}
+
+.autocomplete .MuiInput-underline:after {
+    border-bottom-color: #FED201;
+}
+
+.autocomplete .MuiAutocomplete-tag {
+    color: #3f51b5;
+    background-color: #FED201;
+}
+.autocomplete span.MuiAutocomplete-tag {
+    color: white;
+    background-color: transparent;
+}
+
+.autocomplete .MuiAutocomplete-tag .MuiChip-deleteIcon {
+    color: orangered;
+}
+
+.autocomplete .MuiAutocomplete-clearIndicator {
+    color: white;
+}
+
+.autocomplete .Mui-focused .MuiAutocomplete-clearIndicator {
+    color: #FED201;
+}
