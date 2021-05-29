@@ -5,6 +5,7 @@ import authService from './AuthorizeService';
 import { styled } from '@material-ui/core/styles';
 import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
 import { ButtonLink } from '../CustomButtons/ButtonLink';
+import { AccountCircle } from '@material-ui/icons';
 
 const CustomButton = styled(
     ({ ...other }) => (
@@ -23,13 +24,16 @@ const CustomButton = styled(
         color: 'white',
         background: 'rgba(255, 255, 255, 0.1)',
     },
+    '& .MuiButton-label:hover': {
+        color: '#fed201',
+    },
 });
 
-const CustomAvatar = styled(Avatar)({
+const IconProfile = {
     width: '60px',
     height: '60px',
     marginLeft: '15px'
-});
+}
 
 interface LoginMenuState {
     isAuthenticated: boolean,
@@ -84,7 +88,8 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
                 onClick={(event: React.MouseEvent<HTMLElement>) => this.setState({ anchorEl: event.currentTarget })}
             >
                 {userName}
-                <CustomAvatar>{userName ? userName[0] : 'A'}</CustomAvatar>
+                <AccountCircle style={IconProfile} />
+
             </CustomButton>
             <Menu
                 anchorEl={this.state.anchorEl}

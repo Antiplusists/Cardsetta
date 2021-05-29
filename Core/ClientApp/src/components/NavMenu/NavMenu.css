@@ -5,9 +5,13 @@
 
 .toolbar {
   display: grid !important;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr 0.5fr;
+  grid-template-columns: 0.5fr 1fr 1fr 0.5fr 1fr;
   align-items: center;
   justify-content: center;
+}
+
+.toolbar .span2 {
+  grid-column-start: span 2;
 }
 
 .logo {
@@ -23,12 +27,11 @@
 .hov {
   position: absolute;
   left: 0;
-  transition: opacity 500ms;
   opacity: 0;
 }
 
 .hov:hover {  
-  opacity: 0.5;
+  opacity: 0.75;
 }
 
 .logo img {

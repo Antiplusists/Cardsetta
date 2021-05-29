@@ -24,15 +24,17 @@ export default function NavMenu() {
     <AppBar className='header' position='static'>
       <Toolbar className='toolbar'>
 
-        <div className='flexCenter'>
-          {isAuthenticated ?
+        {isAuthenticated
+          ?
+          <div className='flexCenter' style={{ justifyContent: 'flex-start' }}>
             <ButtonLink>
               <Link to='/custom-cardsets'>Мои наборы</Link>
             </ButtonLink>
-            : ''}
-        </div>
+          </div>
+          : ''
+        }
 
-        <div className='flexCenter'>
+        <div className={`flexCenter ${!isAuthenticated ? 'span2' : ''}`}>
           <TagInput />
         </div>
 
@@ -47,10 +49,10 @@ export default function NavMenu() {
 
         <div></div>
 
-        <div className='flexCenter'>
+        <div className='flexCenter' style={{ justifyContent: 'flex-end' }} >
           <LoginMenu />
         </div>
       </Toolbar>
-    </AppBar>
+    </AppBar >
   );
 }
