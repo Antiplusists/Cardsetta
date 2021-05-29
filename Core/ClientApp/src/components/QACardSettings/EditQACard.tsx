@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { InferProps } from 'prop-types';
 import useQuery from '../../customHooks/useQuery';
-import { Redirect } from 'react-router-dom';
 import { Card, CreateEmptyCard } from "../../entities/Card";
 import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import CardPatcher from "../../patchHelpers/CardPatcher";
 import authService from "../api-authorization/AuthorizeService";
 import QACardSettings from './QACardSettings';
 import LoaderLayout from '../LoaderLayout/LoaderLayout';
+import NotFound from "../NotFound/NotFound";
 
 type QACardSettingsProps = {
     cardId: string;
@@ -104,10 +104,9 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
         await patchCard(card);
         await updateImage(card, file);
     }
-
-    //TODO: сделать переход на страницу NotFound
+    
     return (
-        <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<Redirect to='/' />}>
+        <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<NotFound />}>
             <QACardSettings card={state.card} deckId={deckId!} onSave={onSave} />
         </LoaderLayout>
     );

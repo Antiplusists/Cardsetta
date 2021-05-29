@@ -3,10 +3,10 @@ import CardsetSettings from './CardsetSettings'
 import Deck, { CreateEmptyDeck } from '../../entities/Deck';
 import authService from '../api-authorization/AuthorizeService';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
-import { Redirect } from 'react-router';
 import { useEffect, useState } from 'react';
 import LoaderLayout from '../LoaderLayout/LoaderLayout';
 import DeckPatcher from '../../patchHelpers/DeckPatcher';
+import NotFound from "../NotFound/NotFound";
 
 type EditCardsetProps = {
     deckId: string
@@ -99,10 +99,9 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
             default: throw new Error(`Can not fetch ${ApiPaths.decks.updateImage(deckId)}`);
         }
     }
-
-    //TODO сделать переход на страницу NotFound
+    
     return (
-        <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<Redirect to='/' />}>
+        <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<NotFound />}>
             <CardsetSettings deck={state.deck} onSave={onSave} pathRedirect={`/cards-preview/${deckId}`} />
         </LoaderLayout>
     );

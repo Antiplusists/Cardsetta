@@ -29,7 +29,8 @@ export const ButtonLink = styled(
         textDecoration: 'none',
     },
     '& a:hover': {
-        textDecoration: 'none'
+        textDecoration: 'none',
+        color: '#fed201'
     },
     '& p': {
         display: 'flex',

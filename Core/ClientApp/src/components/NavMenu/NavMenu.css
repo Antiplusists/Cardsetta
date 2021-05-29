@@ -19,6 +19,20 @@
   transform: translate(-50%, -68%);
 }
 
+.logo-container {
+  position: relative;
+}
+
+.hov {
+  position: absolute;
+  left: 0;
+  visibility: hidden;
+}
+
+.logo-container:hover .hov {
+  visibility: visible;
+}
+
 .logo img {
   height: 100px;
   margin: 10px;

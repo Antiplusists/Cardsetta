@@ -24,7 +24,10 @@ export default function NavMenu() {
     <AppBar className='header' position='static'>
       <Toolbar>
         <Link className='logo' to="/" >
-          <img src="/images/logo/logo_white.svg" alt="logo" />
+          <div className="logo-container">
+            <img src="/images/logo/logo_white.svg" alt="logo" />
+            <img className="hov" src="/images/logo/logo_gold.svg" alt="logo"/>
+          </div>
         </Link>
         {isAuthenticated ?
           <ButtonLink>

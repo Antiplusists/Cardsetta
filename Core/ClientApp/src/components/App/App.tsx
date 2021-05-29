@@ -14,6 +14,7 @@ import authService from "../api-authorization/AuthorizeService";
 import AddCardset from "../CardsetSettings/AddCardset";
 import EditCardset from "../CardsetSettings/EditCardset";
 import EditQACard from "../QACardSettings/EditQACard";
+import NotFound from "../NotFound/NotFound";
 
 
 export default function App() {
@@ -35,6 +36,12 @@ export default function App() {
                 {isAuthenticated ? <Redirect from='/login' to='/' /> : null}
                 {!isAuthenticated ? <Redirect from='/custom-cardsets' to='/login' /> : null}
                 {!isAuthenticated ? <Redirect from='/profile' to='/login' /> : null}
+                {!isAuthenticated ? [
+                    <Redirect from="/card-settings" to="/login" />,
+                    <Redirect from="/card-creation" to="/login" />,
+                    <Redirect from="/cardset-settings" to="/login" />,
+                    <Redirect from="cardset-creation" to="/login" />
+                ] : null}
                 <Route exact path="/" component={MainCardsets} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
@@ -57,7 +64,7 @@ export default function App() {
                     <EditCardset deckId={props.match.params.id} />)
                 } />
                 <Route exact path="/cardset-creation" component={AddCardset} />
-                <Route path='*' component={MainCardsets} /> {/* TODO поменять на копмпонент NotFound */}
+                <Route path='*' component={NotFound} />
             </Switch>
         </Layout>
     );
