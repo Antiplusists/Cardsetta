@@ -28,7 +28,7 @@ export default function CardPreview({ card, onDelete, deckId, isAuth }: CardPrev
     }
 
     return (
-        <div ref={blockRef} className='QAcardPreview'>
+        <div ref={blockRef} className='QAcardPreview flexCenter'>
             <div className='sideQACard'>
                 {card.imagePath ? <img src={card.imagePath} alt='questionImage' /> : ''}
                 <span>{card.question}</span>

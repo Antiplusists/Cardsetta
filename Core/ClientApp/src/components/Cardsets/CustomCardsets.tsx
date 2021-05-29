@@ -61,8 +61,6 @@ export default function CustomCardsets() {
     }, []);
 
     const handleDelete = async (deckId: string) => {
-        setDecksState({ ...decksState, decks: decksState.decks.filter(d => d.id !== deckId) });
-
         const body = {
             method: 'DELETE'
         };
