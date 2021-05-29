@@ -76,18 +76,37 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
         }
     }
 
-    const updateImage = async (card: Card) => {
+    const updateImage = async (card: Card, file?: File) => {
         if (state.card.imagePath !== card.imagePath) {
-            //TODO: надо вытащить файл и положить в formData
+            const formData = new FormData();
+            if (file)
+                formData.append("image", file, file.name);
+            
+            const body = {
+                method: "POST",
+                body: formData
+            }
+            authService.addAuthorizationHeader(body);
+            
+            const response = await fetch(ApiPaths.cards.updateImage(deckId!, cardId), body);
+
+            switch (response.status) {
+                case 204: break;
+                case 401: throw new Error(response.statusText);
+                case 404: throw new Error(`Deck ${deckId} or card ${cardId} in deck is not exists`);
+                case 422: throw new Error(`Invalid data`);
+                default: throw new Error(`Can not fetch ${ApiPaths.cards.updateImage(deckId!, cardId)}`);
+            }
         }
     }
 
-    async function onSave(card: Card) {
+    async function onSave(card: Card, file?: File) {
         await patchCard(card);
-        await updateImage(card);
+        await updateImage(card, file);
     }
 
-    return (                                                                  // TODO сделать переход на страницу NotFound
+    //TODO: сделать переход на страницу NotFound
+    return (
         <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<Redirect to='/' />}>
             <QACardSettings card={state.card} deckId={deckId!} onSave={onSave} />
         </LoaderLayout>

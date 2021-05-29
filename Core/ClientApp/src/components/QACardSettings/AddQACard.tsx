@@ -8,13 +8,14 @@ export default function AddQACard() {
     const query = useQuery();
     const deckId = query.get('cardset');
 
-    async function onSave(card: Card) {
+    async function onSave(card: Card, file?: File) {
 
         const formData = new FormData();
         formData.append('question', card.question);
         formData.append('answer', card.answer);
         formData.append('type', CardType[card.type]);
-        //formData.append('image', ); TODO: как-то достать изображение
+        if (file)
+            formData.append('image', file, file.name);
         const body = {
             method: 'POST',
             body: formData

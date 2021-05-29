@@ -100,7 +100,8 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
         }
     }
 
-    return (                                                                  // TODO сделать переход на страницу NotFound
+    //TODO сделать переход на страницу NotFound
+    return (
         <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<Redirect to='/' />}>
             <CardsetSettings deck={state.deck} onSave={onSave} pathRedirect={`/cards-preview/${deckId}`} />
         </LoaderLayout>

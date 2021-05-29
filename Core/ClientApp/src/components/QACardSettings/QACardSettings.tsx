@@ -22,16 +22,18 @@ export default function QACardSettings(props: QACardSettingsProps) {
     const [cardState, setCardState] = useState<Card>(card);
     const [isSubmit, setIsSubmit] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
+    const file = useRef<File>();
 
     async function handleSave() {
         if (onSave) {
-            await onSave(cardState);
+            await onSave(cardState, file.current);
         }
         setIsSubmit(true);
     }
 
     function handleAddImage(files: FileObject[]) {
         setCardState({ ...cardState, imagePath: files[0].data?.toString() });
+        file.current = files[0].file;
     }
 
     return (

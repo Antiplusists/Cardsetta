@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Models.Dbo;
 using Core.Models.Dto;
 using Core.Models.Results;
 using Core.Repositories.Abstracts;
+using Core.Services.Images;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -58,6 +60,8 @@ namespace Core.Controllers
                 return NotFound();
 
             var cardDbo = mapper.Map<CreationCardDto, CardDbo>(dto);
+            cardDbo.ImagePath = await ImageStore.SaveImage(dto.Image?.OpenReadStream(),
+                '.' + dto.Image?.FileName.Split('.')[1]);
             cardDbo = await deckRepo.AddCard(deckId, cardDbo);
 
             if (cardDbo is null)
@@ -144,7 +148,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> UpdateImage([FromRoute] Guid deckId, [FromRoute] Guid cardId,
-            [Required] [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile image)
+            [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile? image)
         {
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
@@ -157,7 +161,17 @@ namespace Core.Controllers
             if (card is null)
                 return NotFound();
             
-            //TODO: Тут какое-то обновление картинки
+            if (image is null)
+            {
+                ImageStore.RemoveImage(card.ImagePath?.Split('/').Last());
+                card.ImagePath = null;
+            }
+            else
+            {
+                var oldPath = card.ImagePath;
+                card.ImagePath = await ImageStore.SaveImage(image.OpenReadStream(), '.' + image.FileName.Split('.')[1]);
+                ImageStore.RemoveImage(oldPath?.Split('/').Last());
+            }
 
             await cardRepo.UpdateAsync(card);
             return NoContent();
