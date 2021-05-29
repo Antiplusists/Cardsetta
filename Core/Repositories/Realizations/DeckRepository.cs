@@ -64,14 +64,14 @@ namespace Core.Repositories.Realizations
             var result = DbContext.Decks.Update(dbo);
 
             if (result is not {State: EntityState.Modified})
-                throw new OperationException("Failed to update entity");
+                throw new DbUpdateException("Failed to update entity");
             
             await DbContext.SaveChangesAsync();
 
             if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
             
-            throw new OperationException("Failed to update entity");
+            throw new DbUpdateException("Failed to update entity");
         }
         
         
