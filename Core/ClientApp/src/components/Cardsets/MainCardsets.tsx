@@ -3,8 +3,10 @@ import {useEffect, useRef, useState} from "react";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
 import DeckPage from "../../entities/DeckPage";
 import Cardsets from './Cardsets';
+import useQuery from "../../customHooks/useQuery";
 
 export default function MainCardsets() {
+  const query = useQuery();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [isLoading, setLoading] = useState(false);
   const [isNotFound, setNotFound] = useState(false);
@@ -14,7 +16,7 @@ export default function MainCardsets() {
   const pageSize = 20;
 
   const getDecks = async (pageNumber: number, pageSize: number) => {
-    let response = await fetch(ApiPaths.decks.default + `?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+    let response = await fetch(ApiPaths.decks.default + `?pageNumber=${pageNumber}` + `&pageSize=${pageSize}` + `&${query.toString()}`);
     
     switch (response.status) {
       case 200: break;

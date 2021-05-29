@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.58",
     "jquery": "^3.5.1",
     "material-ui-dropzone": "^3.5.0",
     "merge": "^1.2.1",

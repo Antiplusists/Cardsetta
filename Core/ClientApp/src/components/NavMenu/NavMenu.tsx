@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import authService from '../api-authorization/AuthorizeService';
 import {useEffect, useState} from 'react';
 import { ButtonLink } from '../CustomButtons/ButtonLink';
+import TagInput from "../TagInput/TagInput";
 
 export default function NavMenu() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,6 +31,7 @@ export default function NavMenu() {
             <Link to='/custom-cardsets'>Мои наборы</Link>
           </ButtonLink>
           : ''}
+        <TagInput />
         <div className='grow' />
         <LoginMenu />
       </Toolbar>

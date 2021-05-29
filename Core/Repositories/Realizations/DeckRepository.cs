@@ -33,7 +33,7 @@ namespace Core.Repositories.Realizations
 
         public override async Task<DeckDbo> AddAsync(DeckDbo dbo)
         {
-            dbo.Tags = dbo.Tags.AsParallel().Select(tag => DbContext.Tags.Find(tag.Tag) ?? tag).ToHashSet();
+            dbo.Tags = dbo.Tags.Select(tag => DbContext.Tags.Find(tag.Tag) ?? tag).ToHashSet();
             
             var result = await DbContext.Decks.AddAsync(dbo);
 
