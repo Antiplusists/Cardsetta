@@ -42,7 +42,7 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
             });
     }, []);
 
-    const onSave = async (cardset: Deck) => {
+    const onSave = async (cardset: Deck, file?: File) => {
         const patchBuilder = new DeckPatcher();
         if (state.deck.name !== cardset.name) {
             patchBuilder.patchName(cardset.name);
@@ -52,7 +52,7 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
         }
 
         const data = patchBuilder.build();
-        if (data.length === 0) {
+        if (data.length === 0 && cardset.imagePath === state.deck.imagePath) {
             return;
         }
 
@@ -73,6 +73,30 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
             case 404: throw new Error(`Deck ${deckId} not found`);
             case 422: throw new Error(`Invalid data`);
             default: throw new Error(`Can not fetch ${ApiPaths.decks.byId(deckId)}`);
+        }
+        
+        await updateImage(cardset, file);
+    }
+    
+    const updateImage = async (deck: Deck, file?: File) => {
+        if (state.deck.imagePath === deck.imagePath) return;
+        const formData = new FormData();
+        if (file)
+            formData.append("image", file, file.name);
+        const body = {
+            method: "POST",
+            body: formData
+        }
+        authService.addAuthorizationHeader(body);
+        
+        const response = await fetch(ApiPaths.decks.updateImage(deckId), body);
+        
+        switch (response.status) {
+            case 204: break;
+            case 401: throw new Error(response.statusText);
+            case 404: throw new Error(`Deck ${deckId} not found`);
+            case 422: throw new Error(`Invalid data`);
+            default: throw new Error(`Can not fetch ${ApiPaths.decks.updateImage(deckId)}`);
         }
     }
 

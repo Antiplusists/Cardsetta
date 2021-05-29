@@ -157,7 +157,7 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> UpdateImage([FromRoute] Guid deckId,
-            [Required] [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile image)
+            [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile? image)
         {
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
@@ -166,7 +166,17 @@ namespace Core.Controllers
             if (deck is null)
                 return NotFound();
 
-            //TODO: Сделать какое-то обновление картинки здесь
+            if (image is null)
+            {
+                ImageStore.RemoveImage(deck.ImagePath?.Split('/').Last());
+                deck.ImagePath = null;
+            }
+            else
+            {
+                var oldPath = deck.ImagePath;
+                deck.ImagePath = await ImageStore.SaveImage(image.OpenReadStream(), '.' + image.FileName.Split('.')[1]);
+                ImageStore.RemoveImage(oldPath?.Split('/').Last());
+            }
 
             await deckRepo.UpdateAsync(deck);
             return NoContent();

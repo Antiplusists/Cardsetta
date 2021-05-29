@@ -26,5 +26,11 @@ namespace Core.Services.Images
             
             return $"{OutputPath}/{name}";
         }
+
+        public static void RemoveImage(string? imagePath)
+        {
+            if (imagePath is null) return;
+            File.Delete(ImageFolder + '/' + imagePath);
+        }
     }
 }
