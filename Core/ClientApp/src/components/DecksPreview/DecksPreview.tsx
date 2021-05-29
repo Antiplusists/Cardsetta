@@ -1,17 +1,17 @@
-import './PreviewCardsets.css';
+import './DecksPreview.css';
 import { Link } from 'react-router-dom';
 import { ButtonLink } from '../CustomButtons/ButtonLink';
 import { DeleteButton } from '../CustomButtons/DeleteButton';
-import Deck from '../../entities/Deck';
+import DeckEntity from '../../entities/Deck';
 import { useRef } from 'react';
 import authService from '../api-authorization/AuthorizeService';
 
-type PreviewCardsetProps = {
-  deck: Deck,
+type DeckPreviewProps = {
+  deck: DeckEntity,
   onDelete?: (deckId: string) => void,
 }
 
-export default function PreviewCardsets(props: PreviewCardsetProps) {
+export default function DecksPreview(props: DeckPreviewProps) {
   const { deck, onDelete } = props;
   const blockRef = useRef<HTMLDivElement>(null);
 

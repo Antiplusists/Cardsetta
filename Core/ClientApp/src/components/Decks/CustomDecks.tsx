@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { Fab, makeStyles } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import { useEffect, useState } from 'react';
-import Deck from '../../entities/Deck';
+import DeckEntity from '../../entities/Deck';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
 import AuthorizeService from '../api-authorization/AuthorizeService';
 import authService from '../api-authorization/AuthorizeService';
-import Cardsets from './Cardsets';
+import Decks from './Decks';
 
 const useStyles = makeStyles({
     fabOne: {
@@ -21,10 +21,10 @@ const useStyles = makeStyles({
 
 type DecksState = {
     isLoading: boolean,
-    decks: Deck[],
+    decks: DeckEntity[],
 }
 
-export default function CustomCardsets() {
+export default function CustomDecks() {
     const classes = useStyles();
     const [decksState, setDecksState] = useState<DecksState>({ isLoading: false, decks: [] });
 
@@ -34,11 +34,11 @@ export default function CustomCardsets() {
             return null;
         }
 
-        const decks: Deck[] = [];
+        const decks: DeckEntity[] = [];
         for (const id of deckIds) {
             const response = await fetch(ApiPaths.decks.byId(id));
             if (response.status === 200) {
-                decks.push(await response.json() as Deck);
+                decks.push(await response.json() as DeckEntity);
             }
         }
         return decks;
@@ -74,8 +74,8 @@ export default function CustomCardsets() {
 
     return (
         <div>
-            <Cardsets {...decksState} isNotFound={decksState.decks.length === 0} onDelete={handleDelete} />
-            <Link to='cardset-creation'>
+            <Decks {...decksState} isNotFound={decksState.decks.length === 0} onDelete={handleDelete} />
+            <Link to='deck-creation'>
                 <Fab className={classes.fabOne} color='primary'>
                     <Add />
                 </Fab>

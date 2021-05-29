@@ -1,27 +1,27 @@
 import { useEffect, useState } from 'react';
 import { InferProps } from 'prop-types';
 import useQuery from '../../customHooks/useQuery';
-import { Card, CreateEmptyCard } from "../../entities/Card";
+import { CardEntity, CreateEmptyCard } from "../../entities/Card";
 import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import CardPatcher from "../../patchHelpers/CardPatcher";
 import authService from "../api-authorization/AuthorizeService";
-import QACardSettings from './QACardSettings';
+import CardSettings from './CardSettings';
 import LoaderLayout from '../LoaderLayout/LoaderLayout';
 import NotFound from "../NotFound/NotFound";
 
-type QACardSettingsProps = {
+type CardSettingsProps = {
     cardId: string;
 }
 
 type State = {
     isLoading: boolean,
     isNotFound: boolean,
-    card: Card
+    card: CardEntity
 }
 
-export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) {
+export default function EditCard({ cardId }: InferProps<CardSettingsProps>) {
     const query = useQuery();
-    const deckId = query.get('cardset');
+    const deckId = query.get('deck');
 
     const [state, setState] = useState<State>(
         { isLoading: true, isNotFound: false, card: CreateEmptyCard() });
@@ -31,7 +31,7 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
         if (response.status === 404) {
             return null;
         }
-        return await response.json() as Card;
+        return await response.json() as CardEntity;
     };
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
             });
     }, []);
 
-    const patchCard = async (card: Card) => {
+    const patchCard = async (card: CardEntity) => {
         const patchBuilder = new CardPatcher();
         if (state.card.answer !== card.answer) {
             patchBuilder.patchAnswer(card.answer);
@@ -76,7 +76,7 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
         }
     }
 
-    const updateImage = async (card: Card, file?: File) => {
+    const updateImage = async (card: CardEntity, file?: File) => {
         if (state.card.imagePath !== card.imagePath) {
             const formData = new FormData();
             if (file)
@@ -100,14 +100,14 @@ export default function EditQACard({ cardId }: InferProps<QACardSettingsProps>) 
         }
     }
 
-    async function onSave(card: Card, file?: File) {
+    async function onSave(card: CardEntity, file?: File) {
         await patchCard(card);
         await updateImage(card, file);
     }
     
     return (
         <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<NotFound />}>
-            <QACardSettings card={state.card} deckId={deckId!} onSave={onSave} />
+            <CardSettings card={state.card} deckId={deckId!} onSave={onSave} />
         </LoaderLayout>
     );
 }

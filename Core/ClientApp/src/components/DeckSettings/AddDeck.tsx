@@ -1,13 +1,13 @@
-import CardsetSettings from './CardsetSettings'
-import Deck, { CreateEmptyDeck } from '../../entities/Deck';
+import DeckSettings from './DeckSettings'
+import DeckEntity, { CreateEmptyDeck } from '../../entities/Deck';
 import authService from '../api-authorization/AuthorizeService';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
 
-export default function AddCardset() {
-    const onSave = async (cardset: Deck, file?: File) => {
+export default function AddDeck() {
+    const onSave = async (deck: DeckEntity, file?: File) => {
         const formData = new FormData();
-        formData.append('name', cardset.name);
-        formData.append('description', cardset.description);
+        formData.append('name', deck.name);
+        formData.append('description', deck.description);
         if (file)
             formData.append('image', file, file.name);
 
@@ -23,13 +23,13 @@ export default function AddCardset() {
             case 422: throw new Error(`Invalid data`);
             default: throw new Error(`Can not fetch ${ApiPaths.cards.default}`);
         }
-        const deck = await response.json() as Deck;
+        const newDeck = await response.json() as DeckEntity;
         const user = authService.getUser();
         if (user !== null) {
-            authService.updateState({ ...user, deckIds: [...user.deckIds, deck.id] });
+            authService.updateState({ ...user, deckIds: [...user.deckIds, newDeck.id] });
         }
     }
     return (
-        <CardsetSettings deck={CreateEmptyDeck()} onSave={onSave} pathRedirect='/custom-cardsets' />
+        <DeckSettings deck={CreateEmptyDeck()} onSave={onSave} pathRedirect='/custom-decks' />
     );
 }

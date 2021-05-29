@@ -1,11 +1,11 @@
-.QAcardsPreview {
+.cardsPreview {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     justify-items: center;
     padding: 20px 0;
 }
 
-.QAcardPreview {
+.cardPreview {
     position: relative;
     width: 500px;
     height: 350px;
@@ -14,7 +14,7 @@
     box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
 }
 
-.QAcardPreview .sideQACard {
+.cardPreview .sideCard {
     position: relative;
     width: 43%;
     height: 85%;
@@ -24,15 +24,15 @@
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
-.QAcardPreview .sideQACard span {
+.cardPreview .sideCard span {
     font-size: medium;
 }
 
-.QAcardPreview .overlay .buttonLink {
+.cardPreview .overlay .buttonLink {
     border-radius: 30px;
 }
 
-.QAcardPreview .overlay .buttonLink a {
+.cardPreview .overlay .buttonLink a {
     width: 500px;
     height: 350px;
     border-radius: 30px;

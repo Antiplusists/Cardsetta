@@ -2,18 +2,18 @@ import "./App.css";
 import { useState, useEffect } from 'react';
 import { Route, Redirect, Switch } from "react-router";
 import { Layout } from "./Layout";
-import MainCardsets from "../Cardsets/MainCardsets";
-import QAPage from "../QAPage/QAPage";
+import MainDecks from "../Decks/MainDecks";
+import CardsStudy from "../CardsStudy/CardsStudy";
 import CardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
-import CustomCardsets from "../Cardsets/CustomCardsets";
+import CustomDecks from "../Decks/CustomDecks";
 import { Register } from "../Authorization/Register";
 import { Login } from "../Authorization/Login";
 import Profile from "../Profile/Profile";
-import AddQACard from "../QACardSettings/AddQACard";
+import AddCard from "../CardSettings/AddCard";
 import authService from "../api-authorization/AuthorizeService";
-import AddCardset from "../CardsetSettings/AddCardset";
-import EditCardset from "../CardsetSettings/EditCardset";
-import EditQACard from "../QACardSettings/EditQACard";
+import AddDeck from "../DeckSettings/AddDeck";
+import EditDeck from "../DeckSettings/EditDeck";
+import EditCard from "../CardSettings/EditCard";
 import NotFound from "../NotFound/NotFound";
 
 
@@ -34,36 +34,36 @@ export default function App() {
             <Switch>
                 {isAuthenticated ? <Redirect from='/register' to='/' /> : null}
                 {isAuthenticated ? <Redirect from='/login' to='/' /> : null}
-                {!isAuthenticated ? <Redirect from='/custom-cardsets' to='/login' /> : null}
+                {!isAuthenticated ? <Redirect from='/custom-decks' to='/login' /> : null}
                 {!isAuthenticated ? <Redirect from='/profile' to='/login' /> : null}
                 {!isAuthenticated ? [
                     <Redirect from="/card-settings" to="/login" />,
                     <Redirect from="/card-creation" to="/login" />,
-                    <Redirect from="/cardset-settings" to="/login" />,
-                    <Redirect from="/cardset-creation" to="/login" />
+                    <Redirect from="/deck-settings" to="/login" />,
+                    <Redirect from="/deck-creation" to="/login" />
                 ] : null}
-                <Route exact path="/" component={MainCardsets} />
+                <Route exact path="/" component={MainDecks} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/profile" component={Profile} />
-                <Route exact path="/custom-cardsets" component={CustomCardsets} />
+                <Route exact path="/custom-decks" component={CustomDecks} />
                 <Route exact path="/search" render={(props) =>
-                    <MainCardsets key={props.location.pathname} />
+                    <MainDecks key={props.location.pathname} />
                 } />
                 <Route path="/cards/:id" render={(props) =>
-                    <QAPage deckId={props.match.params.id} />
+                    <CardsStudy deckId={props.match.params.id} />
                 } />
                 <Route exact path="/cards-preview/:id" render={(props) =>
                     <CardsPreviewPage deckId={props.match.params.id} />
                 } />
                 <Route exact path="/card-settings/:id" render={(props) =>
-                    <EditQACard cardId={props.match.params.id} />
+                    <EditCard cardId={props.match.params.id} />
                 } />
-                <Route exact path="/card-creation" component={AddQACard} />
-                <Route exact path="/cardset-settings/:id" render={(props) => (
-                    <EditCardset deckId={props.match.params.id} />)
+                <Route exact path="/card-creation" component={AddCard} />
+                <Route exact path="/deck-settings/:id" render={(props) => (
+                    <EditDeck deckId={props.match.params.id} />)
                 } />
-                <Route exact path="/cardset-creation" component={AddCardset} />
+                <Route exact path="/deck-creation" component={AddDeck} />
                 <Route path='*' component={NotFound} />
             </Switch>
         </Layout>

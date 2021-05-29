@@ -1,14 +1,14 @@
 import useQuery from '../../customHooks/useQuery';
-import { Card, CardType, CreateEmptyCard } from "../../entities/Card";
+import { CardEntity, CardType, CreateEmptyCard } from "../../entities/Card";
 import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import authService from "../api-authorization/AuthorizeService";
-import QACardSettings from './QACardSettings';
+import CardSettings from './CardSettings';
 
-export default function AddQACard() {
+export default function AddCard() {
     const query = useQuery();
-    const deckId = query.get('cardset');
+    const deckId = query.get('deck');
 
-    async function onSave(card: Card, file?: File) {
+    async function onSave(card: CardEntity, file?: File) {
 
         const formData = new FormData();
         formData.append('question', card.question);
@@ -32,6 +32,6 @@ export default function AddQACard() {
     }
 
     return (
-        <QACardSettings card={CreateEmptyCard()} deckId={deckId!} onSave={onSave} />
+        <CardSettings card={CreateEmptyCard()} deckId={deckId!} onSave={onSave} />
     );
 }

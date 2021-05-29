@@ -1,29 +1,29 @@
-import {useEffect, useRef, useState} from 'react';
+import './CardsStudy.css';
+import { useEffect, useRef, useState } from 'react';
 import { InferProps } from 'prop-types';
 import { Button } from '@material-ui/core';
-import { QACard } from '../QACard/QACard'
-import './QAPage.css';
-import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
-import {Card} from "../../entities/Card";
+import { Card } from '../Card/Card'
+import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
+import { CardEntity } from "../../entities/Card";
 import React from 'react';
 
-type QAPageState = {
+type CardsStudyState = {
     isKnow: boolean | undefined,
 }
 
-type QAPageProps = {
+type CardsStudyProps = {
     deckId: string,
 }
 
-const defaultPageState: QAPageState = {
+const defaultCardsStudyState: CardsStudyState = {
     isKnow: undefined,
 }
 
-export default function QAPage({ deckId }: InferProps<QAPageProps>) {
-    const cards = useRef<Card[]>([]);
+export default function CardsStudy({ deckId }: InferProps<CardsStudyProps>) {
+    const cards = useRef<CardEntity[]>([]);
     const [loading, setLoading] = useState(true);
     const [position, setPosition] = useState<number>(0);
-    const [pageState, setPageState] = useState<QAPageState>(defaultPageState);
+    const [pageState, setPageState] = useState<CardsStudyState>(defaultCardsStudyState);
     const cardRef = useRef<HTMLDivElement>(null);
 
     const getCards = async () => {
@@ -35,9 +35,9 @@ export default function QAPage({ deckId }: InferProps<QAPageProps>) {
             default: throw new Error(`Can not fetch ${ApiPaths.cards.default(deckId)}`);
         }
 
-        return await response.json() as Card[];
+        return await response.json() as CardEntity[];
     }
-    
+
     useEffect(() => {
         setLoading(true);
         getCards()
@@ -46,7 +46,7 @@ export default function QAPage({ deckId }: InferProps<QAPageProps>) {
                 setLoading(false);
             });
     }, []);
-    
+
     function chooseAnswer(isKnow: boolean | undefined) {
         if (pageState.isKnow !== undefined) {
             nextCard();
@@ -66,31 +66,31 @@ export default function QAPage({ deckId }: InferProps<QAPageProps>) {
             else setPosition(position + 1);
             setTimeout(() => {
                 cardRef.current?.classList.remove('isReduce', 'isFlipped');
-                setPageState(defaultPageState);
+                setPageState(defaultCardsStudyState);
             }, 100);
         }, 750);
     }
 
     const getPage = () => {
         return (
-            <div className='QAPage'>
-                <QACard ref={cardRef} cardInfo={cards.current[position]} />
+            <div className='CardsStudy'>
+                <Card ref={cardRef} card={cards.current[position]} />
                 <div>
                     {pageState.isKnow !== false
                         ?
                         <div>
                             <Button className='answerButton'
-                                    variant='contained' color='primary' onClick={() => chooseAnswer(true)}>
+                                variant='contained' color='primary' onClick={() => chooseAnswer(true)}>
                                 Знаю
                             </Button>
                             <Button className='answerButton'
-                                    variant='contained' color='primary' onClick={() => chooseAnswer(false)}>
+                                variant='contained' color='primary' onClick={() => chooseAnswer(false)}>
                                 Не знаю
                             </Button>
                         </div>
                         :
                         <Button className='answerButton'
-                                variant='contained' color='primary' onClick={() => chooseAnswer(undefined)}>
+                            variant='contained' color='primary' onClick={() => chooseAnswer(undefined)}>
                             Продолжить
                         </Button>
                     }
@@ -98,7 +98,7 @@ export default function QAPage({ deckId }: InferProps<QAPageProps>) {
             </div>
         )
     }
-    
+
     return (
         <React.Fragment>
             {loading ? <div>Loading...</div> : getPage()}

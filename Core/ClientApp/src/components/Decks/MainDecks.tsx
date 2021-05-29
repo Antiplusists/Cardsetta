@@ -1,13 +1,13 @@
-import Deck from "../../entities/Deck";
+import DeckEntity from "../../entities/Deck";
 import {useEffect, useRef, useState} from "react";
 import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
-import DeckPage from "../../entities/DeckPage";
-import Cardsets from './Cardsets';
+import DeckPageEntity  from "../../entities/DeckPage";
+import Decks from './Decks';
 import useQuery from "../../customHooks/useQuery";
 
-export default function MainCardsets() {
+export default function MainDecks() {
   const query = useQuery();
-  const [decks, setDecks] = useState<Deck[]>([]);
+  const [decks, setDecks] = useState<DeckEntity[]>([]);
   const [isLoading, setLoading] = useState(false);
   const [isNotFound, setNotFound] = useState(false);
   const [pageNumber, setPage] = useState(1);
@@ -27,7 +27,7 @@ export default function MainCardsets() {
       default: throw new Error(`Can not fetch ${ApiPaths.decks.default}`);
     }
     
-    return await response.json() as DeckPage;
+    return await response.json() as DeckPageEntity ;
   }
 
   useEffect(() => {
@@ -54,6 +54,6 @@ export default function MainCardsets() {
   }, []);
   
   return (
-    <Cardsets decks={decks} isLoading={isLoading} isNotFound={isNotFound}/>
+    <Decks decks={decks} isLoading={isLoading} isNotFound={isNotFound}/>
   );
 }

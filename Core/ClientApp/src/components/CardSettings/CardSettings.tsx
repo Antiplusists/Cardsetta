@@ -1,25 +1,25 @@
-import './QACardSettings.css'
+import './CardSettings.css'
 import { ChangeEvent, useRef, useState } from 'react';
 import { FileObject } from 'material-ui-dropzone'
-import { QACard } from '../QACard/QACard'
+import { Card } from '../Card/Card'
 import { Link, Redirect } from 'react-router-dom';
 import { ButtonLink } from '../CustomButtons/ButtonLink'
-import { Card } from "../../entities/Card";
+import { CardEntity } from "../../entities/Card";
 import ImageDropzone from '../ImageDropzone/ImageDropzone';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { CardWordValidators } from '../../validators/Validators';
 import { CardWordErrorMessages } from '../../validators/ErrorMessage';
 
-type QACardSettingsProps = {
-    card: Card,
+type CardSettingsProps = {
+    card: CardEntity,
     deckId: string,
     onSave?: Function,
 }
 
-export default function QACardSettings(props: QACardSettingsProps) {
+export default function CardSettings(props: CardSettingsProps) {
     const { card, deckId, onSave } = props;
 
-    const [cardState, setCardState] = useState<Card>(card);
+    const [cardState, setCardState] = useState<CardEntity>(card);
     const [isSubmit, setIsSubmit] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
     const file = useRef<File>();
@@ -66,7 +66,7 @@ export default function QACardSettings(props: QACardSettingsProps) {
                     </ButtonLink>
                 </ValidatorForm>
                 <div className='part2'>
-                    <QACard ref={cardRef} cardInfo={cardState}
+                    <Card ref={cardRef} card={cardState}
                         onClick={() => cardRef.current?.classList.toggle('isFlipped')} />
                 </div>
             </div >

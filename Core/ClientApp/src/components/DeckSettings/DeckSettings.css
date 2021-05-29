@@ -1,15 +1,15 @@
-.settingsBlock .previewCardsetBlock {
+.settingsBlock .deckPreviewBlock {
     position: relative;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     border-radius: 25px;
 }
 
-.settingsBlock .previewCardset {   
+.settingsBlock .deckPreview {   
     width: 330px;
     height: 550px;
 }
 
-.settingsBlock .previewCardset img {
+.settingsBlock .deckPreview img {
     max-width: 75%;
     max-height: 75%;
     height: 100%;
@@ -22,7 +22,7 @@
     margin: 15px;
 }
 
-.settingsBlock .previewCardset .textBlock {
+.settingsBlock .deckPreview .textBlock {
     max-width: 85%;
     max-height: 85%;
     overflow: hidden;
@@ -30,7 +30,7 @@
     text-align: center;
 }
 
-.settingsBlock .previewCardset .name {
+.settingsBlock .deckPreview .name {
     font-weight: bold;
     font-size: x-large;
 }

@@ -28,7 +28,7 @@ export default function NavMenu() {
           ?
           <div className='flexCenter' style={{ justifyContent: 'flex-start' }}>
             <ButtonLink>
-              <Link to='/custom-cardsets'>Мои наборы</Link>
+              <Link to='/custom-decks'>Мои наборы</Link>
             </ButtonLink>
           </div>
           : ''

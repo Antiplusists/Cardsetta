@@ -1,6 +1,6 @@
 import { InferProps } from 'prop-types';
-import CardsetSettings from './CardsetSettings'
-import Deck, { CreateEmptyDeck } from '../../entities/Deck';
+import DeckSettings from './DeckSettings'
+import DeckEntity, { CreateEmptyDeck } from '../../entities/Deck';
 import authService from '../api-authorization/AuthorizeService';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
 import { useEffect, useState } from 'react';
@@ -8,17 +8,17 @@ import LoaderLayout from '../LoaderLayout/LoaderLayout';
 import DeckPatcher from '../../patchHelpers/DeckPatcher';
 import NotFound from "../NotFound/NotFound";
 
-type EditCardsetProps = {
+type EditDeckProps = {
     deckId: string
 }
 
 type State = {
     isLoading: boolean,
     isNotFound: boolean,
-    deck: Deck
+    deck: DeckEntity
 }
 
-export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
+export default function EditDeck({ deckId }: InferProps<EditDeckProps>) {
     const [state, setState] = useState<State>(
         { isLoading: true, isNotFound: false, deck: CreateEmptyDeck() });
 
@@ -27,7 +27,7 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
         if (response.status === 404) {
             return null;
         }
-        const deck = await response.json() as Deck;
+        const deck = await response.json() as DeckEntity;
         return deck;
     }
 
@@ -42,17 +42,17 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
             });
     }, []);
 
-    const onSave = async (cardset: Deck, file?: File) => {
+    const onSave = async (deck: DeckEntity, file?: File) => {
         const patchBuilder = new DeckPatcher();
-        if (state.deck.name !== cardset.name) {
-            patchBuilder.patchName(cardset.name);
+        if (state.deck.name !== deck.name) {
+            patchBuilder.patchName(deck.name);
         }
-        if (state.deck.description !== cardset.description) {
-            patchBuilder.patchDescription(cardset.description);
+        if (state.deck.description !== deck.description) {
+            patchBuilder.patchDescription(deck.description);
         }
 
         const data = patchBuilder.build();
-        if (data.length === 0 && cardset.imagePath === state.deck.imagePath) {
+        if (data.length === 0 && deck.imagePath === state.deck.imagePath) {
             return;
         }
 
@@ -75,10 +75,10 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
             default: throw new Error(`Can not fetch ${ApiPaths.decks.byId(deckId)}`);
         }
         
-        await updateImage(cardset, file);
+        await updateImage(deck, file);
     }
     
-    const updateImage = async (deck: Deck, file?: File) => {
+    const updateImage = async (deck: DeckEntity, file?: File) => {
         if (state.deck.imagePath === deck.imagePath) return;
         const formData = new FormData();
         if (file)
@@ -102,7 +102,7 @@ export default function EditCardset({ deckId }: InferProps<EditCardsetProps>) {
     
     return (
         <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<NotFound />}>
-            <CardsetSettings deck={state.deck} onSave={onSave} pathRedirect={`/cards-preview/${deckId}`} />
+            <DeckSettings deck={state.deck} onSave={onSave} pathRedirect={`/cards-preview/${deckId}`} />
         </LoaderLayout>
     );
 }

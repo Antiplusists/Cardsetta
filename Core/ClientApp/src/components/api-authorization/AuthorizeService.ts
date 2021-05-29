@@ -1,4 +1,4 @@
-﻿import User from "../../entities/User";
+﻿import UserEntity from "../../entities/User";
 import {deleteCookie, getCookie, setCookie} from "../../helpers/cookieHelpers";
 import {ApiPaths} from "./ApiAuthorizationConstants";
 
@@ -11,7 +11,7 @@ export enum OperationResponse {
 class AuthorizeService {
     private static tokenCookieName = "access_token";
     
-    private _user: User | null = null;
+    private _user: UserEntity | null = null;
     private _callbacks: { callback: ()=> void, subscription: number }[] = [];
     private _nextSubscriptionId: number = 0;
     
@@ -65,7 +65,7 @@ class AuthorizeService {
                 let playload = AuthorizeService.parseJwtPlayload(respObj.accessToken);
                 
                 setCookie(AuthorizeService.tokenCookieName, respObj.accessToken, playload.exp - playload.nbf);
-                let user = await (await fetch(ApiPaths.users.byId(playload.sub))).json() as User;
+                let user = await (await fetch(ApiPaths.users.byId(playload.sub))).json() as UserEntity;
                 this.updateState(user);
                 
                 return OperationResponse.Success;
@@ -109,7 +109,7 @@ class AuthorizeService {
         this.updateState(await response.json());
     }
     
-    updateState(user: User | null) {
+    updateState(user: UserEntity | null) {
         this._user = user;
         this.notifySubscribers();
     }

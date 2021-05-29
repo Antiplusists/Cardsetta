@@ -1,4 +1,4 @@
-.QAPage {
+.CardsStudy {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6,7 +6,7 @@
     padding-top: 50px;
 }
 
-.QAPage .answerButton {
+.CardsStudy .answerButton {
     margin: 40px 20px;
     width: 200px;
     height: 75px;

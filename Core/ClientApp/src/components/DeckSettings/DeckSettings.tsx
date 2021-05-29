@@ -1,56 +1,56 @@
-import './CardsetSettings.css';
+import './DeckSettings.css';
 import {ChangeEvent, useRef, useState} from 'react';
 import { Button } from '@material-ui/core'
 import { FileObject } from 'material-ui-dropzone'
 import { Link, Redirect } from 'react-router-dom';
 import { ButtonLink } from '../CustomButtons/ButtonLink'
-import Deck from '../../entities/Deck';
+import DeckEntity from '../../entities/Deck';
 import ImageDropzone from '../ImageDropzone/ImageDropzone';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { DeckNameValidators, DeckDescriptionValidators } from '../../validators/Validators';
 import { DeckNameErrorMessages, DeckDescriptionErrorMessages } from '../../validators/ErrorMessage';
 
-type CardsetSettingsProps = {
-    deck: Deck,
+type DeckSettingsProps = {
+    deck: DeckEntity,
     pathRedirect: string,
     onSave?: Function,
 }
 
-export default function CardsetSettings(props: CardsetSettingsProps) {
+export default function DeckSettings(props: DeckSettingsProps) {
     const { deck, onSave, pathRedirect } = props;
-    const [cardset, setCardset] = useState<Deck>(deck);
+    const [deckState, setDeckState] = useState<DeckEntity>(deck);
     const [isSubmit, setIsSubmit] = useState(false);
     const file = useRef<File>();
 
     function handleSave() {
         if (onSave) {
             setIsSubmit(true);
-            onSave(cardset, file.current);
+            onSave(deckState, file.current);
         }
     }
 
     function handleAddImage(files: FileObject[]) {
-        setCardset({ ...cardset, imagePath: files[0].data?.toString() ?? '' });
+        setDeckState({ ...deckState, imagePath: files[0].data?.toString() ?? '' });
         file.current = files[0].file;
     }
 
     function handleDeleteImage() {
-        if (cardset.imagePath) {
-            setCardset({ ...cardset, imagePath: '' });
+        if (deckState.imagePath) {
+            setDeckState({ ...deckState, imagePath: '' });
             file.current = undefined;
         }
     }
 
-    const DemoCardset = () => {
-        return (<div className='previewCardsetBlock '>
-            <div className='previewCardset flexCenter'>
-                {cardset.imagePath
+    const DeckDemo = () => {
+        return (<div className='deckPreviewBlock '>
+            <div className='deckPreview flexCenter'>
+                {deckState.imagePath
                     ?
-                    <img src={cardset.imagePath} alt='preview' />
+                    <img src={deckState.imagePath} alt='preview' />
                     :
                     <div className='textBlock'>
-                        <h1 className='name'>{cardset.name}</h1>
-                        <p>{cardset.description}</p>
+                        <h1 className='name'>{deckState.name}</h1>
+                        <p>{deckState.description}</p>
                     </div>
                 }
             </div>
@@ -70,16 +70,16 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
                 <ValidatorForm className='part1' onSubmit={handleSave} instantValidate={false}>
                     <TextValidator label='Название' variant='outlined' type='text' name='name'
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setCardset({ ...cardset, name: e.target.value })}
-                        value={cardset.name}
+                            setDeckState({ ...deckState, name: e.target.value })}
+                        value={deckState.name}
                         validators={DeckNameValidators}
                         errorMessages={DeckNameErrorMessages}
                     />
                     <TextValidator label='Описание' variant='outlined' type='text' name='description'
                         rows={4} rowsMax={4} multiline
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setCardset({ ...cardset, description: e.target.value })}
-                        value={cardset.description ?? ''}
+                            setDeckState({ ...deckState, description: e.target.value })}
+                        value={deckState.description ?? ''}
                         validators={DeckDescriptionValidators}
                         errorMessages={DeckDescriptionErrorMessages}
                     />
@@ -92,7 +92,7 @@ export default function CardsetSettings(props: CardsetSettingsProps) {
                     </ButtonLink>
                 </ValidatorForm >
                 <div className='part2'>
-                    <DemoCardset />
+                    <DeckDemo />
                 </div>
             </div >
     );

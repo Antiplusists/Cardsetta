@@ -1,4 +1,4 @@
-﻿export default interface Deck {
+﻿export default interface DeckEntity {
     id: string,
     authorId: string,
     name: string,
@@ -7,7 +7,7 @@
     tags: string[]
 }
 
-export const CreateEmptyDeck = (): Deck => {
+export const CreateEmptyDeck = (): DeckEntity => {
     return {
         id: '',
         authorId: '',

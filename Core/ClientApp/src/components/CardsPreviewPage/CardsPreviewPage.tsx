@@ -4,7 +4,7 @@ import { InferProps } from 'prop-types';
 import { Fab, makeStyles } from '@material-ui/core';
 import { Edit, Add } from '@material-ui/icons';
 import { Fragment, useEffect, useState } from 'react';
-import { Card } from "../../entities/Card";
+import { CardEntity } from "../../entities/Card";
 import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import authService from "../api-authorization/AuthorizeService";
 import CardPreview from './CardPreview'
@@ -35,7 +35,7 @@ type СardsPreviewPageProps = {
 
 type State = {
   isLoading: boolean,
-  cards: Card[]
+  cards: CardEntity[]
 }
 
 export default function СardsPreviewPage({ deckId }: InferProps<СardsPreviewPageProps>) {
@@ -53,7 +53,7 @@ export default function СardsPreviewPage({ deckId }: InferProps<СardsPreviewPa
       case 404: throw new Error(`Deck with id: ${deckId} is not exist`);
       default: throw new Error(`Can not fetch ${ApiPaths.cards.default(deckId)}`);
     }
-    return await response.json() as Card[];
+    return await response.json() as CardEntity[];
   };
 
   useEffect(() => {
@@ -85,13 +85,13 @@ export default function СardsPreviewPage({ deckId }: InferProps<СardsPreviewPa
   const getFabButtons = () => {
     return (
       <Fragment>
-        <Link to={`/card-creation?cardset=${deckId}`}>
+        <Link to={`/card-creation?deck=${deckId}`}>
           <Fab className={classes.fabOne} color='primary'>
             <Add />
           </Fab>
         </Link>
 
-        <Link to={`/cardset-settings/${deckId}`}>
+        <Link to={`/deck-settings/${deckId}`}>
           <Fab className={classes.fabTwo} color='primary'>
             <Edit />
           </Fab>
@@ -102,7 +102,7 @@ export default function СardsPreviewPage({ deckId }: InferProps<СardsPreviewPa
 
   return (
     <Fragment>
-      <LoaderLayout className='QAcardsPreview' isLoading={state.isLoading} isNotFound={state.cards.length === 0}
+      <LoaderLayout className='cardsPreview' isLoading={state.isLoading} isNotFound={state.cards.length === 0}
         componentNotFound={<div className='centerText'>Карточек еще нет</div>}>
         {state.cards.map(
           card =>

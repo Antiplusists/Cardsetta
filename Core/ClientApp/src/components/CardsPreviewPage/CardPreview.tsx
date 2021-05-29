@@ -1,12 +1,12 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { Card } from "../../entities/Card";
+import { CardEntity } from "../../entities/Card";
 import { ButtonLink } from "../CustomButtons/ButtonLink";
 import { DeleteButton } from "../CustomButtons/DeleteButton";
 
 type CardPreviewProps = {
     deckId: string,
-    card: Card,
+    card: CardEntity,
     onDelete: (cardId: string) => void,
     isAuth: boolean
 }
@@ -18,7 +18,7 @@ export default function CardPreview({ card, onDelete, deckId, isAuth }: CardPrev
         return (
             <div className='overlay'>
                 <ButtonLink className='buttonLink'>
-                    <Link to={`/card-settings/${card.id}?cardset=${deckId}`}>Изменить</Link>
+                    <Link to={`/card-settings/${card.id}?deck=${deckId}`}>Изменить</Link>
                 </ButtonLink>
                 <DeleteButton refComponentForDelete={blockRef}
                     onClick={() => onDelete(card.id)}
@@ -28,12 +28,12 @@ export default function CardPreview({ card, onDelete, deckId, isAuth }: CardPrev
     }
 
     return (
-        <div ref={blockRef} className='QAcardPreview flexCenter'>
-            <div className='sideQACard'>
+        <div ref={blockRef} className='cardPreview flexCenter'>
+            <div className='sideCard'>
                 {card.imagePath ? <img src={card.imagePath} alt='questionImage' /> : ''}
                 <span>{card.question}</span>
             </div>
-            <div className='sideQACard'>
+            <div className='sideCard'>
                 <span>{card.answer}</span>
             </div>
             {isAuth ? getOverlay() : null}

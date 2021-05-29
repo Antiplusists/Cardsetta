@@ -1,4 +1,4 @@
-﻿export interface Card {
+﻿export interface CardEntity {
     id: string,
     type: CardType,
     question: string,
@@ -12,7 +12,7 @@ export enum CardType {
     Mixed
 }
 
-export const CreateEmptyCard = (): Card => {
+export const CreateEmptyCard = (): CardEntity => {
     return {
         id: '',
         type: CardType.Text,

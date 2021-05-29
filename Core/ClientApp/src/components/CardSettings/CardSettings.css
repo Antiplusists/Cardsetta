@@ -47,6 +47,10 @@
     font-size: large;
 }
 
+.settingsBlock .buttonLink a:hover {
+    color: white;
+}
+
 .settingsBlock .MuiDropzoneArea-root {
     width: 75%;
     margin: 15px;
@@ -55,7 +59,7 @@
     font-family: 'Roboto';
 }
 
-.settingsBlock .QACard {
+.settingsBlock .Card {
     width: 400px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
