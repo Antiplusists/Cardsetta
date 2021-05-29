@@ -40,7 +40,7 @@ export default function App() {
                     <Redirect from="/card-settings" to="/login" />,
                     <Redirect from="/card-creation" to="/login" />,
                     <Redirect from="/cardset-settings" to="/login" />,
-                    <Redirect from="cardset-creation" to="/login" />
+                    <Redirect from="/cardset-creation" to="/login" />
                 ] : null}
                 <Route exact path="/" component={MainCardsets} />
                 <Route exact path="/register" component={Register} />
