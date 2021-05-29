@@ -18,7 +18,7 @@ import NotFound from "../NotFound/NotFound";
 
 
 export default function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
 
     useEffect(() => {
         const updateState = () => {

@@ -22,6 +22,17 @@
     color: #3f51b5;
     background-color: #FED201;
 }
+
+.autocomplete .MuiAutocomplete-tagSizeSmall {
+    margin-bottom: 7px;
+}
+
+.autocomplete .MuiFormLabel-root, 
+.autocomplete .MuiFormLabel-root.Mui-focused {
+    color: white;
+
+}
+
 .autocomplete span.MuiAutocomplete-tag {
     color: white;
     background-color: transparent;
