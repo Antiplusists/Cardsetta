@@ -153,7 +153,7 @@ namespace Core.Controllers
         public async Task<IActionResult> AcceptCard([FromRoute] Guid deckId, [FromRoute] Guid cardId,
             [FromBody] bool isRight)
         {
-            if (Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
                 return NotFound();
 
             var deckDbo = await deckRepo.FindAsync(deckId);
