@@ -1,14 +1,15 @@
 import './Authorization.css';
 import PasswordInput from './PasswordInput'
-import { InputAdornment, Button } from '@material-ui/core';
+import { InputAdornment } from '@material-ui/core';
 import { ChangeEvent, FC, Fragment, useEffect, useState } from 'react';
 import { AccountCircle } from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { LoginValidators, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
-import { LoginErrorMessages, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
+import { RequiredValidator, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
+import { RequiredErrorMessage, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
 import AuthorizeService, { OperationResponse } from "../api-authorization/AuthorizeService";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import RegisterAlerts, { RegisterAlertsState, CreateDefaultState } from '../Alerts/RegisterAlerts';
+import { LoadingButton } from '../CustomButtons/LoadingButton';
 
 type RegisterFormData = {
   login: string,
@@ -19,6 +20,8 @@ type RegisterFormData = {
 const RegForm: FC<RouteComponentProps> = (props) => {
   const [registerForm, setRegisterForm] = useState<RegisterFormData>({ login: '', password: '', repeatPassword: '' });
   const [alertsState, setAlertsState] = useState<RegisterAlertsState>(CreateDefaultState());
+  const [isLoading, setIsLoding] = useState(false);
+
   useEffect(() => {
     ValidatorForm.addValidationRule('isPasswordMatch',
       (value: string) => {
@@ -31,12 +34,14 @@ const RegForm: FC<RouteComponentProps> = (props) => {
   }, [registerForm.password]);
 
   const onSubmit = async () => {
+    setIsLoding(true);
     let formData = new FormData();
     formData.append('userName', registerForm.login)
     formData.append('password', registerForm.password);
     formData.append('passwordConfirm', registerForm.repeatPassword)
 
-    let response = await AuthorizeService.register(formData);
+    const response = await AuthorizeService.register(formData);
+    setIsLoding(false);
     switch (response) {
       case OperationResponse.Success: {
         props.history.push('/');
@@ -60,8 +65,8 @@ const RegForm: FC<RouteComponentProps> = (props) => {
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setRegisterForm({ ...registerForm, login: e.target.value })}
           value={registerForm.login}
-          validators={LoginValidators}
-          errorMessages={LoginErrorMessages}
+          validators={RequiredValidator}
+          errorMessages={RequiredErrorMessage}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -84,7 +89,7 @@ const RegForm: FC<RouteComponentProps> = (props) => {
           validators={RepeatPasswordValidators}
           errorMessages={RepeatPasswordErrorMessages}
         />
-        <Button type='submit'>Зарегистрироваться</Button>
+        <LoadingButton loading={isLoading} text='Зарегистрироваться' type='submit' />
       </ValidatorForm>
       <RegisterAlerts alertsState={alertsState}
         onClose={(state: RegisterAlertsState) => setAlertsState(state)} />

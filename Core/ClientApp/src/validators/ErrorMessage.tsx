@@ -1,4 +1,4 @@
-export const LoginErrorMessages = [
+export const RequiredErrorMessage = [
     'Это поле не может быть пустым',
 ];
 

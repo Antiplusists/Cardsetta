@@ -1,4 +1,4 @@
-export const LoginValidators = [
+export const RequiredValidator = [
     'required',
 ];
 

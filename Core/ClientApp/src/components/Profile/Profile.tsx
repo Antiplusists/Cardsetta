@@ -1,14 +1,15 @@
 import './Profile.css';
 import PasswordInput from '../Authorization/PasswordInput'
-import { InputAdornment, Button, } from '@material-ui/core';
+import { InputAdornment } from '@material-ui/core';
 import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { AccountCircle } from '@material-ui/icons';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { LoginValidators, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
-import { LoginErrorMessages, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
+import { RequiredValidator, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
+import { RequiredErrorMessage, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
 import authService from '../api-authorization/AuthorizeService';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
 import ProfileAlerts, { ProfileAlertsState, CreateDefaultState } from '../Alerts/ProfileAlerts';
+import { LoadingButton } from '../CustomButtons/LoadingButton';
 
 type ProfileForm = {
     login: string,
@@ -22,6 +23,9 @@ export default function Profile() {
     const [profileForm, setProfileForm] = useState<ProfileForm>(
         { login: userName, oldPassword: '', password: '', repeatPassword: '' });
     const [alertsState, setAlertsState] = useState<ProfileAlertsState>(CreateDefaultState());
+
+    const [isLoadingLogin, setIsLodingLogin] = useState(false);
+    const [isLoadingPassword, setIsLodingPassword] = useState(false);
 
     useEffect(() => {
         ValidatorForm.addValidationRule('isPasswordMatch',
@@ -48,6 +52,10 @@ export default function Profile() {
     }, []);
 
     async function handleChangeLogin() {
+        if (profileForm.login === userName) {
+            return;
+        }
+        setIsLodingLogin(true);
         const body: RequestInit = {
             method: 'POST',
             headers: {
@@ -57,6 +65,7 @@ export default function Profile() {
         };
         authService.addAuthorizationHeader(body);
         const response = await fetch(ApiPaths.users.updateUserName, body);
+        setIsLodingLogin(false);
         const user = authService.getUser();
         if (response.status === 204 && user) {
             setAlertsState({ ...alertsState, isLoginSuccess: true });
@@ -67,6 +76,10 @@ export default function Profile() {
     }
 
     async function handleChangePassword() {
+        if (profileForm.oldPassword === profileForm.password) {
+            return;
+        }
+        setIsLodingPassword(true);
         const formData = new FormData();
         formData.append('oldPassword', profileForm.oldPassword);
         formData.append('newPassword', profileForm.password);
@@ -77,6 +90,7 @@ export default function Profile() {
         };
         authService.addAuthorizationHeader(body);
         const response = await fetch(ApiPaths.users.updatePassword, body);
+        setIsLodingPassword(false);
         if (response.status === 204) {
             setAlertsState({ ...alertsState, isPasswordSuccess: true });
         }
@@ -96,8 +110,8 @@ export default function Profile() {
                             onChange={(e: ChangeEvent<HTMLInputElement>) =>
                                 setProfileForm({ ...profileForm, login: e.target.value })}
                             value={profileForm.login}
-                            validators={LoginValidators}
-                            errorMessages={LoginErrorMessages}
+                            validators={RequiredValidator}
+                            errorMessages={RequiredErrorMessage}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -106,7 +120,8 @@ export default function Profile() {
                                 ),
                             }}
                         />
-                        <Button className='saveLogin' type='submit'>Сохранить измения</Button>
+                        <LoadingButton className='saveLogin' loading={isLoadingLogin}
+                            text='Сохранить измения' type='submit' />
                     </ValidatorForm>
                     <ValidatorForm className='form'
                         onSubmit={handleChangePassword}
@@ -135,7 +150,8 @@ export default function Profile() {
                             validators={RepeatPasswordValidators}
                             errorMessages={RepeatPasswordErrorMessages}
                         />
-                        <Button className='changePassword' type='submit'>Изменить пароль</Button>
+                        <LoadingButton className='changePassword' loading={isLoadingPassword}
+                            text='Изменить пароль' type='submit' />
                     </ValidatorForm>
                 </Fragment>
             </div>
