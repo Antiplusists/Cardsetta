@@ -155,14 +155,16 @@ namespace Core.Repositories.Realizations
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
+            
+            var pageList = new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
+                pageNumber, pageSize);
 
-            foreach (var deckDbo in page)
+            foreach (var deckDbo in pageList)
             {
                 await DbContext.Entry(deckDbo).Collection(d => d.Tags).LoadAsync();
             }
 
-            return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
-                pageNumber, pageSize);
+            return pageList;
         }
 
         public async Task<PageList<DeckDbo>> GetPage(int pageNumber, int pageSize)
