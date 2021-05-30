@@ -14,6 +14,7 @@ export const ApiPaths = {
     },
     decks: {
         default: apiPath + '/decks',
+        my: apiPath + '/decks/my',
         byId: (id: string) => apiPath + '/decks/' + id,
         updateImage: (id: string) => apiPath + '/decks/' + id + '/update-image',
         updateTags: (id: string) => apiPath + '/decks/' + id + '/update-tags'

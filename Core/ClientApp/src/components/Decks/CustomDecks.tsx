@@ -29,18 +29,23 @@ export default function CustomDecks() {
     const [decksState, setDecksState] = useState<DecksState>({ isLoading: false, decks: [] });
 
     const getDecks = async () => {
-        const deckIds = AuthorizeService.getUser()?.deckIds;
-        if (deckIds === undefined) {
-            return null;
-        }
-
         const decks: DeckEntity[] = [];
-        for (const id of deckIds) {
-            const response = await fetch(ApiPaths.decks.byId(id));
-            if (response.status === 200) {
-                decks.push(await response.json() as DeckEntity);
-            }
+        
+        const body = {};
+        authService.addAuthorizationHeader(body);
+        const response = await fetch(ApiPaths.decks.my, body);
+        
+        switch (response.status) {
+            case 200: 
+                decks.push(...(await response.json() as DeckEntity[]));
+                break;
+            case 401:
+                throw new Error('Not authorized');
+            case 404:
+                break;
+            default: throw new Error(`Can not fetch ${ApiPaths.decks.my}`);
         }
+        
         return decks;
     }
 

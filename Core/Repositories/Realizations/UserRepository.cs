@@ -15,22 +15,20 @@ namespace Core.Repositories.Realizations
 
         public override async Task<ApplicationUser?> FindAsync(string id)
         {
-            var user = await DbContext.Users.FindAsync(id);
-            if (user is null) return null;
-            var entry = DbContext.Entry(user);
-            await entry.Collection(u => u.Decks).LoadAsync();
-            return user;
+            var user = await DbContext.Users
+                .Include(applicationUser => applicationUser.Decks)
+                .ThenInclude(deck => deck.Tags)
+                .FirstOrDefaultAsync(applicationUser => applicationUser.Id == id);
+            return user ?? null;
         }
         
         public async Task<ApplicationUser?> FindByNameAsync(string userName)
         {
-            var user = await DbContext.Users.FirstOrDefaultAsync(u =>
-                u.NormalizedUserName == userName.ToUpperInvariant());
-            if (user is null) return null;
-            
-            var entry = DbContext.Entry(user);
-            await entry.Collection(u => u.Decks).LoadAsync();
-            return user;
+            var user = await DbContext.Users
+                    .Include(applicationUser => applicationUser.Decks)
+                    .ThenInclude(deck => deck.Tags)
+                    .FirstOrDefaultAsync(u => u.NormalizedUserName == userName.ToUpperInvariant());
+            return user ?? null;
         }
 
         public override Task<ApplicationUser> AddAsync(ApplicationUser creationEntity)

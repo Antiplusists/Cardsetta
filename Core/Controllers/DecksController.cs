@@ -12,6 +12,7 @@ using Core.Models.Results;
 using Core.Models.Validation;
 using Core.Repositories.Abstracts;
 using Core.Services.Images;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -28,15 +29,18 @@ namespace Core.Controllers
         private readonly IDeckRepository deckRepo;
         private readonly IMapper mapper;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUserRepository userRepo;
 
         private async Task<ApplicationUser?> GetCurrentUser()
             => await userManager.GetUserAsync(User);
 
-        public DecksController(IDeckRepository deckRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public DecksController(IDeckRepository deckRepo, IMapper mapper, UserManager<ApplicationUser> userManager,
+            IUserRepository userRepo)
         {
             this.deckRepo = deckRepo;
             this.mapper = mapper;
             this.userManager = userManager;
+            this.userRepo = userRepo;
         }
 
         [HttpGet]
@@ -213,6 +217,20 @@ namespace Core.Controllers
                     throw new AggregateException();
 
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("my")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<DeckResult>>> GetMyDecks()
+        {
+            var user = await userRepo.FindByNameAsync(User.GetDisplayName());
+
+            if (!user.Decks.Any())
+                return NotFound();
+
+            return Ok(mapper.Map<IEnumerable<DeckDbo>, IEnumerable<DeckResult>>(user.Decks));
         }
     }
 }
