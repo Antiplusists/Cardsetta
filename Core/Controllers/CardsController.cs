@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Helpers;
 using Core.Models.Dbo;
 using Core.Models.Dto;
 using Core.Models.Results;
@@ -16,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Core.Controllers
 {
     [ApiController]
-    [Route( "api/v1/decks/{deckId:guid}/cards")]
+    [Route("api/v1/decks/{deckId:guid}/cards")]
     [Produces("application/json")]
     public class CardsController : Controller
     {
@@ -30,7 +32,7 @@ namespace Core.Controllers
             this.cardRepo = cardRepo;
             this.mapper = mapper;
         }
-        
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,10 +41,10 @@ namespace Core.Controllers
             var deck = await deckRepo.FindAsync(deckId);
             if (deck is null)
                 return NotFound();
-            
+
             return Ok(mapper.Map<IEnumerable<CardDbo>, IEnumerable<CardResult>>(deck.Cards));
         }
-        
+
         [HttpPost]
         [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -52,9 +54,9 @@ namespace Core.Controllers
         {
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
-            
+
             var deck = await deckRepo.FindAsync(deckId);
-            
+
             if (deck is null)
                 return NotFound();
 
@@ -105,7 +107,7 @@ namespace Core.Controllers
 
             return NoContent();
         }
-        
+
         [HttpPatch("{cardId:guid}")]
         [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -140,6 +142,54 @@ namespace Core.Controllers
             return NoContent();
         }
 
+        [HttpPost("{cardId:guid}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [Consumes("application/json")]
+        public async Task<IActionResult> AcceptCard([FromRoute] Guid deckId, [FromRoute] Guid cardId,
+            [FromBody] bool isRight)
+        {
+            if (Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
+                return NotFound();
+
+            var deckDbo = await deckRepo.FindAsync(deckId);
+            if (deckDbo is null)
+                return NotFound();
+
+            var cardDbo = deckDbo.Cards.Find(card => card.Id == cardId);
+            if (cardDbo is null)
+                return NotFound();
+
+            if (!cardDbo.Marks.TryGetValue(userId, out var mark))
+            {
+                mark = 0;
+                cardDbo.Marks.Add(userId, mark);
+            }
+
+            mark = isRight ? ++mark : --mark;
+
+            var time = mark switch
+            {
+                < 0 => 1.Minutes(),
+                > 3 => 1.Days(),
+                0 => 5.Minutes(),
+                1 => 30.Minutes(),
+                2 => 1.Hours(),
+                3 => 12.Hours()
+            };
+
+            cardDbo.TimeToRepeat = DateTimeOffset.UtcNow + time;
+            cardDbo.Marks[userId] = mark;
+
+            await cardRepo.UpdateAsync(cardDbo);
+
+            return NoContent();
+        }
+
         [HttpPost("{cardId:guid}/update-image")]
         [Authorize(Policy = "MustBeDeckOwner")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -147,7 +197,8 @@ namespace Core.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> UpdateImage([FromRoute] Guid deckId, [FromRoute] Guid cardId,
-            [Models.Validation.FileExtensions("jpg", "jpeg", "png")] IFormFile? image)
+            [Models.Validation.FileExtensions("jpg", "jpeg", "png")]
+            IFormFile? image)
         {
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
@@ -159,7 +210,7 @@ namespace Core.Controllers
             var card = deck.Cards.Find(cardDbo => cardDbo.Id == cardId);
             if (card is null)
                 return NotFound();
-            
+
             if (image is null)
             {
                 ImageStore.RemoveImage(card.ImagePath?.Split('/').Last());
