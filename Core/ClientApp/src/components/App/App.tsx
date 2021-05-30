@@ -50,7 +50,7 @@ export default function App() {
                 <Route exact path="/profile" component={Profile} />
                 <Route exact path="/custom-decks" component={CustomDecks} />
                 <Route exact path="/search" render={(props) =>
-                    <MainDecks key={props.location.pathname} />
+                    <MainDecks key={props.location.search} />
                 } />
                 <Route path="/cards/:id" render={(props) =>
                     <CardsBasicStudy deckId={props.match.params.id} />
