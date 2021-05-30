@@ -1,7 +1,7 @@
 .settingsBlock {
     background-color: white;
     width: 1000px;
-    height: 700px;
+    min-height: 700px;
     border-radius: 50px;
     margin: 50px;
     padding: 25px;

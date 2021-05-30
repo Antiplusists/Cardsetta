@@ -1,5 +1,5 @@
 import './DeckSettings.css';
-import {ChangeEvent, useRef, useState} from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { Button } from '@material-ui/core'
 import { FileObject } from 'material-ui-dropzone'
 import { Link, Redirect } from 'react-router-dom';
@@ -9,6 +9,7 @@ import ImageDropzone from '../ImageDropzone/ImageDropzone';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { DeckNameValidators, DeckDescriptionValidators } from '../../validators/Validators';
 import { DeckNameErrorMessages, DeckDescriptionErrorMessages } from '../../validators/ErrorMessage';
+import ChipInput from 'material-ui-chip-input'
 
 type DeckSettingsProps = {
     deck: DeckEntity,
@@ -21,6 +22,9 @@ export default function DeckSettings(props: DeckSettingsProps) {
     const [deckState, setDeckState] = useState<DeckEntity>(deck);
     const [isSubmit, setIsSubmit] = useState(false);
     const file = useRef<File>();
+
+    const [tagsInputValue, setTagsInputValue] = useState('');
+    const filterTag = (tag: string) => tag.replace(/[^\d^a-zа-я]/g, '').slice(0, 10);
 
     function handleSave() {
         if (onSave) {
@@ -61,6 +65,7 @@ export default function DeckSettings(props: DeckSettingsProps) {
             </div>
         </div>);
     }
+
     return (
         isSubmit
             ?
@@ -83,7 +88,16 @@ export default function DeckSettings(props: DeckSettingsProps) {
                         validators={DeckDescriptionValidators}
                         errorMessages={DeckDescriptionErrorMessages}
                     />
-                    <ImageDropzone onAddImage={handleAddImage} />
+                    <ChipInput className='chipInput' variant='outlined' label='Теги для поиска'
+                        newChipKeys={[' ', 'Enter']} defaultValue={deckState.tags}
+                        InputProps={{
+                            value: tagsInputValue,
+                            onChange: (e => setTagsInputValue(filterTag(e.target.value)))
+                        }}
+                        onBeforeAdd={() => { setTagsInputValue(''); return true; }}
+                        onChange={(tags) => setDeckState({ ...deckState, tags: tags })}
+                    />
+                    <ImageDropzone className='miniDropzone' onAddImage={handleAddImage} />
                     <ButtonLink className='buttonLink' type='submit' fixTabIndex={false}>
                         <p>Сохранить</p>
                     </ButtonLink>

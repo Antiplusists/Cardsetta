@@ -27,7 +27,7 @@ const TagInput = () => {
                     return (
                         <TextField
                             {...restParams}
-                            placeholder={values.length === 0 ? 'Тэги для поиска' : ''}
+                            placeholder={values.length === 0 ? 'Теги для поиска' : ''}
                             InputProps={{
                                 ...restInputProps,
                                 startAdornment: (

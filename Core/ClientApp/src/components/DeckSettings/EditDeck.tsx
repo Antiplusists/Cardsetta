@@ -43,6 +43,16 @@ export default function EditDeck({ deckId }: InferProps<EditDeckProps>) {
     }, []);
 
     const onSave = async (deck: DeckEntity, file?: File) => {
+        await patchDeck(deck);
+        if (state.deck.tags !== deck.tags) {
+            await updateTags(deck);
+        }
+        if (state.deck.imagePath !== deck.imagePath) {
+            await updateImage(deck.id, file);
+        }
+    }
+
+    const patchDeck = async (deck: DeckEntity) => {
         const patchBuilder = new DeckPatcher();
         if (state.deck.name !== deck.name) {
             patchBuilder.patchName(deck.name);
@@ -74,12 +84,29 @@ export default function EditDeck({ deckId }: InferProps<EditDeckProps>) {
             case 422: throw new Error(`Invalid data`);
             default: throw new Error(`Can not fetch ${ApiPaths.decks.byId(deckId)}`);
         }
-        
-        await updateImage(deck, file);
     }
-    
-    const updateImage = async (deck: DeckEntity, file?: File) => {
-        if (state.deck.imagePath === deck.imagePath) return;
+
+    const updateTags = async (deck: DeckEntity) => {
+        const body: RequestInit = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json-patch+json'
+            },
+            body: JSON.stringify(deck.tags)
+        };
+        authService.addAuthorizationHeader(body);
+
+        const response = await fetch(ApiPaths.decks.updateTags(deckId), body);
+
+        switch (response.status) {
+            case 204: break;
+            case 401: throw new Error(response.statusText);
+            case 404: throw new Error(`Deck ${deckId} not found`);
+            default: throw new Error(`Can not fetch ${ApiPaths.decks.byId(deckId)}`);
+        }
+    }
+
+    const updateImage = async (deckId: string, file?: File) => {
         const formData = new FormData();
         if (file)
             formData.append("image", file, file.name);
@@ -88,9 +115,9 @@ export default function EditDeck({ deckId }: InferProps<EditDeckProps>) {
             body: formData
         }
         authService.addAuthorizationHeader(body);
-        
+
         const response = await fetch(ApiPaths.decks.updateImage(deckId), body);
-        
+
         switch (response.status) {
             case 204: break;
             case 401: throw new Error(response.statusText);
@@ -99,7 +126,7 @@ export default function EditDeck({ deckId }: InferProps<EditDeckProps>) {
             default: throw new Error(`Can not fetch ${ApiPaths.decks.updateImage(deckId)}`);
         }
     }
-    
+
     return (
         <LoaderLayout isLoading={state.isLoading} isNotFound={state.isNotFound} componentNotFound={<NotFound />}>
             <DeckSettings deck={state.deck} onSave={onSave} pathRedirect={`/cards-preview/${deckId}`} />

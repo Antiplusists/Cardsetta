@@ -1,5 +1,5 @@
 import useQuery from '../../customHooks/useQuery';
-import { CardEntity, CardType, CreateEmptyCard } from "../../entities/Card";
+import { CardEntity, CreateEmptyCard } from "../../entities/Card";
 import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import authService from "../api-authorization/AuthorizeService";
 import CardSettings from './CardSettings';
@@ -13,7 +13,6 @@ export default function AddCard() {
         const formData = new FormData();
         formData.append('question', card.question);
         formData.append('answer', card.answer);
-        formData.append('type', CardType[card.type]);
         if (file)
             formData.append('image', file, file.name);
         const body = {

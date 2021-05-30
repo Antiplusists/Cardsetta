@@ -17,9 +17,18 @@
     object-fit: contain;
 }
 
-.textField {
+.settingsBlock .chipInput {
     width: 350px;
     margin: 15px;
+}
+
+.settingsBlock .miniDropzone {
+    min-height: 125px;
+}
+
+.settingsBlock .miniDropzone .MuiDropzoneArea-text {
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
 .settingsBlock .deckPreview .textBlock {

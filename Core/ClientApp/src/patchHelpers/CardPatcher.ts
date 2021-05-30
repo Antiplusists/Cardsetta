@@ -1,19 +1,10 @@
-﻿import {CardType} from "../entities/Card";
-
-export default class CardPatcher {
-    private _type: CardType | null;
+﻿export default class CardPatcher {
     private _question: string | null;
     private _answer: string | null;
 
     constructor() {
-        this._type = null;
         this._question = null;
         this._answer = null;
-    }
-
-    public patchType(newType: CardType): CardPatcher {
-        this._type = newType;
-        return this;
     }
 
     public patchQuestion(newQuestion: string): CardPatcher {
@@ -28,14 +19,6 @@ export default class CardPatcher {
 
     public build(): object[] {
         let result = new Array<object>();
-        
-        if (this._type) {
-            result.push({
-                op: "replace",
-                path: "/type",
-                value: CardType[this._type]
-            });
-        }
         
         if (this._question) {
             result.push({

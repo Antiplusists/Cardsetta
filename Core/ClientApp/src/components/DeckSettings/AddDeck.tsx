@@ -8,9 +8,9 @@ export default function AddDeck() {
         const formData = new FormData();
         formData.append('name', deck.name);
         formData.append('description', deck.description);
+        deck.tags.forEach(tag => formData.append('tags[]', tag));
         if (file)
             formData.append('image', file, file.name);
-
         const data = {
             method: 'POST',
             body: formData
