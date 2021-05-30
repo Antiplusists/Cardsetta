@@ -6,7 +6,6 @@ using Core.Models;
 using Core.Models.Dbo;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
