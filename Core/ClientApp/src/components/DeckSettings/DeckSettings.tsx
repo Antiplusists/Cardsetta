@@ -1,6 +1,6 @@
 import './DeckSettings.css';
 import { ChangeEvent, useRef, useState } from 'react';
-import { Button } from '@material-ui/core'
+import { Button, Chip } from '@material-ui/core'
 import { FileObject } from 'material-ui-dropzone'
 import { Link } from 'react-router-dom';
 import { ButtonLink } from '../CustomButtons/ButtonLink'
@@ -50,6 +50,10 @@ export default function DeckSettings(props: DeckSettingsProps) {
 
     const DeckDemo = () => {
         return (<div className='deckPreviewBlock '>
+            <div className='tags'>
+                {deckState.tags.map((t, i) => <Chip key={i} label={t} size='small'
+                    style={{ backgroundColor: stringToHSL(t) }} />)}
+            </div>
             <div className='deckPreview flexCenter'>
                 {deckState.imagePath
                     ?
@@ -109,3 +113,30 @@ export default function DeckSettings(props: DeckSettingsProps) {
         </div >
     );
 }
+
+const stringToHSL = (str: string) => {
+    let h: number, s: number, l: number;
+    const opts = {
+      hue: [0, 360],
+      sat: [75, 100],
+      lit: [70, 90]
+    };
+  
+    const range = (hash: number, min: number, max: number) => {
+      var diff = max - min;
+      var x = ((hash % diff) + diff) % diff;
+      return x + min;
+    };
+  
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      hash = hash & hash;
+    }
+  
+    h = range(hash, opts.hue[0], opts.hue[1]);
+    s = range(hash, opts.sat[0], opts.sat[1]);
+    l = range(hash, opts.lit[0], opts.lit[1]);
+  
+    return `hsl(${h}, ${s}%, ${l}%)`;
+  }

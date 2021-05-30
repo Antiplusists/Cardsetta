@@ -1,10 +1,33 @@
 .settingsBlock .deckPreviewBlock {
     position: relative;
-    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     border-radius: 25px;
 }
 
-.settingsBlock .deckPreview {   
+.settingsBlock .deckPreviewBlock {
+    position: relative;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    border-radius: 25px;
+}
+
+.settingsBlock .deckPreviewBlock .tags {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.settingsBlock .deckPreviewBlock .MuiChip-root {
+    margin: 5px;
+}
+
+.settingsBlock .deckPreview {
     width: 330px;
     height: 550px;
 }

@@ -5,6 +5,7 @@ import { DeleteButton } from '../CustomButtons/DeleteButton';
 import DeckEntity from '../../entities/Deck';
 import { useRef } from 'react';
 import authService from '../api-authorization/AuthorizeService';
+import { Chip } from '@material-ui/core';
 
 type DeckPreviewProps = {
   deck: DeckEntity,
@@ -18,6 +19,10 @@ export default function DecksPreview(props: DeckPreviewProps) {
   return (
     <div>
       <div ref={blockRef} className='previewSetCard flexCenter'>
+        <div className='tags'>
+          {deck.tags.map((t, i) => <Chip key={i} label={t} size='small'
+            style={{ backgroundColor: stringToHSL(t) }} />)}
+        </div>
         {deck.imagePath
           ?
           <img src={deck.imagePath} alt='preview' />
@@ -31,12 +36,15 @@ export default function DecksPreview(props: DeckPreviewProps) {
           {authService.isAuthenticated()
             ?
             <ButtonLink className='buttonLink'>
-              <Link to={`/cards/${deck.id}`}>Начать</Link>
+              <Link to={`/cards/${deck.id}`}>Базовый</Link>
             </ButtonLink>
             : null
           }
           <ButtonLink className='buttonLink'>
-            <Link to={`/cards-endless/${deck.id}`}>Endless</Link>
+            <Link to={`/cards-endless/${deck.id}`}
+              style={{ fontSize: '40px' }}>
+              Бесконечный
+            </Link>
           </ButtonLink>
           <ButtonLink className='buttonLink'>
             <Link to={`/cards-preview/${deck.id}`}>Превью</Link>
@@ -52,4 +60,31 @@ export default function DecksPreview(props: DeckPreviewProps) {
       </div>
     </div>
   );
+}
+
+const stringToHSL = (str: string) => {
+  let h: number, s: number, l: number;
+  const opts = {
+    hue: [0, 360],
+    sat: [75, 100],
+    lit: [70, 90]
+  };
+
+  const range = (hash: number, min: number, max: number) => {
+    var diff = max - min;
+    var x = ((hash % diff) + diff) % diff;
+    return x + min;
+  };
+
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    hash = hash & hash;
+  }
+
+  h = range(hash, opts.hue[0], opts.hue[1]);
+  s = range(hash, opts.sat[0], opts.sat[1]);
+  l = range(hash, opts.lit[0], opts.lit[1]);
+
+  return `hsl(${h}, ${s}%, ${l}%)`;
 }
