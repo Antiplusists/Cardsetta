@@ -57,7 +57,7 @@ namespace Core.Repositories.Realizations
             if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
 
-            throw new OperationException("Failed to update entity");
+            throw new DbUpdateException("Failed to update entity");
         }
 
         public async Task<CardDbo> UpdateAsync(CardDbo dbo)
