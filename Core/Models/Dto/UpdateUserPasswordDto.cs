@@ -6,15 +6,15 @@ namespace Core.Models.Dto
     {
         [Required]
         [DataType(DataType.Password)]
-        public string OldPassword { get; set; }
-        
+        public string OldPassword { get; set; } = null!;
+
         [Required]
         [DataType(DataType.Password)]
-        public string NewPassword { get; set; }
-        
+        public string NewPassword { get; set; } = null!;
+
         [Required]
         [Compare("NewPassword")]
         [DataType(DataType.Password)]
-        public string NewPasswordConfirm { get; set; }
+        public string NewPasswordConfirm { get; set; } = null!;
     }
 }

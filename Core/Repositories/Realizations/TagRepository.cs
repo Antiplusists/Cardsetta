@@ -35,12 +35,12 @@ namespace Core.Repositories.Realizations
             return result.Entity!;
         }
 
-        public override async Task<bool> RemoveAsync(string tag)
+        public override Task<bool> RemoveAsync(string tag)
         {
             throw new NotSupportedException();
         }
 
-        public override async Task<TagDbo> UpdateAsync(string tag, string? _)
+        public override Task<TagDbo> UpdateAsync(string tag, string? _)
         {
             throw new NotSupportedException();
         }

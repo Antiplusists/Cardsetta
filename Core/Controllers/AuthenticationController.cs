@@ -89,7 +89,9 @@ namespace Core.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+#pragma warning disable 1998
         public async Task<IActionResult> IsAuthenticated()
+#pragma warning restore 1998
         {
             return Ok();
         }
