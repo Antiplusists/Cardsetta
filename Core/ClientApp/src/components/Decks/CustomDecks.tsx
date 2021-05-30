@@ -4,7 +4,6 @@ import { Add } from '@material-ui/icons';
 import { useEffect, useState } from 'react';
 import DeckEntity from '../../entities/Deck';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
-import AuthorizeService from '../api-authorization/AuthorizeService';
 import authService from '../api-authorization/AuthorizeService';
 import Decks from './Decks';
 

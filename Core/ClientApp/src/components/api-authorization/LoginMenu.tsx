@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import authService from './AuthorizeService';
 
 import { styled } from '@material-ui/core/styles';
-import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
+import { Menu, MenuItem, Button } from '@material-ui/core';
 import { ButtonLink } from '../CustomButtons/ButtonLink';
 import { AccountCircle } from '@material-ui/icons';
 

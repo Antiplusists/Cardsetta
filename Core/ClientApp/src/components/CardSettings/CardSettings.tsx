@@ -26,9 +26,9 @@ export default function CardSettings(props: CardSettingsProps) {
 
     async function handleSave() {
         if (onSave) {
+            setIsSubmit(true);
             await onSave(cardState, file.current);
         }
-        setIsSubmit(true);
     }
 
     function handleAddImage(files: FileObject[]) {

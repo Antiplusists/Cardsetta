@@ -1,5 +1,5 @@
 import './TagInput.css';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Autocomplete } from "@material-ui/lab";
 import { TextField } from "@material-ui/core";
 import { useHistory } from "react-router-dom";

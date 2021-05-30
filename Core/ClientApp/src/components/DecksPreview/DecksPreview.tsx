@@ -28,11 +28,15 @@ export default function DecksPreview(props: DeckPreviewProps) {
           </div>
         }
         <div className='overlay'>
+          {authService.isAuthenticated()
+            ?
+            <ButtonLink className='buttonLink'>
+              <Link to={`/cards/${deck.id}`}>Начать</Link>
+            </ButtonLink>
+            : null
+          }
           <ButtonLink className='buttonLink'>
-            <Link to={`/cards/${deck.id}`}>Начать</Link>
-          </ButtonLink>
-          <ButtonLink className='buttonLink'>
-            <Link to={'/'}>SOON</Link>
+            <Link to={`/cards-endless/${deck.id}`}>Endless</Link>
           </ButtonLink>
           <ButtonLink className='buttonLink'>
             <Link to={`/cards-preview/${deck.id}`}>Превью</Link>

@@ -18,7 +18,7 @@ export default class LoaderLayout extends Component<LoaderLayoutProps> {
             }
             {isLoading
                 ? <CircularProgress className='loader' size={100} />
-                : this.props.children
+                : !isNotFound ? this.props.children : null
             }
         </div>);
     }

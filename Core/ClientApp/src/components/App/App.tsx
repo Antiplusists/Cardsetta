@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Route, Redirect, Switch } from "react-router";
 import { Layout } from "./Layout";
 import MainDecks from "../Decks/MainDecks";
-import CardsStudy from "../CardsStudy/CardsStudy";
 import CardsPreviewPage from "../CardsPreviewPage/CardsPreviewPage";
 import CustomDecks from "../Decks/CustomDecks";
 import { Register } from "../Authorization/Register";
@@ -15,6 +14,8 @@ import AddDeck from "../DeckSettings/AddDeck";
 import EditDeck from "../DeckSettings/EditDeck";
 import EditCard from "../CardSettings/EditCard";
 import NotFound from "../NotFound/NotFound";
+import CardsBasicStudy from "../CardsStudy/CardsBasicStudy";
+import CardsEndlessStudy from "../CardsStudy/CardsEndlessStudy";
 
 
 export default function App() {
@@ -40,7 +41,8 @@ export default function App() {
                     <Redirect from="/card-settings" to="/login" />,
                     <Redirect from="/card-creation" to="/login" />,
                     <Redirect from="/deck-settings" to="/login" />,
-                    <Redirect from="/deck-creation" to="/login" />
+                    <Redirect from="/deck-creation" to="/login" />,
+                    <Redirect from="/cards/" to="/login" />,
                 ] : null}
                 <Route exact path="/" component={MainDecks} />
                 <Route exact path="/register" component={Register} />
@@ -51,7 +53,10 @@ export default function App() {
                     <MainDecks key={props.location.pathname} />
                 } />
                 <Route path="/cards/:id" render={(props) =>
-                    <CardsStudy deckId={props.match.params.id} />
+                    <CardsBasicStudy deckId={props.match.params.id} />
+                } />
+                <Route path="/cards-endless/:id" render={(props) =>
+                    <CardsEndlessStudy deckId={props.match.params.id} />
                 } />
                 <Route exact path="/cards-preview/:id" render={(props) =>
                     <CardsPreviewPage deckId={props.match.params.id} />

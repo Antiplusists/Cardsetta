@@ -2,7 +2,8 @@
     id: string,
     question: string,
     answer: string,
-    imagePath?: string
+    imagePath?: string,
+    timeToRepeat: string,
 }
 
 export const CreateEmptyCard = (): CardEntity => {
@@ -10,5 +11,6 @@ export const CreateEmptyCard = (): CardEntity => {
         id: '',
         question: '',
         answer: '',
+        timeToRepeat: '',
     };
 };

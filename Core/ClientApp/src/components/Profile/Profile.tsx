@@ -7,7 +7,6 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { LoginValidators, PasswordValidators, RepeatPasswordValidators } from '../../validators/Validators'
 import { LoginErrorMessages, PasswordErrorMessages, RepeatPasswordErrorMessages } from '../../validators/ErrorMessage'
 import authService from '../api-authorization/AuthorizeService';
-import { Redirect } from 'react-router';
 import { ApiPaths } from '../api-authorization/ApiAuthorizationConstants';
 import ProfileAlerts, { ProfileAlertsState, CreateDefaultState } from '../Alerts/ProfileAlerts';
 

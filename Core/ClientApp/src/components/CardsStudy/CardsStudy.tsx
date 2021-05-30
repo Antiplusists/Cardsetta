@@ -1,82 +1,114 @@
 import './CardsStudy.css';
-import { useEffect, useRef, useState } from 'react';
-import { InferProps } from 'prop-types';
-import { Button } from '@material-ui/core';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { Button, Fab, TextField } from '@material-ui/core';
+import { Send } from '@material-ui/icons';
 import { Card } from '../Card/Card'
-import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
 import { CardEntity } from "../../entities/Card";
-import React from 'react';
 
 type CardsStudyState = {
     isKnow: boolean | undefined,
+    isWaiting: boolean,
+    answerValue: string,
 }
 
 type CardsStudyProps = {
-    deckId: string,
+    cards: CardEntity[],
+    onTrue?: (cardId: string) => void,
+    onFalse?: (cardId: string) => void,
+    onEnd?: Function,
 }
 
 const defaultCardsStudyState: CardsStudyState = {
     isKnow: undefined,
+    isWaiting: true,
+    answerValue: '',
 }
 
-export default function CardsStudy({ deckId }: InferProps<CardsStudyProps>) {
-    const cards = useRef<CardEntity[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [position, setPosition] = useState<number>(0);
+const randomCards = (cards: CardEntity[]) => {
+    let copyOfCards = [...cards];
+    return (): CardEntity | null => {
+        if (copyOfCards.length === 0) {
+            return null;
+        }
+        const card = copyOfCards[Math.floor(Math.random() * copyOfCards.length)];
+        copyOfCards = copyOfCards.filter(c => c.id != card.id);
+        return card;
+    }
+}
+
+export default function CardsStudy(props: CardsStudyProps) {
+    const { cards, onTrue, onFalse, onEnd } = props;
+
     const [pageState, setPageState] = useState<CardsStudyState>(defaultCardsStudyState);
     const cardRef = useRef<HTMLDivElement>(null);
 
-    const getCards = async () => {
-        const response = await fetch(ApiPaths.cards.default(deckId));
+    const getNextCard = useRef(randomCards(cards));
+    const [currentCard, setCurrentCard] = useState<CardEntity | null>(null);
 
-        switch (response.status) {
-            case 200: break;
-            case 404: throw new Error(`Deck with id: ${deckId} is not exist`);
-            default: throw new Error(`Can not fetch ${ApiPaths.cards.default(deckId)}`);
-        }
+    useEffect(() => setCurrentCard(getNextCard.current()), []);
 
-        return await response.json() as CardEntity[];
-    }
-
-    useEffect(() => {
-        setLoading(true);
-        getCards()
-            .then(v => {
-                cards.current = v;
-                setLoading(false);
-            });
-    }, []);
-
-    function chooseAnswer(isKnow: boolean | undefined) {
-        if (pageState.isKnow !== undefined) {
-            nextCard();
-        }
-        else {
+    function chooseAnswer(isKnow: boolean) {
+        if (!isKnow) {
+            setPageState({ ...pageState, isWaiting: false });
             cardRef.current?.classList.add('isFlipped');
-            setPageState({ ...pageState, isKnow });
+            if (onFalse) {
+                onFalse(currentCard!.id);
+            }
+            setTimeout(() => setPageState({ ...pageState, isKnow, isWaiting: true }), 750);
         }
+        else setPageState({ ...pageState, isKnow });
     }
 
-    function nextCard() {
-        cardRef.current?.classList.add('isReduce');
-        setTimeout(() => {
-            if (position + 1 >= cards.current.length) {
-                setPosition(0);
+    function checkAnswer(answer: string) {
+        setPageState({ ...pageState, isWaiting: false });
+        cardRef.current?.classList.add('isFlipped');
+
+        if (currentCard!.answer.toLowerCase() !== answer.toLowerCase()) {
+            if (onFalse) {
+                onFalse(currentCard!.id);
             }
-            else setPosition(position + 1);
-            setTimeout(() => {
-                cardRef.current?.classList.remove('isReduce', 'isFlipped');
-                setPageState(defaultCardsStudyState);
-            }, 100);
+            setTimeout(() =>
+                setPageState({ ...pageState, isKnow: false, isWaiting: true })
+                , 750);
+            return;
+        }
+
+        if (onTrue) {
+            onTrue(currentCard!.id);
+        }
+
+        setTimeout(() => {
+            moveNextCard();
+        }, 1500);
+    }
+
+    function moveNextCard() {
+        setPageState({ ...pageState, isWaiting: false });
+        cardRef.current?.classList.add('isReduce');
+
+        setTimeout(() => {
+            const nextCard = getNextCard.current();
+            if (!nextCard) {
+                if (onEnd) {
+                    onEnd();
+                    return;
+                }
+                getNextCard.current = randomCards(cards);
+                setCurrentCard(getNextCard.current());
+            }
+            else setCurrentCard(nextCard);
+            cardRef.current?.classList.remove('isReduce', 'isFlipped');
+            setTimeout(() => setPageState(defaultCardsStudyState), 750);
         }, 750);
     }
 
-    const getPage = () => {
-        return (
-            <div className='CardsStudy'>
-                <Card ref={cardRef} card={cards.current[position]} />
-                <div>
-                    {pageState.isKnow !== false
+    return (
+        <div className='CardsStudy'>
+            {currentCard ? <Card ref={cardRef} card={currentCard} /> : null}
+            {pageState.isWaiting
+                ?
+                <Fragment>
+                    {pageState.isKnow === undefined
                         ?
                         <div>
                             <Button className='answerButton'
@@ -89,19 +121,27 @@ export default function CardsStudy({ deckId }: InferProps<CardsStudyProps>) {
                             </Button>
                         </div>
                         :
-                        <Button className='answerButton'
-                            variant='contained' color='primary' onClick={() => chooseAnswer(undefined)}>
-                            Продолжить
-                        </Button>
+                        pageState.isKnow
+                            ?
+                            <div className='flexCenter'>
+                                <TextField className='answerButton' variant='outlined' color='primary'
+                                    value={pageState.answerValue} autoFocus placeholder='Ответ'
+                                    InputProps={{ style: { backgroundColor: 'white' } }}
+                                    onChange={e => setPageState({ ...pageState, answerValue: e.target.value })}
+                                    onKeyDown={(e) => e.key === 'Enter' ? checkAnswer(pageState.answerValue) : null} />
+                                <Fab className='checkButton' color='primary'
+                                    onClick={() => checkAnswer(pageState.answerValue)}>
+                                    <Send />
+                                </Fab>
+                            </div>
+                            :
+                            <Button className='answerButton'
+                                variant='contained' color='primary' onClick={moveNextCard}>
+                                Продолжить
+                            </Button>
                     }
-                </div>
-            </div>
-        )
-    }
-
-    return (
-        <React.Fragment>
-            {loading ? <div>Loading...</div> : getPage()}
-        </React.Fragment>
+                </Fragment>
+                : null}
+        </div>
     );
 }
