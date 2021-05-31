@@ -11,6 +11,7 @@ namespace Core
         {
             var host = CreateHostBuilder(args).Build();
             host.PrepareDB();
+            host.PreparedStatic();
             host.Run();
         }
 
