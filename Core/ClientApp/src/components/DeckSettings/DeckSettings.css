@@ -1,0 +1,77 @@
+.settingsBlock .deckPreviewBlock {
+    position: relative;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    border-radius: 25px;
+}
+
+.settingsBlock .deckPreviewBlock {
+    position: relative;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    border-radius: 25px;
+}
+
+.settingsBlock .deckPreviewBlock .tags {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.settingsBlock .deckPreviewBlock .MuiChip-root {
+    margin: 5px;
+}
+
+.settingsBlock .deckPreview {
+    width: 330px;
+    height: 550px;
+}
+
+.settingsBlock .deckPreview img {
+    max-width: 75%;
+    max-height: 75%;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.settingsBlock .chipInput {
+    width: 350px;
+    margin: 15px;
+}
+
+.settingsBlock .miniDropzone {
+    min-height: 125px;
+}
+
+.settingsBlock .miniDropzone .MuiDropzoneArea-text {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.settingsBlock .deckPreview .textBlock {
+    max-width: 85%;
+    max-height: 85%;
+    overflow: hidden;
+    font-size: large;
+    text-align: center;
+}
+
+.settingsBlock .deckPreview .name {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+.settingsBlock .deleteButton {
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 35px;
+    font-weight: bold;
+    text-transform: none;
+}

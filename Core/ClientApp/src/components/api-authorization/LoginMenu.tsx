@@ -1,36 +1,39 @@
 import { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import authService from './AuthorizeService';
-import { ApplicationPaths } from './ApiAuthorizationConstants';
 
 import { styled } from '@material-ui/core/styles';
-import { Menu, MenuItem, Avatar, Button } from '@material-ui/core';
-import { ButtonLink } from '../ButtonLink/ButtonLink';
+import { Menu, MenuItem, Button } from '@material-ui/core';
+import { ButtonLink } from '../CustomButtons/ButtonLink';
+import { AccountCircle } from '@material-ui/icons';
 
-const CustomButton =  styled(
+const CustomButton = styled(
     ({ ...other }) => (
-      <Button {...other} />
+        <Button {...other} />
     )
-  )({
+)({
     color: 'white',
     backgroundColor: 'rgba(255, 255, 255, 0)',
     borderRadius: '15px',
     padding: '10px 15px',
     fontWeight: 'bold',
     fontSize: 'x-large',
-    fontFamily: 'Roboto', 
+    fontFamily: 'Roboto',
     textTransform: 'none',
     '&:hover': {
         color: 'white',
         background: 'rgba(255, 255, 255, 0.1)',
     },
+    '& .MuiButton-label:hover': {
+        color: '#fed201',
+    },
 });
 
-const CustomAvatar = styled(Avatar)({
+const IconProfile = {
     width: '60px',
     height: '60px',
     marginLeft: '15px'
-});
+}
 
 interface LoginMenuState {
     isAuthenticated: boolean,
@@ -60,39 +63,33 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
     }
 
     async populateState() {
-        const [isAuthenticated, user] = await Promise.all([authService.isAuthenticated(), authService.getUser()])
+        const user = authService.getUser();
         this.setState({
-            isAuthenticated,
-            userName: user && user.name
+            isAuthenticated: authService.isAuthenticated(),
+            userName: user && user.userName
         });
     }
 
     render() {
         const { isAuthenticated, userName } = this.state;
         if (!isAuthenticated) {
-            const registerPath = `${ApplicationPaths.Register}`;
-            const loginPath = `${ApplicationPaths.Login}`;
+            const registerPath = `/register`;
+            const loginPath = `/login`;
             return this.anonymousView(registerPath, loginPath);
         } else {
-            const profilePath = `${ApplicationPaths.Profile}`;
-            const logoutPath = { pathname: `${ApplicationPaths.LogOut}`, state: { local: true } };
-            return this.authenticatedView(userName, profilePath, logoutPath);
+            const profilePath = `/profile`;
+            return this.authenticatedView(userName, profilePath);
         }
     }
 
-    authenticatedView(
-        userName: string | null,
-        profilePath: string,
-        logoutPath: {
-            pathname: string, state:
-                { local: boolean }
-        }) {
+    authenticatedView(userName: string | null, profilePath: string) {
         return (<Fragment>
             <CustomButton
                 onClick={(event: React.MouseEvent<HTMLElement>) => this.setState({ anchorEl: event.currentTarget })}
             >
                 {userName}
-                <CustomAvatar>{userName ? userName[0] : 'A'}</CustomAvatar>
+                <AccountCircle style={IconProfile} />
+
             </CustomButton>
             <Menu
                 anchorEl={this.state.anchorEl}
@@ -100,8 +97,10 @@ export class LoginMenu extends Component<{}, LoginMenuState> {
                 onClose={() => this.setState({ anchorEl: null })}
                 style={{ marginTop: '50px', marginLeft: '10px' }}
             >
-                <MenuItem component={Link} to={profilePath}>Профиль</MenuItem>
-                <MenuItem component={Link} to={logoutPath}>Выйти</MenuItem>
+                <MenuItem component={Link} to={profilePath}
+                    onClick={() => this.setState({ anchorEl: null })}>Профиль</MenuItem>
+                <MenuItem component={Link} to='/'
+                    onClick={() => { this.setState({ anchorEl: null }); authService.logout(); }}>Выйти</MenuItem>
             </Menu>
         </Fragment>);
 

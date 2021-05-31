@@ -1,0 +1,19 @@
+.CardsStudy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-top: 50px;
+}
+
+.CardsStudy .answerButton {
+    margin: 40px 20px;
+    width: 200px;
+    height: 75px;
+    font-weight: bold;
+    font-size: x-large;
+}
+
+.CardsStudy .checkButton {
+    margin-bottom: 22px;
+}

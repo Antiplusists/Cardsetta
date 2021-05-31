@@ -1,0 +1,88 @@
+.settingsBlock {
+    background-color: white;
+    width: 1000px;
+    min-height: 700px;
+    border-radius: 50px;
+    margin: 50px;
+    padding: 25px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsBlock .part1 {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsBlock .part2 {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsBlock .MuiTextField-root {
+    width: 350px;
+    margin: 15px;
+}
+
+.settingsBlock .buttonLink {
+    width: 60%;
+    margin: 10px;
+    background-color: green;
+    font-size: small;
+}
+
+.settingsBlock .loadingButton {
+    width: 60%;
+    background-color: green;
+    margin: 10px;
+    border-radius: 15px;
+    padding: 0;
+    height: 51px;
+}
+
+.settingsBlock .loadingButton:hover {
+    color: white;
+    background-color: rgb(0, 92, 0);
+}
+
+.settingsBlock .loadingButton .MuiButton-label {
+    color: white;
+    font-weight: bold;
+    font-size: large;
+    font-family: 'Roboto';
+    text-transform: none;
+    padding: 10px 15px;
+}
+
+.settingsBlock .buttonLink:hover {
+    background-color: rgb(0, 92, 0);
+}
+
+.settingsBlock .buttonLink a {
+    font-size: large;
+}
+
+.settingsBlock .buttonLink a:hover {
+    color: white;
+}
+
+.settingsBlock .MuiDropzoneArea-root {
+    width: 75%;
+    margin: 15px;
+    min-height: 200px;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.settingsBlock .Card {
+    width: 400px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}

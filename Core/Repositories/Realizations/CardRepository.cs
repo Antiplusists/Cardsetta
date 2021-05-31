@@ -4,7 +4,6 @@ using Core.Data;
 using Core.Models.Dbo;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
@@ -57,7 +56,7 @@ namespace Core.Repositories.Realizations
             if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
 
-            throw new OperationException("Failed to update entity");
+            throw new DbUpdateException("Failed to update entity");
         }
 
         public async Task<CardDbo> UpdateAsync(CardDbo dbo)

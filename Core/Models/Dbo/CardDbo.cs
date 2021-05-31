@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models.Dbo
 {
@@ -7,9 +9,12 @@ namespace Core.Models.Dbo
     {
         [Key] 
         public Guid Id { get; set; }
-        public CardType Type { get; set; }
         public string? Question { get; set; }
         public string Answer { get; set; } = null!;
-        public string? ImagePath { get; set; }
+        public string? ImagePath { get; set; } 
+        [Column(TypeName = "jsonb")]
+        public Dictionary<Guid, int> Marks { get; set; } = new();
+        [Column(TypeName = "jsonb")]
+        public Dictionary<Guid, DateTimeOffset> TimeToRepeat { get; set; } = new();
     }
 }

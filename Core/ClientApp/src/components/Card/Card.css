@@ -1,0 +1,50 @@
+.Card {
+    width: 450px;
+    height: 600px;
+    border-radius: 60px;
+    background-color: white;
+    transition: transform 750ms;
+    transform-style: preserve-3d;
+}
+
+.Card.isFlipped {
+    transform: rotateY(180deg);
+}
+
+.Card.isReduce {
+    transform: scale(0.01);
+}
+
+.sideCard {
+    position: absolute;
+    backface-visibility: hidden;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 5% 0;
+}
+
+.sideCard span {
+    width: 75%;
+    text-align: center;
+    font-size: xx-large;
+    font-weight: bold;
+    font-family: Roboto;
+    margin: 10px;
+    overflow: hidden;
+}
+
+.sideCard img {
+    max-width: 75%;
+    max-height: 75%;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.sideCard.back {
+    transform: rotateY(180deg);
+}

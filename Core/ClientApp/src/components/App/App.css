@@ -1,6 +1,12 @@
 body {
   margin: 0;
   font-family: 'Roboto';
+  -ms-overflow-style: none; 
+  scrollbar-width: none;  
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 *, *::before, *::after {
@@ -11,4 +17,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.loader {
+  position: fixed;
+  top: 50%;
+  left: 48%;
+}
+
+.centerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  font-weight: bold;
 }

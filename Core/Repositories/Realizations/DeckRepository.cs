@@ -6,7 +6,6 @@ using Core.Models;
 using Core.Models.Dbo;
 using Core.Repositories.Abstracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Core.Repositories.Realizations
 {
@@ -33,7 +32,7 @@ namespace Core.Repositories.Realizations
 
         public override async Task<DeckDbo> AddAsync(DeckDbo dbo)
         {
-            dbo.Tags = dbo.Tags.AsParallel().Select(tag => DbContext.Tags.Find(tag.Tag) ?? tag).ToHashSet();
+            dbo.Tags = dbo.Tags.Select(tag => DbContext.Tags.Find(tag.Tag) ?? tag).ToHashSet();
             
             var result = await DbContext.Decks.AddAsync(dbo);
 
@@ -64,14 +63,14 @@ namespace Core.Repositories.Realizations
             var result = DbContext.Decks.Update(dbo);
 
             if (result is not {State: EntityState.Modified})
-                throw new OperationException("Failed to update entity");
+                throw new DbUpdateException("Failed to update entity");
             
             await DbContext.SaveChangesAsync();
 
             if (result is {State: EntityState.Unchanged})
                 return result.Entity!;
             
-            throw new OperationException("Failed to update entity");
+            throw new DbUpdateException("Failed to update entity");
         }
         
         
@@ -156,14 +155,16 @@ namespace Core.Repositories.Realizations
                 .OrderBy(deck => deck.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
+            
+            var pageList = new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
+                pageNumber, pageSize);
 
-            foreach (var deckDbo in page)
+            foreach (var deckDbo in pageList)
             {
                 await DbContext.Entry(deckDbo).Collection(d => d.Tags).LoadAsync();
             }
 
-            return new PageList<DeckDbo>(await page.ToListAsync(), await neededDecks.LongCountAsync(),
-                pageNumber, pageSize);
+            return pageList;
         }
 
         public async Task<PageList<DeckDbo>> GetPage(int pageNumber, int pageSize)

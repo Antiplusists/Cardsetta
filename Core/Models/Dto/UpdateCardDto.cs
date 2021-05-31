@@ -5,8 +5,6 @@ namespace Core.Models.Dto
 {
     public record UpdateCardDto
     {
-        [Required]
-        public CardType Type { get; set; }
         [OnlyLettersAndNumbers]
         [StringLength(500)]
         public string? Question { get; set; }

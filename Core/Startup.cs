@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 using Core.Data;
 using Core.Models;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -67,8 +69,8 @@ namespace Core
             });
             
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(
+                    Configuration.GetConnectionString("PostgresqlConnection")));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICardRepository, CardRepository>();
@@ -139,7 +141,6 @@ namespace Core
             }
             else
             {
-                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -158,7 +159,13 @@ namespace Core
             app.UseSerilogRequestLogging();
             
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(env.ContentRootPath, "StaticFiles")),
+                RequestPath = "/files"
+                
+            });
             app.UseSpaStaticFiles();
 
             app.UseRouting();

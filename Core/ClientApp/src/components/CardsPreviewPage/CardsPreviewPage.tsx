@@ -1,13 +1,14 @@
+import './CardsPreviewPage.css'
 import { Link } from 'react-router-dom';
 import { InferProps } from 'prop-types';
-import { Fab, IconButton, makeStyles } from '@material-ui/core';
-import { Edit, Add, DeleteForever } from '@material-ui/icons';
-import { FC, useRef, useState } from 'react';
-import { CardInfo } from '../../types/CardInfo'
-import './CardsPreviewPage.css'
-import { changeIdsInCardset, getCardsetById } from '../../fakeRepository/fakeCardsets'
-import { getCardById } from '../../fakeRepository/fakeCards'
-import { ButtonLink } from '../ButtonLink/ButtonLink';
+import { Fab, makeStyles } from '@material-ui/core';
+import { Edit, Add } from '@material-ui/icons';
+import { Fragment, useEffect, useState } from 'react';
+import { CardEntity } from "../../entities/Card";
+import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
+import authService from "../api-authorization/AuthorizeService";
+import CardPreview from './CardPreview'
+import LoaderLayout from '../LoaderLayout/LoaderLayout';
 
 const useStyles = makeStyles({
   fabOne: {
@@ -28,77 +29,88 @@ const useStyles = makeStyles({
   },
 });
 
-type CardPreviewProps = {
-  cardsetId: string,
-  cardInfo: CardInfo,
-  onDelete: Function,
-}
-
-const CardPreview: FC<CardPreviewProps> = ({ cardInfo, onDelete, cardsetId }) => {
-  const { id, questionImg, questionText, answearText } = cardInfo;
-  const blockRef = useRef<HTMLDivElement>(null);
-
-  function handleDelete() {
-    blockRef.current?.classList.add('isDelete');
-    setTimeout(() => onDelete(id), 500);
-  }
-
-  return (
-    <div ref={blockRef} className='QAcardPreview'>
-      <div className='sideQACard'>
-        {questionImg !== undefined ? <img src={questionImg} alt='questionImage' /> : ''}
-        <span>{questionText}</span>
-      </div>
-      <div className='sideQACard'>
-        <span>{answearText}</span>
-      </div>
-      <div className='overlay'>
-        <ButtonLink className='buttonLink'>
-          <Link to={`/card-settings/${id}?cardset=${cardsetId}`}>Изменить</Link>
-        </ButtonLink>
-        <IconButton className='deleteButton' onClick={handleDelete}>
-          <DeleteForever />
-        </IconButton>
-      </div>
-    </div>
-  );
-}
-
 type СardsPreviewPageProps = {
-  cardsetId: string,
+  deckId: string,
 }
 
-export default function СardsPreviewPage({ cardsetId}
-  : InferProps<СardsPreviewPageProps>) {
-  const classes = useStyles();
-  const set = getCardsetById(cardsetId);
-  const [cardIds, setCardIds] = useState<string[]>(set.cardIds);
+type State = {
+  isLoading: boolean,
+  cards: CardEntity[]
+}
 
-  function handleRemoveCard(id: string) {
-    const ids = cardIds.filter(i => i !== id);
-    changeIdsInCardset(cardsetId, ids);
-    setCardIds(ids);
+export default function СardsPreviewPage({ deckId }: InferProps<СardsPreviewPageProps>) {
+  const classes = useStyles();
+
+  const [state, setState] = useState<State>({ isLoading: true, cards: [] });
+
+  const [isAuthorAuth, setIsAuthorAuth] = useState<boolean>(authService.isAuthenticated()
+    && !!authService.getUser()?.deckIds.includes(deckId));
+
+  const getCards = async (deckId: string) => {
+    const response = await fetch(ApiPaths.cards.default(deckId));
+    switch (response.status) {
+      case 200: break;
+      case 404: throw new Error(`Deck with id: ${deckId} is not exist`);
+      default: throw new Error(`Can not fetch ${ApiPaths.cards.default(deckId)}`);
+    }
+    return await response.json() as CardEntity[];
+  };
+
+  useEffect(() => {
+    const _subscribe = authService.subscribe(() => setIsAuthorAuth(authService.isAuthenticated()
+      && !!authService.getUser()?.deckIds.includes(deckId)));
+
+    getCards(deckId)
+      .then(cards => {
+        setState({ ...state, isLoading: false, cards })
+      });
+
+    return () => authService.unsubscribe(_subscribe);
+  }, []);
+
+  const handleRemoveCard = async (cardId: string) => {
+    setState({ ...state, cards: state.cards.filter(card => card.id !== cardId) });
+    const body = {
+      method: 'DELETE'
+    };
+    authService.addAuthorizationHeader(body);
+    const response = await fetch(ApiPaths.cards.byId(deckId, cardId), body);
+    switch (response.status) {
+      case 204: return;
+      case 404: throw new Error(`Card ${cardId} in deck ${deckId} is not exist`);
+      default: throw new Error(`Can not fetch ${ApiPaths.cards.byId(deckId, cardId)}`);
+    }
+  }
+
+  const getFabButtons = () => {
+    return (
+      <Fragment>
+        <Link to={`/card-creation?deck=${deckId}`}>
+          <Fab className={classes.fabOne} color='primary'>
+            <Add />
+          </Fab>
+        </Link>
+
+        <Link to={`/deck-settings/${deckId}`}>
+          <Fab className={classes.fabTwo} color='primary'>
+            <Edit />
+          </Fab>
+        </Link>
+      </Fragment>
+    )
   }
 
   return (
-    <div>
-      <div className='QAcardsPreview'>
-        {set.cardIds.map(
-          id =>
-            <CardPreview key={id} cardInfo={getCardById(id)} cardsetId={cardsetId} onDelete={handleRemoveCard} />
+    <Fragment>
+      <LoaderLayout className='cardsPreview' isLoading={state.isLoading} isNotFound={state.cards.length === 0}
+        componentNotFound={<div className='centerText'>Карточек еще нет</div>}>
+        {state.cards.map(
+          card =>
+            <CardPreview key={card.id} card={card} deckId={deckId}
+              isAuth={isAuthorAuth} onDelete={handleRemoveCard} />
         )}
-      </div>
-      <Link to={`/card-settings?cardset=${cardsetId}`}>
-        <Fab className={classes.fabOne} color='primary'>
-          <Add />
-        </Fab>
-      </Link>
-
-      <Link to={`/cardset-settings/${cardsetId}`}>
-        <Fab className={classes.fabTwo} color='primary'>
-          <Edit />
-        </Fab>
-      </Link>
-    </div>
+      </LoaderLayout>
+      {isAuthorAuth ? getFabButtons() : null}
+    </Fragment>
   );
 }

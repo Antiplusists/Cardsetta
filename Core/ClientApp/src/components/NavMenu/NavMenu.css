@@ -1,29 +1,43 @@
-.grow {
-  flex-grow: 1;
-}
-
 .header {
   height: 125px;
   background-color: #253C88 !important;
-  display: flex;
+}
+
+.toolbar {
+  display: grid !important;
+  grid-template-columns: 0.5fr 1fr 1fr 0.5fr 1fr;
+  align-items: center;
   justify-content: center;
+}
+
+.toolbar .span2 {
+  grid-column-start: span 2;
 }
 
 .logo {
   height: 100px;
   margin: 10px;
+  transition: transform 50ms ease-out;
+}
+
+.logo-container {
+  position: relative;
+}
+
+.hov {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -68%);
+  left: 0;
+  opacity: 0;
+}
+
+.hov:hover {  
+  opacity: 0.75;
 }
 
 .logo img {
-  height: 100px;
-  margin: 10px;
+  max-height: 100px;
 }
 
 .logo:active {
-  transform: translate(-50%, -70%);
+  transform: translate(0%, 5%);
 }
