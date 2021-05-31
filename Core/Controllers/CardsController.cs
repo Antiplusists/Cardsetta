@@ -170,19 +170,21 @@ namespace Core.Controllers
                 cardDbo.Marks.Add(userId, mark);
             }
 
-            mark = isRight ? ++mark : --mark;
+            mark = Math.Max(0, Math.Min(isRight ? ++mark : --mark, 4));
 
             var time = mark switch
             {
-                < 0 => 1.Minutes(),
-                > 3 => 1.Days(),
-                0 => 5.Minutes(),
-                1 => 30.Minutes(),
-                2 => 1.Hours(),
-                3 => 12.Hours()
+                0 => 0.Minutes(),
+                1 => 5.Minutes(),
+                2 => 15.Minutes(),
+                3 => 30.Minutes(),
+                4 => 1.Hours(),
+                _ => throw new ArithmeticException()
             };
 
-            cardDbo.TimeToRepeat = DateTimeOffset.UtcNow + time;
+            if (time.Minutes == 0) return NoContent();
+            
+            cardDbo.TimeToRepeat[userId] = DateTimeOffset.UtcNow + time;
             cardDbo.Marks[userId] = mark;
 
             await cardRepo.UpdateAsync(cardDbo);

@@ -28,7 +28,7 @@ export default function CardsBasicStudy({ deckId }: InferProps<CardsBasicStudyPr
         if (cards.length === 0) {
             setIsEmpty(true);
         }
-        return cards.filter(c => new Date() > new Date(c.timeToRepeat));
+        return cards.filter(c => new Date() > (c.timeToRepeat[authService.getUser()!.id] ?? 0));
     }
 
     const updateCards = async () => {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Core.Models.Results
 {
@@ -8,6 +9,6 @@ namespace Core.Models.Results
         public string? Question { get; set; }
         public string Answer { get; set; } = null!;
         public string? ImagePath { get; set; }
-        public DateTimeOffset TimeToRepeat { get; set; }
+        public Dictionary<Guid, DateTimeOffset> TimeToRepeat { get; set; } = null!;
     }
 }

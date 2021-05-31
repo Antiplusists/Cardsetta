@@ -14,6 +14,7 @@ namespace Core.Models.Dbo
         public string? ImagePath { get; set; } 
         [Column(TypeName = "jsonb")]
         public Dictionary<Guid, int> Marks { get; set; } = new();
-        public DateTimeOffset TimeToRepeat { get; set; }
+        [Column(TypeName = "jsonb")]
+        public Dictionary<Guid, DateTimeOffset> TimeToRepeat { get; set; } = new();
     }
 }
