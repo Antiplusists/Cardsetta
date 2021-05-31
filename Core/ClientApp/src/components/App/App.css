@@ -1,6 +1,12 @@
 body {
   margin: 0;
   font-family: 'Roboto';
+  -ms-overflow-style: none; 
+  scrollbar-width: none;  
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 *, *::before, *::after {

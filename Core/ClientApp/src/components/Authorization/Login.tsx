@@ -28,13 +28,13 @@ const LogForm: React.FC<RouteComponentProps> = (props) => {
         formData.append('password', loginForm.password);
 
         let response = await AuthorizeService.login(formData);
-        setIsLoding(false);
         switch (response) {
             case OperationResponse.Success: {
                 props.history.push('/');
                 break;
             }
             default: {
+                setIsLoding(false);
                 setAlertsState({ ...alertsState, isLoginOrPasswordError: true })
                 break;
             }
@@ -68,7 +68,7 @@ const LogForm: React.FC<RouteComponentProps> = (props) => {
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setLoginForm({ ...loginForm, password: e.target.value })}
                 />
-                <LoadingButton loading={isLoading} text='Войти' type='submit'/>
+                <LoadingButton loading={isLoading} text='Войти' type='submit' />
             </ValidatorForm>
             <LoginAlerts alertsState={alertsState}
                 onClose={(state: LoginAlertsState) => setAlertsState(state)} />

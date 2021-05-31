@@ -1,7 +1,7 @@
 import DeckEntity from "../../entities/Deck";
-import {useEffect, useRef, useState} from "react";
-import {ApiPaths} from "../api-authorization/ApiAuthorizationConstants";
-import DeckPageEntity  from "../../entities/DeckPage";
+import { useEffect, useRef, useState } from "react";
+import { ApiPaths } from "../api-authorization/ApiAuthorizationConstants";
+import DeckPageEntity from "../../entities/DeckPage";
 import Decks from './Decks';
 import useQuery from "../../customHooks/useQuery";
 
@@ -17,7 +17,7 @@ export default function MainDecks() {
 
   const getDecks = async (pageNumber: number, pageSize: number) => {
     let response = await fetch(ApiPaths.decks.default + `?pageNumber=${pageNumber}&pageSize=${pageSize}&${query.toString()}`);
-    
+
     switch (response.status) {
       case 200: break;
       case 404: {
@@ -26,20 +26,22 @@ export default function MainDecks() {
       }
       default: throw new Error(`Can not fetch ${ApiPaths.decks.default}`);
     }
-    
-    return await response.json() as DeckPageEntity ;
+
+    return await response.json() as DeckPageEntity;
   }
 
   useEffect(() => {
-    setLoading(true);
+    if (pageNumber === 1) {
+      setLoading(true);
+    }
     getDecks(pageNumber, pageSize)
-        .then((deckPage) => {
-          maxPage.current = deckPage?.totalPages ?? maxPage.current;
-          setDecks(value => [...value, ...(deckPage?.items ?? [])]);
-          setLoading(false);
-        });
+      .then((deckPage) => {
+        maxPage.current = deckPage?.totalPages ?? maxPage.current;
+        setDecks(value => [...value, ...(deckPage?.items ?? [])]);
+        setLoading(false);
+      });
   }, [pageNumber]);
-  
+
   useEffect(() => {
     const onscroll = () => {
       if (document.documentElement.scrollHeight - document.documentElement.scrollTop === document.documentElement.clientHeight) {
@@ -49,11 +51,11 @@ export default function MainDecks() {
       }
     };
     document.addEventListener('scroll', onscroll);
-    
+
     return () => window.removeEventListener('scroll', onscroll);
   }, []);
-  
+
   return (
-    <Decks decks={decks} isLoading={isLoading} isNotFound={isNotFound}/>
+    <Decks decks={decks} isLoading={isLoading} isNotFound={isNotFound} />
   );
 }

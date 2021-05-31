@@ -41,13 +41,14 @@ const RegForm: FC<RouteComponentProps> = (props) => {
     formData.append('passwordConfirm', registerForm.repeatPassword)
 
     const response = await AuthorizeService.register(formData);
-    setIsLoding(false);
+
     switch (response) {
       case OperationResponse.Success: {
         props.history.push('/');
         break;
       }
       default: {
+        setIsLoding(false);
         setAlertsState({ ...alertsState, isLoginError: true });
       }
     }

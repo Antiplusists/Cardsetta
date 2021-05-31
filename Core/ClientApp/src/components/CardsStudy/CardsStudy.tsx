@@ -31,7 +31,7 @@ const randomCards = (cards: CardEntity[]) => {
             return null;
         }
         const card = copyOfCards[Math.floor(Math.random() * copyOfCards.length)];
-        copyOfCards = copyOfCards.filter(c => c.id != card.id);
+        copyOfCards = copyOfCards.filter(c => c.id !== card.id);
         return card;
     }
 }
