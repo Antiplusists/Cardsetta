@@ -29,22 +29,19 @@ export default function CustomDecks() {
 
     const getDecks = async () => {
         const decks: DeckEntity[] = [];
-        
+
         const body = {};
         authService.addAuthorizationHeader(body);
         const response = await fetch(ApiPaths.decks.my, body);
-        
+
         switch (response.status) {
-            case 200: 
+            case 200:
                 decks.push(...(await response.json() as DeckEntity[]));
                 break;
-            case 401:
-                throw new Error('Not authorized');
-            case 404:
-                break;
-            default: throw new Error(`Can not fetch ${ApiPaths.decks.my}`);
+            default:
+                return null;
         }
-        
+
         return decks;
     }
 
